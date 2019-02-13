@@ -1,0 +1,26 @@
+.regForm {
+  margin: auto;
+  padding: 10%;
+}
+
+.btn {
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.field {
+  margin-bottom: 30px;
+}
+.regSubmit {
+  vertical-align: middle;
+}
+.regFormCont {
+  padding: 30px;
+  margin: auto;
+  margin-top: 100px;
+  background-color: #fff;
+  box-shadow: 0 0 20px gray;
+  max-width: 500px;
+  max-height: 630px;
+  position: relative;
+}

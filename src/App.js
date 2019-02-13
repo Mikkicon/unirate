@@ -1,26 +1,36 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./Styles/App.css";
+import Registration from "./components/Registration";
+import Login from "./components/Login";
+import Home from "./components/Home";
+import Settings from "./components/Settings";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 class App extends Component {
+  componentDidMount = async () => {
+    // console.log("Mounted.");
+    await fetch(
+      "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/"
+    )
+      .then(response => {
+        response.status === 200
+          ? console.log("Estabilished connection with server")
+          : console.log("Error occured with code: ", response.status);
+      })
+      .catch(err =>
+        console.log("Couldn't establish connection with server", err)
+      );
+  };
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Router>
+        <div>
+          <Route path="/" exact component={() => <Home />} />
+          <Route path="/settings" component={() => <Settings />} />
+          <Route path="/login" component={() => <Login />} />
+          <Route path="/register" component={() => <Registration />} />
+        </div>
+      </Router>
     );
   }
 }

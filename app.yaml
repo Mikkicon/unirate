@@ -1,0 +1,9 @@
+runtime: nodejs
+env: flex
+# network:
+#   instance_tag: TAG_NAME
+#   name: NETWORK_NAME
+#   subnetwork_name: SUBNETWORK_NAME
+#   session_affinity: true
+#   forwarded_ports:
+#     - PORT

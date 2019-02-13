@@ -1,0 +1,26 @@
+.loginForm {
+  margin: auto;
+  padding: 10%;
+}
+
+.btn {
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.field {
+  margin-bottom: 30px;
+}
+.loginSubmit {
+  vertical-align: middle;
+}
+.loginFormCont {
+  padding: 30px;
+  margin: auto;
+  margin-top: 100px;
+  background-color: #fff;
+  box-shadow: 0 0 20px gray;
+  max-width: 500px;
+  /* max-height: 330px; */
+  position: relative;
+}
