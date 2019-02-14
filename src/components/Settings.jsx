@@ -14,6 +14,7 @@ class Settings extends Component {
       role: "",
       profession: ""
     },
+    image: avatar,
     enableSave: false
   };
   componentDidMount() {
@@ -64,6 +65,17 @@ class Settings extends Component {
       ? this.setState({ enableSave: true })
       : this.setState({ enableSave: false });
   };
+  handleAvatar = p => {
+    let reader = new FileReader();
+    let file = p.target.files[0];
+    reader.onloadend = () => {
+      this.setState({
+        image: reader.result
+      });
+    };
+    reader.readAsDataURL(file);
+    // this.setState({ discipline: p.target.value })
+  };
   submitValues = () => {
     // fetch(`http://localhost:3001/user/${this.state.userinfo.login}`, {
     fetch(
@@ -100,11 +112,16 @@ class Settings extends Component {
           <br />
           <div className="row">
             <div className="col-6">
-              <img src={avatar} alt="Default logo" />
+              <img
+                src={this.state.image}
+                width="200px"
+                height="200px"
+                alt="Default logo"
+              />
               <div>
                 <button className="btn btn-outline-primary col-6 float-left">
                   Upload
-                  <input type="file" />
+                  <input onChange={p => this.handleAvatar(p)} type="file" />
                 </button>
               </div>
             </div>
