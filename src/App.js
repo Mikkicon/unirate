@@ -29,6 +29,9 @@ class App extends Component {
           <Route path="/settings" component={() => <Settings />} />
           <Route path="/login" component={() => <Login />} />
           <Route path="/register" component={() => <Registration />} />
+          <Route path="/admin/user" component={() => <Registration />} />
+          <Route path="/admin/teacher" component={() => <Registration />} />
+          <Route path="/admin/" component={() => <Registration />} />
         </div>
       </Router>
     );

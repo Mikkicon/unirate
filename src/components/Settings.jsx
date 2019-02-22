@@ -8,7 +8,7 @@ class Settings extends Component {
     discipline: null,
     disciplines: null,
     userinfo: {
-      login: "mikkiconww",
+      login: "testLogin",
       email: "",
       password: "fdsafdsa",
       role: "",
@@ -126,8 +126,6 @@ class Settings extends Component {
               </div>
             </div>
             <div className="col-6">
-              <label>New Login</label>
-              <input className="form-control field" type="text" />
               <label>New Email</label>
               <input className="form-control field" type="text" />
               <label>New Password</label>

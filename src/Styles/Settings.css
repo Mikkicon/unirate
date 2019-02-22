@@ -5,6 +5,7 @@
   margin-top: 100px;
   background-color: #fff;
   box-shadow: 0 0 20px gray;
+  min-width: 530px;
 }
 img {
   border-radius: 100%;
