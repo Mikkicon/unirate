@@ -31,10 +31,9 @@ class Login extends Component {
         }),
         headers: { "Content-Type": "application/json" }
       }
-    )
-      .then(res => res.json())
-      .then(data => console.log("Data", data))
-      .catch(err => console.log("Error: ", err));
+    ).then(response => {
+      //  sessionStorage.setItem(‘jwtToken’, response.payload.data.token);
+    });
   };
   handleKeyPress = e => {
     if (e.key === "Enter") this.submitValues();
@@ -55,6 +54,9 @@ class Login extends Component {
           </Link>
           <Link className="btn btn-outline-primary" to="/settings">
             Settings
+          </Link>
+          <Link className="btn btn-outline-primary" to="/admin">
+            Admin
           </Link>
           <br />
           <label>Email</label>

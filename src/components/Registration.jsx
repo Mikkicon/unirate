@@ -67,16 +67,7 @@ class Registration extends Component {
         headers: { "Content-Type": "application/json" }
       }
     )
-      .then(res =>
-        res.status !== 200
-          ? alert(JSON.stringify(res.statusText))
-          : alert(
-              `User ${this.state.email.substring(
-                0,
-                this.state.email.indexOf("@")
-              )} has been successfully created`
-            )
-      )
+      .then(res => console.log(res))
       .catch(err => console.log("Error: ", err));
   };
   handleKeyPress = e => {
@@ -137,7 +128,7 @@ class Registration extends Component {
               ))
             ) : (
               <option className="dropdown-item" key={1} hidden defaultValue>
-                Choose your discipline
+                Choose your profession
               </option>
             )}
           </select>

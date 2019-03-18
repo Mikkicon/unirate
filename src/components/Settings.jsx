@@ -109,6 +109,9 @@ class Settings extends Component {
           <Link className="btn btn-outline-primary" to="/settings">
             Settings
           </Link>
+          <Link className="btn btn-outline-primary" to="/admin">
+            Admin
+          </Link>
           <br />
           <div className="row">
             <div className="col-6">

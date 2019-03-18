@@ -21,6 +21,6 @@
   background-color: #fff;
   box-shadow: 0 0 20px gray;
   max-width: 500px;
-  max-height: 630px;
+  /* max-height: 630px; */
   position: relative;
 }

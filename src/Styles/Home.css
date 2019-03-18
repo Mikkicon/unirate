@@ -6,3 +6,8 @@
   background-color: #fff;
   box-shadow: 0 0 20px gray;
 }
+h1 {
+  text-align: center;
+  margin: 50px;
+  padding-bottom: 50px;
+}
