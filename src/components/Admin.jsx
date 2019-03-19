@@ -9,7 +9,6 @@ import avatar from "../media/avatar.png";
 class Admin extends Component {
   state = {
     discipline: null,
-    disciplines: null,
     enableSave: false,
     entities: [],
     users: [
@@ -163,37 +162,31 @@ class Admin extends Component {
           selectedNav: p.target.text,
           entities: this.state[p.target.id.toLowerCase()]
         });
-        break;
       case "TEACHERS":
         return this.setState({
           selectedNav: p.target.text,
           entities: this.state[p.target.id.toLowerCase()]
         });
-        break;
       case "DISCIPLINES":
         return this.setState({
           selectedNav: p.target.text,
           entities: this.state[p.target.id.toLowerCase()]
         });
-        break;
       case "FEEDBACKS":
         return this.setState({
           selectedNav: p.target.text,
           entities: this.state[p.target.id.toLowerCase()]
         });
-        break;
       case "FACULTIES":
         return this.setState({
           selectedNav: p.target.text,
           entities: this.state[p.target.id.toLowerCase()]
         });
-        break;
       case "PROFESSIONS":
         return this.setState({
           selectedNav: p.target.text,
           entities: this.state[p.target.id.toLowerCase()]
         });
-        break;
       default:
         console.log(p.target.id);
         break;

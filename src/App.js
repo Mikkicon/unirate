@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Home from "./components/Home";
 import Settings from "./components/Settings";
 import Admin from "./components/Admin";
+import Discipline from "./components/Discipline";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 class App extends Component {
@@ -30,6 +31,7 @@ class App extends Component {
           <Route path="/settings" component={() => <Settings />} />
           <Route path="/login" component={() => <Login />} />
           <Route path="/register" component={() => <Registration />} />
+          <Route path="/discipline" component={() => <Discipline />} />
           {/* <Route path="/admin/user" component={() => <Registration />} />
           <Route path="/admin/teacher" component={() => <Registration />} /> */}
           <Route path="/admin" component={() => <Admin />} />

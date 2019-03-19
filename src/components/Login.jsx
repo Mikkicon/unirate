@@ -31,9 +31,11 @@ class Login extends Component {
         }),
         headers: { "Content-Type": "application/json" }
       }
-    ).then(response => {
-      //  sessionStorage.setItem(‘jwtToken’, response.payload.data.token);
-    });
+    )
+      .then(res => res.json())
+      .then(response => {
+        localStorage.setItem("token", response.token);
+      });
   };
   handleKeyPress = e => {
     if (e.key === "Enter") this.submitValues();
