@@ -61,21 +61,31 @@ class Admin extends Component {
       profession: ""
     }
   };
-  componentDidMount() {
-    // fetch(
-    //   // "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/auth/disciplines"
-    //   `http://localhost:3001/user/${this.state.userinfo.login}`
-    // )
-    //   .then(res => res.json())
-    //   .then(disciplines => {
-    //     if (disciplines.error) {
-    //       alert(disciplines.error);
-    //     } else {
-    //       this.setState({ disciplines });
-    //       console.log("Data", disciplines);
-    //     }
-    //   })
-    //   .catch(err => console.log("Error", err));
+  componentWillMount() {
+    fetch(
+      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/${this.state.selectedNav.slice(
+        0,
+        -1
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      }
+    )
+      .then(res => res.json())
+      .then(res =>
+        res.total
+          ? this.setState({
+              disciplines: res[this.state.selected],
+              total: res.total
+            })
+          : this.setState({ disciplines: [], total: 0 })
+      )
+      .then(console.log(this.state))
+      .catch(err => console.log(err));
   }
   deleteAccount = () => {
     window.confirm("Are you sure?")

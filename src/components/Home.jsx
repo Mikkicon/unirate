@@ -29,26 +29,8 @@ class Home extends Component {
     };
   }
 
-  componentDidMount = async () => {
-    fetch(
-      "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/discipline",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
-      }
-    )
-      .then(res => res.json())
-      .then(res =>
-        this.setState({
-          disciplines: res[this.state.selected],
-          total: res.total
-        })
-      )
-      .then(console.log(this.state))
-      .catch(err => console.log(err));
+  componentWillMount = async () => {
+    this.search("");
   };
   search = input => {
     fetch(
@@ -119,6 +101,10 @@ class Home extends Component {
           <Link className="btn btn-outline-primary" to="/settings">
             Settings
           </Link>
+          <Link className="btn btn-outline-primary" to="/admin">
+            Admin
+          </Link>
+          <Button className="btn-outline-danger">Logout</Button>
           <br />
           <ButtonToolbar>
             <DropdownButton

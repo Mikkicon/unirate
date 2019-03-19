@@ -33,15 +33,20 @@ class Discipline extends Component {
   };
   render() {
     const { discipline } = this.state;
+    console.log(discipline);
+
     return (
       <React.Fragment>
         <div>
-          {discipline
-            ? Object.keys(discipline).map(val => (
-                <div key={val}>{discipline[val]}</div>
-              ))
-            : ""}
-          {window.location.href.slice(-1)}
+          <h1>
+            {discipline[Object.keys(discipline)[1]]} <small>name</small>{" "}
+          </h1>
+          <h2>
+            {discipline[Object.keys(discipline)[2]]} <small>year</small>{" "}
+          </h2>
+          <h2>
+            {discipline[Object.keys(discipline)[3]]} <small>faculty</small>{" "}
+          </h2>
         </div>
       </React.Fragment>
     );
