@@ -13,8 +13,8 @@ class Home extends Component {
     super(props);
     this.state = {
       disciplines: [],
-      entities: ["disciplines", "professions", "faculties", "teachers"],
-      selected: "disciplines",
+      entities: ["discipline", "profession", "faculty", "teacher"],
+      selected: "discipline",
       total: 0
       // [
       //   { id: 1, name: "OOP", year: 2, faculty_id: 1 },
@@ -34,10 +34,9 @@ class Home extends Component {
   };
   search = input => {
     fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/${this.state.selected.slice(
-        0,
-        -1
-      )}${input ? "?search=" + input : ""}`,
+      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/${
+        this.state.selected
+      }${input ? "?search=" + input : ""}`,
       {
         method: "GET",
         headers: {
@@ -61,10 +60,7 @@ class Home extends Component {
   select = e => {
     this.setState({ selected: e });
     fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/${e.slice(
-        0,
-        -1
-      )}`,
+      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/${e}`,
       {
         method: "GET",
         headers: {
@@ -153,7 +149,7 @@ class Home extends Component {
             {this.state.disciplines
               ? this.state.disciplines.map(d => (
                   <Link
-                    to={"/" + this.state.selected.slice(0, -1) + "/" + d.id}
+                    to={"/" + this.state.selected + "/" + d.id}
                     className="list-group-item list-group-item-action"
                     id={d.id}
                     key={d.id}

@@ -6,9 +6,18 @@ import Home from "./components/Home";
 import Settings from "./components/Settings";
 import Admin from "./components/Admin";
 import Discipline from "./components/Discipline";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import Private from "./components/PrivateRoute";
+import Discipline1 from "./components/Discipline1";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isAdmin: window.localStorage.getItem("admin") ? true : false,
+      isAuthenticated: window.localStorage.getItem("token") ? true : false
+    };
+  }
   componentDidMount = async () => {
     // console.log("Mounted.");
     await fetch(
@@ -23,19 +32,41 @@ class App extends Component {
         console.log("Couldn't establish connection with server", err)
       );
   };
+
   render() {
     return (
       <Router>
-        <div>
-          <Route path="/" exact component={() => <Home />} />
-          <Route path="/settings" component={() => <Settings />} />
+        <Switch>
+          <Private
+            isAuthenticated={this.state.isAuthenticated}
+            isAdmin={this.state.isAdmin}
+            path="/"
+            exact
+            component={<Home />}
+          />
+          <Private
+            isAuthenticated={this.state.isAuthenticated}
+            isAdmin={this.state.isAdmin}
+            path="/settings"
+            component={<Settings />}
+          />
           <Route path="/login" component={() => <Login />} />
+          {/* <Route path="/admin" component={() => <Admin />} /> */}
           <Route path="/register" component={() => <Registration />} />
-          <Route path="/discipline" component={() => <Discipline />} />
-          {/* <Route path="/admin/user" component={() => <Registration />} />
-          <Route path="/admin/teacher" component={() => <Registration />} /> */}
-          <Route path="/admin" component={() => <Admin />} />
-        </div>
+          <Route path="/admin/discipline" component={() => <Discipline1 />} />
+          <Private
+            isAuthenticated={this.state.isAuthenticated}
+            isAdmin={this.state.isAdmin}
+            path="/discipline"
+            component={<Discipline />}
+          />
+          <Private
+            isAuthenticated={this.state.isAuthenticated}
+            isAdmin={this.state.isAdmin}
+            path="/admin"
+            component={<Admin />}
+          />
+        </Switch>
       </Router>
     );
   }

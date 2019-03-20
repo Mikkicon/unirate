@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import bcrypt from "bcryptjs";
 import "../Styles/LoginForm.css";
 import "bootstrap";
 class Login extends Component {
   state = {
     email: "",
     password: "",
-    asAdmin: false
+    asAdmin: false,
+    response: ""
   };
   handleEmail = p => {
     const v = p.target.value;
@@ -21,21 +23,39 @@ class Login extends Component {
     // console.log(this.state.email);
   };
   submitValues = () => {
+    const salt = "$2a$10$saltpasswordhashhashhh";
+    const password = bcrypt.hashSync(this.state.password, salt);
+    console.log("Hashed", password);
+
     fetch(
       "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/auth/login",
       {
         method: "POST",
         body: JSON.stringify({
           login: this.state.email,
-          password: this.state.password
+          password: password
         }),
         headers: { "Content-Type": "application/json" }
       }
     )
-      .then(res => res.json())
-      .then(response => {
-        localStorage.setItem("token", response.token);
-      });
+      .then(res => {
+        let a;
+        if (res.status.toString()[0] === "4") {
+          a = this.setState({ response: res.statusText });
+          a = window.confirm(res.statusText) ? "" : "";
+        } else {
+          a = window.confirm("Welcome!") ? "" : "";
+          a = this.setState({ response: res.statusText });
+        }
+        return res.json();
+      })
+      .then(res => {
+        const response = res;
+        console.log(response);
+        window.localStorage.setItem("token", response.token);
+        window.localStorage.setItem("admin", response.isAdmin);
+      })
+      .catch(err => (window.confirm(err) ? "" : ""));
   };
   handleKeyPress = e => {
     if (e.key === "Enter") this.submitValues();
@@ -45,6 +65,7 @@ class Login extends Component {
       <React.Fragment>
         <div className="loginFormCont">
           <h1>Login</h1>
+          <h2>{this.state.response}</h2>
           <Link className="btn btn-outline-primary" to="/">
             Home
           </Link>
@@ -61,7 +82,7 @@ class Login extends Component {
             Admin
           </Link>
           <br />
-          <label>Email</label>
+          <label>Login</label>
           <input
             className="form-control field"
             type="text"

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+// import { Link, Router, Switch } from "react-router-dom";
 import bcrypt from "bcryptjs";
 import "../Styles/RegForm.css";
 import "bootstrap";
@@ -16,20 +16,21 @@ class Registration extends Component {
     // disciplines: { 0: { name: "default", fac: 0 } },
     disciplines: null,
 
-    discipline: null
+    discipline: null,
+    response: ""
   };
 
   componentDidMount() {
-    fetch(
-      // "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/auth/disciplines"
-      "http://localhost:3000/auth/disciplines"
-    )
-      .then(res => res.json())
-      .then(disciplines => {
-        this.setState({ disciplines });
-        console.log("Data", disciplines);
-      })
-      .catch(err => console.log("Error", err));
+    // fetch(
+    //   "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/auth/disciplines"
+    //   // "http://localhost:3000/auth/disciplines"
+    // )
+    //   .then(res => res.json())
+    //   .then(disciplines => {
+    //     this.setState({ disciplines });
+    //     console.log("Data", disciplines);
+    //   })
+    //   .catch(err => console.log("Error", err));
   }
   handleEmail(p) {
     const v = p.target.value;
@@ -51,8 +52,10 @@ class Registration extends Component {
       : this.setState({ inputError: true });
   }
   submitValues = () => {
-    const salt = bcrypt.genSaltSync(10);
+    const salt = "$2a$10$saltpasswordhashhashhh";
     const password = bcrypt.hashSync(this.state.password, salt);
+    console.log("Hashed:", password);
+
     fetch(
       "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/auth/signup",
       // "http://localhost:3000/auth/signup",
@@ -67,7 +70,10 @@ class Registration extends Component {
         headers: { "Content-Type": "application/json" }
       }
     )
-      .then(res => console.log(res))
+      .then(res => {
+        console.log("Response: ", res.json());
+        this.setState({ response: res.statusText });
+      })
       .catch(err => console.log("Error: ", err));
   };
   handleKeyPress = e => {
@@ -79,21 +85,23 @@ class Registration extends Component {
       <React.Fragment>
         <div className="regFormCont">
           <h1>Registration</h1>
-          <Link className="btn btn-outline-primary" to="/">
+          <h2>{this.state.response}</h2>
+          <a className="btn btn-outline-primary" href="/">
             Home
-          </Link>
-          <Link className="btn btn-outline-primary" to="/register">
+          </a>
+          <a className="btn btn-outline-primary" href="/register">
             Registration
-          </Link>
-          <Link className="btn btn-outline-primary" to="/login">
+          </a>
+          <a className="btn btn-outline-primary" href="/login">
             Login
-          </Link>
-          <Link className="btn btn-outline-primary" to="/settings">
+          </a>
+          <a className="btn btn-outline-primary" href="/settings">
             Settings
-          </Link>
+          </a>
           <br />
           <label>Email</label>
           <input
+            name="mail"
             style={this.state.inputError ? this.state.style : {}}
             className="form-control field"
             type="text"
@@ -102,6 +110,7 @@ class Registration extends Component {
           />
           <label>Password</label>
           <input
+            name="pass"
             style={this.state.inputError ? this.state.style : {}}
             className="form-control field"
             type="password"
@@ -110,13 +119,14 @@ class Registration extends Component {
           />
           <label>Confirm Password</label>
           <input
+            name="conf"
             style={this.state.inputError ? this.state.style : {}}
             className="form-control field"
             type="password"
             onBlur={this.handleConfPassword.bind(this)}
             onKeyPress={this.handleKeyPress}
           />
-          <select
+          {/* <select
             className="form-control"
             onChange={p => this.setState({ discipline: p.target.value })}
           >
@@ -130,9 +140,10 @@ class Registration extends Component {
               <option className="dropdown-item" key={1} hidden defaultValue>
                 Choose your profession
               </option>
-            )}
-          </select>
+            )} */}
+          {/* </select> */}
           <button
+            type="submit"
             disabled={
               this.state.inputError ||
               this.state.email === "" ||

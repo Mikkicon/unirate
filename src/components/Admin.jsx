@@ -11,42 +11,42 @@ class Admin extends Component {
     discipline: null,
     enableSave: false,
     entities: [],
-    users: [
-      {
-        login: "mikkicon",
-        email: "mikkicon@gmail.com",
-        rating: 74,
-        role: 1,
-        professionId: 1,
-        totalFeedbackNumber: 0
-      },
-      {
-        login: "riepkin",
-        email: "riepkin@gmail.com",
-        rating: 80,
-        role: 0,
-        professionId: 2,
-        totalFeedbackNumber: 0
-      }
-    ],
-    disciplines: [
-      { id: 1, name: "OOP", year: 2, faculty_id: 1 },
-      { id: 2, name: "Procedure programming", year: 2, faculty_id: 1 },
-      { id: 3, name: "OBDZ", year: 3, faculty_id: 1 },
-      { id: 4, name: "Algorithms", year: 2, faculty_id: 1 },
-      { id: 5, name: "English", year: 1, faculty_id: 2 },
-      { id: 6, name: "English lit", year: 3, faculty_id: 2 },
-      { id: 7, name: "Economics", year: 2, faculty_id: 777 },
-      { id: 8, name: "History", year: 2, faculty_id: 777 }
-    ],
-    feedback: [
-      (1, 71, 5, "The best OOP", 1550096124, 0, "simple_user", 1),
-      (2, null, 10, "Good oop", 1550096024, 1550096074, "not_human", 1),
-      (3, 99, -5, "BAD OOP", 1550096125, 0, "not_human", 1),
-      (4, 100, 100, "IZI", 1550096063, 1550096074, "simple_user", 3),
-      (5, null, 50, "LOL OBDZ", 1550096124, 0, "not_human", 3),
-      (6, null, 20, "Procedure ok", 1550096124, 0, "simple_user", 2)
-    ],
+    // users: [
+    //   {
+    //     login: "mikkicon",
+    //     email: "mikkicon@gmail.com",
+    //     rating: 74,
+    //     role: 1,
+    //     professionId: 1,
+    //     totalFeedbackNumber: 0
+    //   },
+    //   {
+    //     login: "riepkin",
+    //     email: "riepkin@gmail.com",
+    //     rating: 80,
+    //     role: 0,
+    //     professionId: 2,
+    //     totalFeedbackNumber: 0
+    //   }
+    // ],
+    // disciplines: [
+    //   { id: 1, name: "OOP", year: 2, faculty_id: 1 },
+    //   { id: 2, name: "Procedure programming", year: 2, faculty_id: 1 },
+    //   { id: 3, name: "OBDZ", year: 3, faculty_id: 1 },
+    //   { id: 4, name: "Algorithms", year: 2, faculty_id: 1 },
+    //   { id: 5, name: "English", year: 1, faculty_id: 2 },
+    //   { id: 6, name: "English lit", year: 3, faculty_id: 2 },
+    //   { id: 7, name: "Economics", year: 2, faculty_id: 777 },
+    //   { id: 8, name: "History", year: 2, faculty_id: 777 }
+    // ],
+    // feedback: [
+    //   (1, 71, 5, "The best OOP", 1550096124, 0, "simple_user", 1),
+    //   (2, null, 10, "Good oop", 1550096024, 1550096074, "not_human", 1),
+    //   (3, 99, -5, "BAD OOP", 1550096125, 0, "not_human", 1),
+    //   (4, 100, 100, "IZI", 1550096063, 1550096074, "simple_user", 3),
+    //   (5, null, 50, "LOL OBDZ", 1550096124, 0, "not_human", 3),
+    //   (6, null, 20, "Procedure ok", 1550096124, 0, "simple_user", 2)
+    // ],
     image: avatar,
     number: 3,
     page: 1,
@@ -61,59 +61,8 @@ class Admin extends Component {
       profession: ""
     }
   };
-  componentWillMount() {
-    fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/${this.state.selectedNav.slice(
-        0,
-        -1
-      )}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
-      }
-    )
-      .then(res => res.json())
-      .then(res =>
-        res.total
-          ? this.setState({
-              disciplines: res[this.state.selected],
-              total: res.total
-            })
-          : this.setState({ disciplines: [], total: 0 })
-      )
-      .then(console.log(this.state))
-      .catch(err => console.log(err));
-  }
-  deleteAccount = () => {
-    window.confirm("Are you sure?")
-      ? // fetch(`http://localhost:3001/user/${this.state.userinfo.login}`, {
-        fetch(
-          `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/user/${
-            this.state.userinfo.login
-          }`,
-          {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" }
-          }
-        )
-          .then(data =>
-            data.status !== 200
-              ? alert(
-                  `User '${this.state.userinfo.login}' was ` +
-                    JSON.stringify(data.statusText)
-                )
-              : alert(
-                  `User ${
-                    this.state.userinfo.login
-                  } has been successfully deleted`
-                )
-          )
-          .catch(err => console.log(err))
-      : console.log("You've decided not to delete your account.:)");
-  };
+  componentWillMount() {}
+
   handleVerification = p => {
     p.target.value === "fdsa"
       ? this.setState({ enableSave: true })
@@ -140,7 +89,12 @@ class Admin extends Component {
   };
   pages = () => {
     let array = [];
-    for (let i = 1; i < Math.floor(this.state.entities.length / 20) + 2; i++) {
+    for (
+      let i = 1;
+      i <
+      Math.floor(this.state.entities ? this.state.entities.length / 20 : 0) + 2;
+      i++
+    ) {
       array.push(<Pagination.Item key={i}> {i}</Pagination.Item>);
     }
     return array;
@@ -165,42 +119,36 @@ class Admin extends Component {
       .then(data => (data.error ? alert(data.error) : console.log(data)))
       .catch(err => alert(err));
   };
+
+  loadEntities = entityName => {
+    fetch(
+      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${entityName}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      }
+    )
+      .then(res => res.json())
+      .then(res =>
+        res.total
+          ? this.setState({
+              entities: res[entityName],
+              total: res.total
+            })
+          : this.setState({ entities: [], total: 0 })
+      )
+      .then(console.log(this.state))
+      .catch(err => console.log(err));
+  };
+
   selectEntity = p => {
-    switch (p.target.id) {
-      case "USERS":
-        return this.setState({
-          selectedNav: p.target.text,
-          entities: this.state[p.target.id.toLowerCase()]
-        });
-      case "TEACHERS":
-        return this.setState({
-          selectedNav: p.target.text,
-          entities: this.state[p.target.id.toLowerCase()]
-        });
-      case "DISCIPLINES":
-        return this.setState({
-          selectedNav: p.target.text,
-          entities: this.state[p.target.id.toLowerCase()]
-        });
-      case "FEEDBACKS":
-        return this.setState({
-          selectedNav: p.target.text,
-          entities: this.state[p.target.id.toLowerCase()]
-        });
-      case "FACULTIES":
-        return this.setState({
-          selectedNav: p.target.text,
-          entities: this.state[p.target.id.toLowerCase()]
-        });
-      case "PROFESSIONS":
-        return this.setState({
-          selectedNav: p.target.text,
-          entities: this.state[p.target.id.toLowerCase()]
-        });
-      default:
-        console.log(p.target.id);
-        break;
-    }
+    this.setState({
+      selectedNav: p.target.id,
+      entities: this.loadEntities(p.target.id)
+    });
   };
   putEntity = () => {
     window.confirm("Are you sure you want to update user?")
@@ -311,12 +259,6 @@ class Admin extends Component {
               >
                 Save
               </button>
-              <button
-                onClick={this.deleteAccount}
-                className="btn btn-outline-danger col-12"
-              >
-                Delete Account
-              </button>
             </div>
           </div>
         </div>
@@ -325,23 +267,22 @@ class Admin extends Component {
             <br />
             <br />
             <Navbar title="LOAD">
-              <Nav.Link id="USERS" onClick={this.selectEntity.bind(this)}>
-                {" "}
+              <Nav.Link id="user" onClick={this.selectEntity.bind(this)}>
                 USERS
               </Nav.Link>
-              <Nav.Link id="TEACHERS" onClick={this.selectEntity.bind(this)}>
+              <Nav.Link id="teacher" onClick={this.selectEntity.bind(this)}>
                 TEACHERS
               </Nav.Link>
-              <Nav.Link id="DISCIPLINES" onClick={this.selectEntity.bind(this)}>
+              <Nav.Link id="discipline" onClick={this.selectEntity.bind(this)}>
                 DISCIPLINES
               </Nav.Link>
-              <Nav.Link id="FEEDBACKS" onClick={this.selectEntity.bind(this)}>
+              <Nav.Link id="feedback" onClick={this.selectEntity.bind(this)}>
                 FEEDBACKS
               </Nav.Link>
-              <Nav.Link id="FACULTIES" onClick={this.selectEntity.bind(this)}>
+              <Nav.Link id="faculty" onClick={this.selectEntity.bind(this)}>
                 FACULTIES
               </Nav.Link>
-              <Nav.Link id="PROFESSIONS" onClick={this.selectEntity.bind(this)}>
+              <Nav.Link id="profession" onClick={this.selectEntity.bind(this)}>
                 PROFESSIONS
               </Nav.Link>
             </Navbar>
@@ -349,24 +290,23 @@ class Admin extends Component {
           <div className=" row userList col-6">
             <h3>{this.state.selectedNav}</h3>
             <div className="list-group col-12">
-              {this.state.entities.map(u => (
-                // Object.keys(result.data.sectionList)[0]
-                <div
-                  key={u[Object.keys(u)[0]]}
-                  onClick={this.selectUser.bind(this.id)}
-                  className="list-group-item list-group-item-action"
-                  id={u[Object.keys(u)[0]]}
-                >
-                  {u[Object.keys(u)[0]]}
-                </div>
-              ))}
+              {this.state.entities
+                ? this.state.entities.map(u => (
+                    <div
+                      key={u[Object.keys(u)[0]]}
+                      onClick={this.selectUser.bind(this.id)}
+                      className="list-group-item list-group-item-action"
+                      id={u[Object.keys(u)[0]]}
+                    >
+                      {u[Object.keys(u)[0]]}
+                    </div>
+                  ))
+                : ""}
               <br />
               <Pagination>
                 <Pagination.First />
                 <Pagination.Prev
-                  disabled={
-                    this.state.entities.length < 1 || this.state.page < 2
-                  }
+                  disabled={this.state.entities ? this.state.page < 2 : true}
                 />
                 {this.pages()}
                 <Pagination.Next />

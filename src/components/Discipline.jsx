@@ -15,8 +15,9 @@ class Discipline extends Component {
   }
   componentWillMount = () => {
     fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/discipline?id=${window.location.href.slice(
-        -1
+      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/discipline?id=${window.location.href.substr(
+        window.location.href.indexOf("discipline") + 11,
+        window.location.href.length
       )}`,
       {
         method: "GET",
@@ -27,7 +28,7 @@ class Discipline extends Component {
       }
     )
       .then(res => res.json())
-      .then(res => this.setState({ discipline: res.disciplines[0] }))
+      .then(res => this.setState({ discipline: res.discipline[0] }))
       .then(console.log(this.state))
       .catch(err => console.log(err));
   };
