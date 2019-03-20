@@ -7,7 +7,7 @@ import Settings from "./components/Settings";
 import Admin from "./components/Admin";
 import Discipline from "./components/Discipline";
 import Private from "./components/PrivateRoute";
-import Discipline1 from "./components/Discipline1";
+// import Discipline1 from "./components/Discipline1";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 class App extends Component {
@@ -53,7 +53,7 @@ class App extends Component {
           <Route path="/login" component={() => <Login />} />
           {/* <Route path="/admin" component={() => <Admin />} /> */}
           <Route path="/register" component={() => <Registration />} />
-          <Route path="/admin/discipline" component={() => <Discipline1 />} />
+          {/* <Route path="/admin/discipline" component={() => <Discipline1 />} /> */}
           <Private
             isAuthenticated={this.state.isAuthenticated}
             isAdmin={this.state.isAdmin}
