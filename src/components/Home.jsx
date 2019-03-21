@@ -12,20 +12,13 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      link: this.props.testnet
+        ? "http://localhost:3000"
+        : "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com",
       disciplines: [],
       entities: ["discipline", "profession", "faculty", "teacher"],
       selected: "discipline",
       total: 0
-      // [
-      //   { id: 1, name: "OOP", year: 2, faculty_id: 1 },
-      //   { id: 2, name: "Procedure programming", year: 2, faculty_id: 1 },
-      //   { id: 3, name: "OBDZ", year: 3, faculty_id: 1 },
-      //   { id: 4, name: "Algorithms", year: 2, faculty_id: 1 },
-      //   { id: 5, name: "English", year: 1, faculty_id: 2 },
-      //   { id: 6, name: "English lit", year: 3, faculty_id: 2 },
-      //   { id: 7, name: "Economics", year: 2, faculty_id: 777 },
-      //   { id: 8, name: "History", year: 2, faculty_id: 777 }
-      // ]
     };
   }
 
@@ -34,9 +27,9 @@ class Home extends Component {
   };
   search = input => {
     fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/${
-        this.state.selected
-      }${input ? "?search=" + input : ""}`,
+      `${this.state.link}/${this.state.selected}${
+        input ? "?search=" + input : ""
+      }`,
       {
         method: "GET",
         headers: {
@@ -59,16 +52,13 @@ class Home extends Component {
   };
   select = e => {
     this.setState({ selected: e });
-    fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/${e}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
+    fetch(`${this.state.link}/${e}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
       }
-    )
+    })
       .then(res => res.json())
       .then(res =>
         res.total

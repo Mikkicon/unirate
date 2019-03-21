@@ -1,21 +1,17 @@
 import React, { Component } from "react";
-// import PropTypes from "prop-types";
-// import { withRouter } from "react-router";
 class Discipline extends Component {
-  //   static propTypes = {
-  // match: PropTypes.object.isRequired,
-  // location: PropTypes.object.isRequired,
-  // history: PropTypes.object.isRequired
-  //   };
   constructor(props) {
     super(props);
     this.state = {
+      link: this.props.testnet
+        ? "http://localhost:3000"
+        : "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com",
       discipline: {}
     };
   }
   componentWillMount = () => {
     fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/discipline?id=${window.location.href.substr(
+      `${this.state.link}/discipline?id=${window.location.href.substr(
         window.location.href.indexOf("discipline") + 11,
         window.location.href.length
       )}`,

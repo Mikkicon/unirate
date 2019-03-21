@@ -3,64 +3,33 @@ import { Link } from "react-router-dom";
 import "../Styles/Admin.css";
 import "bootstrap";
 import Pagination from "react-bootstrap/Pagination";
-// import { DropdownButton, Dropdown } from "react-bootstrap";
 import { Navbar, Nav } from "react-bootstrap";
 import avatar from "../media/avatar.png";
 class Admin extends Component {
-  state = {
-    discipline: null,
-    enableSave: false,
-    entities: [],
-    // users: [
-    //   {
-    //     login: "mikkicon",
-    //     email: "mikkicon@gmail.com",
-    //     rating: 74,
-    //     role: 1,
-    //     professionId: 1,
-    //     totalFeedbackNumber: 0
-    //   },
-    //   {
-    //     login: "riepkin",
-    //     email: "riepkin@gmail.com",
-    //     rating: 80,
-    //     role: 0,
-    //     professionId: 2,
-    //     totalFeedbackNumber: 0
-    //   }
-    // ],
-    // disciplines: [
-    //   { id: 1, name: "OOP", year: 2, faculty_id: 1 },
-    //   { id: 2, name: "Procedure programming", year: 2, faculty_id: 1 },
-    //   { id: 3, name: "OBDZ", year: 3, faculty_id: 1 },
-    //   { id: 4, name: "Algorithms", year: 2, faculty_id: 1 },
-    //   { id: 5, name: "English", year: 1, faculty_id: 2 },
-    //   { id: 6, name: "English lit", year: 3, faculty_id: 2 },
-    //   { id: 7, name: "Economics", year: 2, faculty_id: 777 },
-    //   { id: 8, name: "History", year: 2, faculty_id: 777 }
-    // ],
-    // feedback: [
-    //   (1, 71, 5, "The best OOP", 1550096124, 0, "simple_user", 1),
-    //   (2, null, 10, "Good oop", 1550096024, 1550096074, "not_human", 1),
-    //   (3, 99, -5, "BAD OOP", 1550096125, 0, "not_human", 1),
-    //   (4, 100, 100, "IZI", 1550096063, 1550096074, "simple_user", 3),
-    //   (5, null, 50, "LOL OBDZ", 1550096124, 0, "not_human", 3),
-    //   (6, null, 20, "Procedure ok", 1550096124, 0, "simple_user", 2)
-    // ],
-    image: avatar,
-    number: 3,
-    page: 1,
-    selectedNav: "",
+  constructor(props) {
+    super(props);
+    this.state = {
+      discipline: null,
+      enableSave: false,
+      link: this.props.testnet
+        ? "http://localhost:3000"
+        : "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com",
+      entities: [],
+      image: avatar,
+      number: 3,
+      page: 1,
+      selectedNav: "",
+      selectedUser: null,
+      userinfo: {
+        login: "testLogin",
+        email: "",
+        password: "fdsafdsa",
+        role: "",
+        profession: ""
+      }
+    };
+  }
 
-    selectedUser: null,
-    userinfo: {
-      login: "testLogin",
-      email: "",
-      password: "fdsafdsa",
-      role: "",
-      profession: ""
-    }
-  };
   componentWillMount() {}
 
   handleVerification = p => {
@@ -77,7 +46,6 @@ class Admin extends Component {
       });
     };
     reader.readAsDataURL(file);
-    // this.setState({ discipline: p.target.value })
   };
   selectUser = p => {
     console.log("Selected user:", p.target);
@@ -105,32 +73,23 @@ class Admin extends Component {
     this.setState({ selectUser: temp });
   };
   submitValues = () => {
-    // fetch(`http://localhost:3001/user/${this.state.userinfo.login}`, {
-    fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/user/${
-        this.state.userinfo.login
-      }`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" }
-      }
-    )
+    fetch(`/user/${this.state.userinfo.login}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" }
+    })
       .then(p => p.json())
       .then(data => (data.error ? alert(data.error) : console.log(data)))
       .catch(err => alert(err));
   };
 
   loadEntities = entityName => {
-    fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${entityName}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
+    fetch(`${this.state.link}/admin/${entityName}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
       }
-    )
+    })
       .then(res => res.json())
       .then(res =>
         res.total
@@ -152,11 +111,10 @@ class Admin extends Component {
   };
   putEntity = () => {
     window.confirm("Are you sure you want to update user?")
-      ? // fetch(`http://localhost:3001/admin/${this.state.userinfo.login}`, {
-        fetch(
-          `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${this.state.selectedNav
-            .toLowerCase()
-            .replace(" ", "")}/${
+      ? fetch(
+          `${
+            this.state.link
+          }/admin/${this.state.selectedNav.toLowerCase().replace(" ", "")}/${
             this.state.selectedUser[Object.keys(this.state.selectedUser)[0]]
           }`,
           {
@@ -179,7 +137,6 @@ class Admin extends Component {
       : console.log("canceled");
   };
   render() {
-    // console.log(this.state.entities);
     return (
       <React.Fragment>
         <div className="adminFormCont col-10">

@@ -14,57 +14,55 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      testnet: false,
       isAdmin: window.localStorage.getItem("admin") ? true : false,
       isAuthenticated: window.localStorage.getItem("token") ? true : false
     };
   }
-  componentDidMount = async () => {
-    // console.log("Mounted.");
-    await fetch(
-      "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/"
-    )
-      .then(response => {
-        response.status === 200
-          ? console.log("Estabilished connection with server")
-          : console.log("Error occured with code: ", response.status);
-      })
-      .catch(err =>
-        console.log("Couldn't establish connection with server", err)
-      );
-  };
+
+  componentDidMount = async () => {};
 
   render() {
+    const { testnet, isAdmin, isAuthenticated } = this.state;
     return (
       <Router>
         <Switch>
           <Private
-            isAuthenticated={this.state.isAuthenticated}
-            isAdmin={this.state.isAdmin}
+            isAuthenticated={isAuthenticated}
+            isAdmin={isAdmin}
             path="/"
             exact
-            component={<Home />}
+            testnet={testnet}
+            component={<Home testnet={testnet} />}
           />
           <Private
-            isAuthenticated={this.state.isAuthenticated}
-            isAdmin={this.state.isAdmin}
+            isAuthenticated={isAuthenticated}
+            isAdmin={isAdmin}
             path="/settings"
-            component={<Settings />}
+            testnet={testnet}
+            component={<Settings testnet={testnet} />}
           />
-          <Route path="/login" component={() => <Login />} />
-          {/* <Route path="/admin" component={() => <Admin />} /> */}
-          <Route path="/register" component={() => <Registration />} />
-          {/* <Route path="/admin/discipline" component={() => <Discipline1 />} /> */}
+
+          <Route path="/login" component={() => <Login testnet={testnet} />} />
+
+          <Route
+            path="/register"
+            testnet={testnet}
+            component={() => <Registration testnet={testnet} />}
+          />
           <Private
-            isAuthenticated={this.state.isAuthenticated}
-            isAdmin={this.state.isAdmin}
+            isAuthenticated={isAuthenticated}
+            isAdmin={isAdmin}
             path="/discipline"
-            component={<Discipline />}
+            testnet={testnet}
+            component={<Discipline testnet={testnet} />}
           />
           <Private
-            isAuthenticated={this.state.isAuthenticated}
-            isAdmin={this.state.isAdmin}
+            isAuthenticated={isAuthenticated}
+            isAdmin={isAdmin}
             path="/admin"
-            component={<Admin />}
+            testnet={testnet}
+            component={<Admin testnet={testnet} />}
           />
         </Switch>
       </Router>

@@ -5,6 +5,9 @@ import "bootstrap";
 import avatar from "../media/avatar.png";
 class Settings extends Component {
   state = {
+    link: this.props.testnet
+      ? "http://localhost:3000"
+      : "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com",
     discipline: null,
     disciplines: null,
     userinfo: {
@@ -19,8 +22,7 @@ class Settings extends Component {
   };
   componentDidMount() {
     // fetch(
-    //   // "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/auth/disciplines"
-    //   `http://localhost:3001/user/${this.state.userinfo.login}`
+    //   `${this.state.link}/user/${this.state.userinfo.login}`
     // )
     //   .then(res => res.json())
     //   .then(disciplines => {
@@ -35,16 +37,10 @@ class Settings extends Component {
   }
   deleteAccount = () => {
     window.confirm("Are you sure?")
-      ? // fetch(`http://localhost:3001/user/${this.state.userinfo.login}`, {
-        fetch(
-          `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/user/${
-            this.state.userinfo.login
-          }`,
-          {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" }
-          }
-        )
+      ? fetch(`${this.state.link}/user/${this.state.userinfo.login}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" }
+        })
           .then(data =>
             data.status !== 200
               ? alert(
@@ -77,16 +73,10 @@ class Settings extends Component {
     // this.setState({ discipline: p.target.value })
   };
   submitValues = () => {
-    // fetch(`http://localhost:3001/user/${this.state.userinfo.login}`, {
-    fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/user/${
-        this.state.userinfo.login
-      }`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" }
-      }
-    )
+    fetch(`${this.state.link}/user/${this.state.userinfo.login}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" }
+    })
       .then(p => p.json())
       .then(data => (data.error ? alert(data.error) : console.log(data)))
       .catch(err => alert(err));
