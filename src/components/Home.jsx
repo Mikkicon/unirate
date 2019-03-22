@@ -105,8 +105,8 @@ class Home extends Component {
           <Link className="btn btn-outline-primary" to="/admin">
             Admin
           </Link>
-          <Button className="btn-outline-danger">Logout</Button>
-          <br />
+            <Button className="btn-outline-danger" onClick={this.logout}>Logout</Button>
+            <br />
           <ButtonToolbar>
             <DropdownButton
               variant="warning"
@@ -218,6 +218,10 @@ class Home extends Component {
       </React.Fragment>
     );
   }
+logout()
+{
+    localStorage.clear();
+    window.location.href = '/';
 }
-
+}
 export default Home;
