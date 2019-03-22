@@ -48,10 +48,10 @@ class Admin extends Component {
     reader.readAsDataURL(file);
   };
   selectUser = p => {
-    console.log("Selected user:", p.target);
+    // console.log("Selected user:", p.target);
     this.setState({
       selectedUser: this.state.entities.find(
-        a => a[Object.keys(a)[0]] === p.target.id
+        a => a[Object.keys(a)[0]].toString() === p.target.id.toString()
       )
     });
   };
