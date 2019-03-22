@@ -21,9 +21,9 @@ class Admin extends Component {
       selectedNav: "",
       selectedUser: null,
       userinfo: {
-        login: "testLogin",
+        login: "",
         email: "",
-        password: "fdsafdsa",
+        password: "",
         role: "",
         profession: ""
       }

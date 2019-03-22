@@ -6,7 +6,7 @@ class Private extends Component {
     this.state = {};
   }
   render() {
-    const { path, isAdmin, isAuthenticated, component, testnet } = this.props;
+    const { path, isAdmin, isAuthenticated, component } = this.props;
     return isAuthenticated ? (
       path.toString() === "/admin" ? (
         isAdmin ? (
