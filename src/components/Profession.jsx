@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 // import PropTypes from "prop-types";
 // import { withRouter } from "react-router";
-class Faculty extends Component {
+class Profession extends Component {
   //   static propTypes = {
   // match: PropTypes.object.isRequired,
   // location: PropTypes.object.isRequired,
@@ -10,13 +10,13 @@ class Faculty extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      faculty: {}
+      profession: {}
     };
   }
   componentWillMount = () => {
     fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/faculty?facultyId=${window.location.href.substr(
-        window.location.href.indexOf("faculty") + 8,
+      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/profession?professionId=${window.location.href.substr(
+        window.location.href.indexOf("profession") + 11,
         window.location.href.length
       )}`,
       {
@@ -28,22 +28,22 @@ class Faculty extends Component {
       }
     )
       .then(res => res.json())
-      .then(res => this.setState({ faculty: res.faculty[0] }))
+      .then(res => this.setState({ profession: res.profession[0] }))
       .then(console.log(this.state))
       .catch(err => console.log(err));
   };
   render() {
-    const { faculty } = this.state;
-    console.log(faculty);
+    const { profession } = this.state;
+    console.log(profession);
 
     return (
       <React.Fragment>
         <div>
           <h1>
-            {faculty[Object.keys(faculty)[1]]} <small>name</small>{" "}
+            {profession[Object.keys(profession)[1]]} <small>name</small>{" "}
           </h1>
           <h2>
-            {faculty[Object.keys(faculty)[2]]} <small>shortName</small>{" "}
+            {profession[Object.keys(profession)[2]]} <small>faculty</small>{" "}
           </h2>
         </div>
       </React.Fragment>
@@ -51,4 +51,4 @@ class Faculty extends Component {
   }
 }
 
-export default Faculty;
+export default Profession;

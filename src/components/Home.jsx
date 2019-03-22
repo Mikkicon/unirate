@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "../Styles/Home.css";
 import { Link } from "react-router-dom";
 import "bootstrap";
+import Pagination from "react-bootstrap/Pagination";
 import {
   Dropdown,
   DropdownButton,
@@ -81,6 +82,18 @@ class Home extends Component {
       .then(console.log(this.state))
       .catch(err => console.log(err));
   };
+  pages = () => {
+    let array = [];
+    for (
+        let i = 1;
+        i <
+        Math.floor(this.state.entities ? this.state.entities.length / 20 : 0) + 2;
+        i++
+    ) {
+        array.push(<Pagination.Item key={i}> {i}</Pagination.Item>);
+    }
+    return array;
+    };
   render() {
     return (
       <React.Fragment>
@@ -158,8 +171,21 @@ class Home extends Component {
                   </Link>
                 ))
               : ""}
+
+            <Pagination>
+              <Pagination.First />
+              <Pagination.Prev
+                  disabled={this.state.entities ? this.state.page < 2 : true}
+              />
+              {this.pages()}
+              <Pagination.Next />
+              <Pagination.Last />
+            </Pagination>
+
           </div>
+
         </div>
+
       </React.Fragment>
     );
   }

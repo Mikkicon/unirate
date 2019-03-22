@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 // import PropTypes from "prop-types";
 // import { withRouter } from "react-router";
-class Faculty extends Component {
+class Teacher extends Component {
   //   static propTypes = {
   // match: PropTypes.object.isRequired,
   // location: PropTypes.object.isRequired,
@@ -10,13 +10,13 @@ class Faculty extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      faculty: {}
+      teacher: {}
     };
   }
   componentWillMount = () => {
     fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/faculty?facultyId=${window.location.href.substr(
-        window.location.href.indexOf("faculty") + 8,
+      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/teacher?teacherId=${window.location.href.substr(
+        window.location.href.indexOf("teacher") + 8,
         window.location.href.length
       )}`,
       {
@@ -28,27 +28,34 @@ class Faculty extends Component {
       }
     )
       .then(res => res.json())
-      .then(res => this.setState({ faculty: res.faculty[0] }))
+      .then(res => this.setState({ teacher: res.teacher[0] }))
       .then(console.log(this.state))
       .catch(err => console.log(err));
   };
   render() {
-    const { faculty } = this.state;
-    console.log(faculty);
+    const { teacher } = this.state;
+    console.log(teacher);
 
     return (
       <React.Fragment>
         <div>
           <h1>
-            {faculty[Object.keys(faculty)[1]]} <small>name</small>{" "}
+              <small>Last Name</small>{" "} {teacher[Object.keys(teacher)[1]]}
           </h1>
-          <h2>
-            {faculty[Object.keys(faculty)[2]]} <small>shortName</small>{" "}
-          </h2>
+          <h1>
+            <small>First Name</small>{" "} {teacher[Object.keys(teacher)[2]]}
+          </h1>
+          <h1>
+            <small>Middle name</small>{" "} {teacher[Object.keys(teacher)[3]]}
+          </h1>
+          <h1>
+            <small>Feedback number</small>{" "} {teacher[Object.keys(teacher)[4]]}
+          </h1>
+
         </div>
       </React.Fragment>
     );
   }
 }
 
-export default Faculty;
+export default Teacher;

@@ -7,7 +7,9 @@ import Settings from "./components/Settings";
 import Admin from "./components/Admin";
 import Discipline from "./components/Discipline";
 import Private from "./components/PrivateRoute";
-import  Faculty from "./components/Faculty";
+import Faculty from "./components/Faculty";
+import Profession from "./components/Profession";
+import Teacher from "./components/Teacher";
 
 // import Discipline1 from "./components/Discipline1";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -68,6 +70,19 @@ class App extends Component {
             path="/faculty"
             component={<Faculty />}
           />
+          <Private
+            isAuthenticated={this.state.isAuthenticated}
+            isAdmin={this.state.isAdmin}
+            path="/profession"
+            component={<Profession />}
+          />
+          <Private
+            isAuthenticated={this.state.isAuthenticated}
+            isAdmin={this.state.isAdmin}
+            path="/teacher"
+            component={<Teacher />}
+          />
+
           <Private
             isAuthenticated={this.state.isAuthenticated}
             isAdmin={this.state.isAdmin}
