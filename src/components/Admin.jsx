@@ -59,8 +59,7 @@ class Admin extends Component {
     let array = [];
     for (
       let i = 1;
-      i <
-      Math.floor(this.state.entities ? this.state.entities.length / 20 : 0) + 2;
+      i < Math.floor(this.state.entities ? this.state.total / 10 : 0) + 2;
       i++
     ) {
       array.push(<Pagination.Item key={i}> {i}</Pagination.Item>);
