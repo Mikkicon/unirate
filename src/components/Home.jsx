@@ -20,7 +20,10 @@ class Home extends Component {
       entities: ["discipline", "profession", "faculty", "teacher"],
       selected: "discipline",
       total: 0,
-      query: {}
+      query: {},
+      faculties: [],
+      placeholder: "",
+      facVal: ""
     };
   }
 
@@ -33,7 +36,7 @@ class Home extends Component {
       ""
     );
     query = query ? "?" + query.slice(0, -1) : "";
-    console.log(query);
+    console.log("Search params:", query ? query : this.state.selected);
 
     fetch(`${this.state.link}/${this.state.selected}${input ? query : ""}`, {
       method: "GET",
@@ -53,39 +56,32 @@ class Home extends Component {
       )
       .catch(err => console.log(err));
   };
-  select = e => {
-    this.setState({ selected: e });
-    fetch(`${this.state.link}/${e}`, {
-      method: "GET",
+  select = async e => {
+    await this.setState({ selected: e });
+    this.search({});
+  };
+  getFacNames = async () => {
+    const a = await fetch(`${this.state.link}/faculty`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("token")
       }
-    })
-      .then(res => res.json())
-      .then(res =>
-        res.total
-          ? this.setState({
-              disciplines: res[this.state.selected],
-              total: res.total
-            })
-          : this.setState({ disciplines: [], total: 0 })
-      )
-      .then(console.log(this.state))
-      .catch(err => console.log(err));
+    });
+    const b = await a.json();
+    this.setState({ faculties: b.faculty });
   };
   pages = () => {
     let array = [];
     for (
-        let i = 1;
-        i <
-        Math.floor(this.state.entities ? this.state.entities.length / 20 : 0) + 2;
-        i++
+      let i = 1;
+      i <
+      Math.floor(this.state.entities ? this.state.entities.length / 20 : 0) + 2;
+      i++
     ) {
-        array.push(<Pagination.Item key={i}> {i}</Pagination.Item>);
+      array.push(<Pagination.Item key={i}> {i}</Pagination.Item>);
     }
     return array;
-    };
+  };
   render() {
     return (
       <React.Fragment>
@@ -105,7 +101,14 @@ class Home extends Component {
           <Link className="btn btn-outline-primary" to="/admin">
             Admin
           </Link>
-          <Button className="btn-outline-danger">Logout</Button>
+          <Button
+            onClick={() =>
+              window.localStorage.clear() & window.location.replace("/login")
+            }
+            className="btn-outline-danger"
+          >
+            Logout
+          </Button>
           <br />
           <ButtonToolbar>
             <DropdownButton
@@ -120,6 +123,7 @@ class Home extends Component {
               ))}
             </DropdownButton>
             <a
+              onClick={() => this.getFacNames()}
               className="btn btn-primary"
               data-toggle="collapse"
               href="#collapseExample"
@@ -137,16 +141,36 @@ class Home extends Component {
             <div className="card card-body">
               <div className="row">
                 <b className=" col-3">Faculty</b>
-                <input
-                  className="form-control col-9"
-                  type="text"
-                  placeholder="Faculty"
-                  onChange={p => {
-                    const a = this.state.query;
-                    a["facultyId"] = p.target.value;
-                    this.setState({ query: a });
-                  }}
-                />
+                <form action="">
+                  <input
+                    className="form-control col-9"
+                    type="text"
+                    // value={this.state.facVal}
+                    placeholder="Faculty Name"
+                    onChange={p => {
+                      const a = this.state.query;
+                      a["facultyId"] = p.target.value;
+
+                      this.setState({
+                        query: a,
+                        placeholder: p.target.value.toUpperCase()
+                      });
+                    }}
+                  />
+                  {this.state.faculties
+                    .filter(
+                      a => a.shortName.indexOf(this.state.placeholder) > -1
+                    )
+                    .map(a => (
+                      <div
+                        key={a.id}
+                        value=""
+                        onClick={p => this.setState({ facVal: a.name })}
+                      >
+                        {a.name} ({a.shortName})
+                      </div>
+                    ))}
+                </form>
               </div>
               <hr />
               <div className="row">
@@ -175,7 +199,7 @@ class Home extends Component {
               className="form-control col-9"
               type="text"
               placeholder="Search"
-              onChange={p => this.search(p.target.value)}
+              onChange={p => this.search({ search: p.target.value })}
             />
             <div className="col-1" />
             <Button
@@ -204,17 +228,14 @@ class Home extends Component {
             <Pagination>
               <Pagination.First />
               <Pagination.Prev
-                  disabled={this.state.entities ? this.state.page < 2 : true}
+                disabled={this.state.entities ? this.state.page < 2 : true}
               />
               {this.pages()}
               <Pagination.Next />
               <Pagination.Last />
             </Pagination>
-
           </div>
-
         </div>
-
       </React.Fragment>
     );
   }
