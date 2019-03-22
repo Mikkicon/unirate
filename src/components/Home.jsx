@@ -13,39 +13,35 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      link: this.props.testnet
+        ? "http://localhost:3000"
+        : "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com",
       disciplines: [],
       entities: ["discipline", "profession", "faculty", "teacher"],
       selected: "discipline",
-      total: 0
-      // [
-      //   { id: 1, name: "OOP", year: 2, faculty_id: 1 },
-      //   { id: 2, name: "Procedure programming", year: 2, faculty_id: 1 },
-      //   { id: 3, name: "OBDZ", year: 3, faculty_id: 1 },
-      //   { id: 4, name: "Algorithms", year: 2, faculty_id: 1 },
-      //   { id: 5, name: "English", year: 1, faculty_id: 2 },
-      //   { id: 6, name: "English lit", year: 3, faculty_id: 2 },
-      //   { id: 7, name: "Economics", year: 2, faculty_id: 777 },
-      //   { id: 8, name: "History", year: 2, faculty_id: 777 }
-      // ]
+      total: 0,
+      query: {}
     };
   }
 
   componentWillMount = async () => {
-    this.search("");
+    this.search({});
   };
   search = input => {
-    fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/${
-        this.state.selected
-      }${input ? "?search=" + input : ""}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
+    var query = Object.keys(input).reduce(
+      (total, current) => total + current + "=" + input[current] + "&",
+      ""
+    );
+    query = query ? "?" + query.slice(0, -1) : "";
+    console.log(query);
+
+    fetch(`${this.state.link}/${this.state.selected}${input ? query : ""}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
       }
-    )
+    })
       .then(res => res.json())
       .then(res =>
         res.total
@@ -55,21 +51,17 @@ class Home extends Component {
             })
           : this.setState({ disciplines: [], total: 0 })
       )
-      .then(console.log(this.state))
       .catch(err => console.log(err));
   };
   select = e => {
     this.setState({ selected: e });
-    fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/${e}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
+    fetch(`${this.state.link}/${e}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
       }
-    )
+    })
       .then(res => res.json())
       .then(res =>
         res.total
@@ -119,7 +111,7 @@ class Home extends Component {
             <DropdownButton
               variant="warning"
               id="dropdown-basic-button"
-              title={this.state.selected}
+              title={this.state.selected.toUpperCase()}
             >
               {this.state.entities.map(e => (
                 <Dropdown.Item key={e} onSelect={() => this.select(e)}>
@@ -127,20 +119,56 @@ class Home extends Component {
                 </Dropdown.Item>
               ))}
             </DropdownButton>
-
-            <DropdownButton id="dropdown-basic-button" title="Filters">
-              <Dropdown.Item onClick={() => this.setState({})}>
-                Action
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => this.setState({})}>
-                Another action
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => this.setState({})}>
-                Something else
-              </Dropdown.Item>
-            </DropdownButton>
+            <a
+              className="btn btn-primary"
+              data-toggle="collapse"
+              href="#collapseExample"
+              role="button"
+              aria-expanded="false"
+            >
+              FILTER
+            </a>
+            <div style={{ margin: "20px" }}>
+              <h4>Found {this.state.total}</h4>
+            </div>
+            <b />
           </ButtonToolbar>
-          <b>Found {this.state.total}</b>
+          <div className="collapse" id="collapseExample">
+            <div className="card card-body">
+              <div className="row">
+                <b className=" col-3">Faculty</b>
+                <input
+                  className="form-control col-9"
+                  type="text"
+                  placeholder="Faculty"
+                  onChange={p => {
+                    const a = this.state.query;
+                    a["facultyId"] = p.target.value;
+                    this.setState({ query: a });
+                  }}
+                />
+              </div>
+              <hr />
+              <div className="row">
+                <b className=" col-3">Year</b>
+                <select
+                  className="form-control col-9"
+                  placeholder="Year"
+                  onChange={p => {
+                    const a = this.state.query;
+                    a["year"] = Number(p.target.value);
+                    this.setState({ query: a });
+                  }}
+                >
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <br />
 
           <div className="row">
             <input
@@ -153,6 +181,7 @@ class Home extends Component {
             <Button
               style={{ margin: "auto 0" }}
               className=" btn-outline-success col-2"
+              onClick={() => this.search(this.state.query)}
             >
               Search
             </Button>

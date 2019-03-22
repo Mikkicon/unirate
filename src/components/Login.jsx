@@ -5,6 +5,9 @@ import "../Styles/LoginForm.css";
 import "bootstrap";
 class Login extends Component {
   state = {
+    link: this.props.testnet
+      ? "http://localhost:3000"
+      : "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com",
     email: "",
     password: "",
     asAdmin: false,
@@ -27,17 +30,14 @@ class Login extends Component {
     const password = bcrypt.hashSync(this.state.password, salt);
     console.log("Hashed", password);
 
-    fetch(
-      "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/auth/login",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          login: this.state.email,
-          password: password
-        }),
-        headers: { "Content-Type": "application/json" }
-      }
-    )
+    fetch(`${this.state.link}/auth/login`, {
+      method: "POST",
+      body: JSON.stringify({
+        login: this.state.email,
+        password: password
+      }),
+      headers: { "Content-Type": "application/json" }
+    })
       .then(res => {
         let a;
         if (res.status.toString()[0] === "4") {

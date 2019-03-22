@@ -6,15 +6,16 @@ class Private extends Component {
     this.state = {};
   }
   render() {
-    return this.props.isAuthenticated ? (
-      this.props.path.toString() === "/admin" ? (
-        this.props.isAdmin ? (
-          <Route to={this.props.path} component={() => this.props.component} />
+    const { path, isAdmin, isAuthenticated, component } = this.props;
+    return isAuthenticated ? (
+      path.toString() === "/admin" ? (
+        isAdmin ? (
+          <Route to={path} component={testnet => component} />
         ) : (
           <Redirect to="/login" />
         )
       ) : (
-        <Route to={this.props.path} component={() => this.props.component} />
+        <Route to={path} component={testnet => component} />
       )
     ) : (
       <Redirect to="/login" />

@@ -5,6 +5,9 @@ import "../Styles/RegForm.css";
 import "bootstrap";
 class Registration extends Component {
   state = {
+    link: this.props.testnet
+      ? "http://localhost:3000"
+      : "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com",
     email: "",
     password: "",
     style: {
@@ -22,8 +25,7 @@ class Registration extends Component {
 
   componentDidMount() {
     // fetch(
-    //   "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/auth/disciplines"
-    //   // "http://localhost:3000/auth/disciplines"
+    // `${this.state.link}/auth/disciplines`
     // )
     //   .then(res => res.json())
     //   .then(disciplines => {
@@ -34,7 +36,6 @@ class Registration extends Component {
   }
   handleEmail(p) {
     const v = p.target.value;
-    // Remembering mail value for submit
     this.setState({ email: v });
     /[a-zA-Z0-9._+-]+@[a-zA-Z+-]+\.[a-z]+$/.test(p.target.value)
       ? this.setState({ inputError: false })
@@ -56,20 +57,16 @@ class Registration extends Component {
     const password = bcrypt.hashSync(this.state.password, salt);
     console.log("Hashed:", password);
 
-    fetch(
-      "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/auth/signup",
-      // "http://localhost:3000/auth/signup",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          login: this.state.email.substring(0, this.state.email.indexOf("@")),
-          email: this.state.email,
-          password: password,
-          professionId: 1
-        }),
-        headers: { "Content-Type": "application/json" }
-      }
-    )
+    fetch(`${this.state.link}/auth/signup`, {
+      method: "POST",
+      body: JSON.stringify({
+        login: this.state.email.substring(0, this.state.email.indexOf("@")),
+        email: this.state.email,
+        password: password,
+        professionId: 1
+      }),
+      headers: { "Content-Type": "application/json" }
+    })
       .then(res => {
         console.log("Response: ", res.json());
         this.setState({ response: res.statusText });
