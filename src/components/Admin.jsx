@@ -108,92 +108,102 @@ class Admin extends Component {
       entities: this.loadEntities(p.target.id)
     });
   };
-    putEntity = () => {
-        window.confirm("Are you sure you want to update user?")
-            ? fetch(
-            `${
-                this.state.link
-                }/admin/${this.state.selectedNav.toLowerCase().replace(" ", "")}/${
-                this.state.selectedUser[Object.keys(this.state.selectedUser)[0]]
-                }`,
-            {
-                method: "PUT",
-                body: JSON.stringify(this.state.selectedUser),
-                headers: { "Content-Type": "application/json",
-                    Authorization: "Bearer " + localStorage.getItem("token")}
+  putEntity = () => {
+    window.confirm("Are you sure you want to update user?")
+      ? fetch(
+          `${
+            this.state.link
+          }/admin/${this.state.selectedNav.toLowerCase().replace(" ", "")}/${
+            this.state.selectedUser[Object.keys(this.state.selectedUser)[0]]
+          }`,
+          {
+            method: "PUT",
+            body: JSON.stringify(this.state.selectedUser),
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token")
             }
-            )
-                .then(res =>
-                    res.status !== 200
-                        ? alert(JSON.stringify(res.statusText))
-                        : alert(
-                        `User ${this.state.email.substring(
-                            0,
-                            this.state.email.indexOf("@")
-                        )} has been successfully created`
-                        )
-                )
-                .catch(err => console.log("Error: ", err))
-            : console.log("canceled");
-    };
-    deleteItem = () => {
-        window.confirm("Are you sure?")
-            ?
-            fetch(
-                `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${this.state.selectedNav
-                    .toLowerCase()
-                    .replace(" ", "")}/${
-                    this.state.selectedUser[Object.keys(this.state.selectedUser)[0]]
-                    }`,
-                {
-                    method: "DELETE",
-                    headers: { "Content-Type": "application/json",
-                        Authorization: "Bearer " + localStorage.getItem("token")}
-                }
-            )
-                .then(data =>
-                    data.status !== 200
-                        ? alert(
-                        `Discipline '${this.state.discipline.name}' was ` +
-                        JSON.stringify(data.statusText)
-                        )
-                        : alert(
-                        `Discipline ${
-                            this.state.discipline.name
-                            } has been successfully deleted`
-                        )
-                )
-                .catch(err => console.log(err))
-            : console.log("You've decided not to delete discipline.:)");
-    };
-    postEntity = () => {
-        fetch(
-            `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${this.state.selectedNav
-                .toLowerCase()
-                .replace(" ", "")}/`,
-            {
-                method: "POST",
-                body: JSON.stringify(this.state.selectedUser),
-                headers: { "Content-Type": "application/json",
-                    Authorization: "Bearer " + localStorage.getItem("token")}
-            }
+          }
         )
-            .then(p => p.json())
-            .then(data => (data.error ? alert(data.error) : console.log(data)))
-            .catch(err => alert(err));
-    };
+          .then(res =>
+            res.status !== 200
+              ? alert(JSON.stringify(res.statusText))
+              : alert(
+                  `User ${this.state.email.substring(
+                    0,
+                    this.state.email.indexOf("@")
+                  )} has been successfully created`
+                )
+          )
+          .catch(err => console.log("Error: ", err))
+      : console.log("canceled");
+  };
+  deleteItem = () => {
+    window.confirm("Are you sure?")
+      ? fetch(
+          `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${this.state.selectedNav
+            .toLowerCase()
+            .replace(" ", "")}/${
+            this.state.selectedUser[Object.keys(this.state.selectedUser)[0]]
+          }`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token")
+            }
+          }
+        )
+          .then(data =>
+            data.status !== 200
+              ? alert(
+                  `Discipline '${this.state.discipline.name}' was ` +
+                    JSON.stringify(data.statusText)
+                )
+              : alert(
+                  `Discipline ${
+                    this.state.discipline.name
+                  } has been successfully deleted`
+                )
+          )
+          .catch(err => console.log(err))
+      : console.log("You've decided not to delete discipline.:)");
+  };
+  postEntity = () => {
+    fetch(
+      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${this.state.selectedNav
+        .toLowerCase()
+        .replace(" ", "")}/`,
+      {
+        method: "POST",
+        body: JSON.stringify(this.state.selectedUser),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      }
+    )
+      .then(p => p.json())
+      .then(data => (data.error ? alert(data.error) : console.log(data)))
+      .catch(err => alert(err));
+  };
   render() {
     return (
       <React.Fragment>
         <div className="adminFormCont col-10">
           <h1>Admin Settings</h1>
+          <h2>
+            {window.localStorage.getItem("admin") === true
+              ? ""
+              : "You are not logged as an admin"}
+          </h2>
           <br />
           <Link className="btn btn-outline-primary" to="/">
             Home
           </Link>
-            <Link className="btn btn-outline-primary" to="/register">
-                Registration
-            </Link>
+          <Link className="btn btn-outline-primary" to="/register">
+            Registration
+          </Link>
           <Link className="btn btn-outline-primary" to="/login">
             Login
           </Link>
@@ -354,24 +364,24 @@ class Admin extends Component {
                       )}
                     </div>
                   ))}
-                    <button
-                        onClick={this.postEntity}
-                        className="btn btn-outline-primary"
-                    >
-                        Add new
-                    </button>
-                    <button
-                        onClick={this.putEntity}
-                        className="btn btn-outline-primary"
-                    >
-                        Save
-                    </button>
-                    <button
-                        onClick={this.deleteItem}
-                        className="btn btn-outline-danger col-12"
-                    >
-                        Delete
-                    </button>
+                  <button
+                    onClick={this.postEntity}
+                    className="btn btn-outline-primary"
+                  >
+                    Add new
+                  </button>
+                  <button
+                    onClick={this.putEntity}
+                    className="btn btn-outline-primary"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={this.deleteItem}
+                    className="btn btn-outline-danger col-12"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             )}

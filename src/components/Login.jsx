@@ -54,6 +54,7 @@ class Login extends Component {
         console.log(response);
         window.localStorage.setItem("token", response.token);
         window.localStorage.setItem("admin", response.isAdmin);
+        window.location.href = "/";
       })
       .catch(err => (window.confirm(err) ? "" : ""));
   };
