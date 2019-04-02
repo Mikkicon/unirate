@@ -13,7 +13,7 @@ class Profession extends Component {
       profession: {}
     };
   }
-  componentWillMount = () => {
+  componentDidMount = () => {
     fetch(
       `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/profession?professionId=${window.location.href.substr(
         window.location.href.indexOf("profession") + 11,

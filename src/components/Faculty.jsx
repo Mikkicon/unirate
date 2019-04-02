@@ -13,7 +13,7 @@ class Faculty extends Component {
       faculty: {}
     };
   }
-  componentWillMount = () => {
+  componentDidMount = () => {
     fetch(
       `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/faculty?facultyId=${window.location.href.substr(
         window.location.href.indexOf("faculty") + 8,

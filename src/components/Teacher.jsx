@@ -13,7 +13,7 @@ class Teacher extends Component {
       teacher: {}
     };
   }
-  componentWillMount = () => {
+  componentDidMount = () => {
     fetch(
       `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/teacher?teacherId=${window.location.href.substr(
         window.location.href.indexOf("teacher") + 8,
@@ -40,18 +40,17 @@ class Teacher extends Component {
       <React.Fragment>
         <div>
           <h1>
-              <small>Last Name</small>{" "} {teacher[Object.keys(teacher)[1]]}
+            <small>Last Name</small> {teacher[Object.keys(teacher)[1]]}
           </h1>
           <h1>
-            <small>First Name</small>{" "} {teacher[Object.keys(teacher)[2]]}
+            <small>First Name</small> {teacher[Object.keys(teacher)[2]]}
           </h1>
           <h1>
-            <small>Middle name</small>{" "} {teacher[Object.keys(teacher)[3]]}
+            <small>Middle name</small> {teacher[Object.keys(teacher)[3]]}
           </h1>
           <h1>
-            <small>Feedback number</small>{" "} {teacher[Object.keys(teacher)[4]]}
+            <small>Feedback number</small> {teacher[Object.keys(teacher)[4]]}
           </h1>
-
         </div>
       </React.Fragment>
     );

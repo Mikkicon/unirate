@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import bcrypt from "bcryptjs";
 import "../Styles/LoginForm.css";
 import "bootstrap";
@@ -41,7 +40,7 @@ class Login extends Component {
       .then(res => {
         let a;
         if (res.status.toString()[0] === "4") {
-          a = this.setState({ response: res.statusText });
+          this.setState({ response: res.statusText });
           a = window.confirm(res.statusText) ? "" : "";
         } else {
           a = window.confirm("Welcome!") ? "" : "";
@@ -67,21 +66,7 @@ class Login extends Component {
         <div className="loginFormCont">
           <h1>Login</h1>
           <h2>{this.state.response}</h2>
-          <Link className="btn btn-outline-primary" to="/">
-            Home
-          </Link>
-          <Link className="btn btn-outline-primary" to="/register">
-            Registration
-          </Link>
-          <Link className="btn btn-outline-primary" to="/login">
-            Login
-          </Link>
-          <Link className="btn btn-outline-primary" to="/settings">
-            Settings
-          </Link>
-          <Link className="btn btn-outline-primary" to="/admin">
-            Admin
-          </Link>
+
           <br />
           <label>Login</label>
           <input

@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import "../Styles/Admin.css";
 import "bootstrap";
 import Pagination from "react-bootstrap/Pagination";
 import { Navbar, Nav } from "react-bootstrap";
-import avatar from "../media/avatar.png";
+import { MdEdit } from "react-icons/md";
+// import avatar from "../media/avatar.png";
 class Admin extends Component {
   constructor(props) {
     super(props);
@@ -15,7 +15,7 @@ class Admin extends Component {
         ? "http://localhost:3000"
         : "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com",
       entities: [],
-      image: avatar,
+      // image: avatar,
       number: 3,
       page: 1,
       selectedNav: "",
@@ -26,11 +26,10 @@ class Admin extends Component {
         password: "",
         role: "",
         profession: ""
-      }
+      },
+      post: false
     };
   }
-
-  componentWillMount() {}
 
   handleVerification = p => {
     p.target.value === "fdsa"
@@ -118,7 +117,9 @@ class Admin extends Component {
           }`,
           {
             method: "PUT",
-            body: JSON.stringify(this.state.selectedUser),
+            body: JSON.stringify({
+              role: Number(this.state.selectedUser.role)
+            }),
             headers: {
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token")
@@ -193,29 +194,15 @@ class Admin extends Component {
         <div className="adminFormCont col-10">
           <h1>Admin Settings</h1>
           <h2>
-            {window.localStorage.getItem("admin") === true
+            {window.localStorage.getItem("admin").includes(true)
               ? ""
               : "You are not logged as an admin"}
           </h2>
           <br />
-          <Link className="btn btn-outline-primary" to="/">
-            Home
-          </Link>
-          <Link className="btn btn-outline-primary" to="/register">
-            Registration
-          </Link>
-          <Link className="btn btn-outline-primary" to="/login">
-            Login
-          </Link>
-          <Link className="btn btn-outline-primary" to="/settings">
-            Settings
-          </Link>
-          <Link className="btn btn-outline-primary" to="/admin">
-            Admin
-          </Link>
+
           <br />
           <div className="row">
-            <div className="col-6">
+            {/* <div className="col-6">
               <img
                 src={this.state.image}
                 width="200px"
@@ -228,8 +215,8 @@ class Admin extends Component {
                   <input onChange={p => this.handleAvatar(p)} type="file" />
                 </button>
               </div>
-            </div>
-            <div className="col-6">
+            </div> */}
+            <div className="col-10">
               <label>New Email</label>
               <input className="form-control field" type="text" />
               <label>New Password</label>
@@ -311,7 +298,10 @@ class Admin extends Component {
                       className="list-group-item list-group-item-action"
                       id={u[Object.keys(u)[0]]}
                     >
-                      {u[Object.keys(u)[0]]}
+                      {u[Object.keys(u)[0]]}{" "}
+                      <div style={{ float: "right" }}>
+                        <MdEdit />
+                      </div>
                     </div>
                   ))
                 : ""}
@@ -330,7 +320,17 @@ class Admin extends Component {
 
           <div className="userView col-5">
             {!this.state.selectedUser ? (
-              console.log("No selected user")
+              Object.keys(this.state.userinfo).map(empty => (
+                <div key={empty}>
+                  <span>{empty.charAt(0).toUpperCase() + empty.slice(1)}</span>
+                  <input
+                    type="text"
+                    // onChange={this.updateUser.bind(this)}
+                    className="list-group-item list-group-item-action"
+                    // value={this.state.selectedUser[empty]}
+                  />
+                </div>
+              ))
             ) : (
               <div>
                 <h2>
@@ -364,23 +364,33 @@ class Admin extends Component {
                       )}
                     </div>
                   ))}
-                  <button
-                    onClick={this.postEntity}
-                    className="btn btn-outline-primary"
-                  >
-                    Add new
-                  </button>
+
+                  {!this.state.post ? (
+                    <button
+                      onClick={this.addNew}
+                      className="btn btn-outline-primary"
+                    >
+                      ADD NEW
+                    </button>
+                  ) : (
+                    <button
+                      onClick={this.addNew}
+                      className="btn btn-outline-primary"
+                    >
+                      POST
+                    </button>
+                  )}
                   <button
                     onClick={this.putEntity}
                     className="btn btn-outline-primary"
                   >
-                    Save
+                    SAVE
                   </button>
                   <button
                     onClick={this.deleteItem}
-                    className="btn btn-outline-danger col-12"
+                    className="btn btn-outline-danger"
                   >
-                    Delete
+                    DELETE
                   </button>
                 </div>
               </div>

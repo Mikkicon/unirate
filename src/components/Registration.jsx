@@ -83,18 +83,7 @@ class Registration extends Component {
         <div className="regFormCont">
           <h1>Registration</h1>
           <h2>{this.state.response}</h2>
-          <a className="btn btn-outline-primary" href="/">
-            Home
-          </a>
-          <a className="btn btn-outline-primary" href="/register">
-            Registration
-          </a>
-          <a className="btn btn-outline-primary" href="/login">
-            Login
-          </a>
-          <a className="btn btn-outline-primary" href="/settings">
-            Settings
-          </a>
+
           <br />
           <label>Email</label>
           <input

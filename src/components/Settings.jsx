@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import "../Styles/Settings.css";
 import "bootstrap";
 import avatar from "../media/avatar.png";
@@ -84,27 +83,13 @@ class Settings extends Component {
   render() {
     return (
       <React.Fragment>
-        <div className="homeFormCont col-10">
+        <div className="homeFormCont col-8">
           <h1>Settings</h1>
           <br />
-          <Link className="btn btn-outline-primary" to="/">
-            Home
-          </Link>
-          <Link className="btn btn-outline-primary" to="/register">
-            Registration
-          </Link>
-          <Link className="btn btn-outline-primary" to="/login">
-            Login
-          </Link>
-          <Link className="btn btn-outline-primary" to="/settings">
-            Settings
-          </Link>
-          <Link className="btn btn-outline-primary" to="/admin">
-            Admin
-          </Link>
+
           <br />
           <div className="row">
-            <div className="col-6">
+            {/* <div className="col-6">
               <img
                 src={this.state.image}
                 width="200px"
@@ -117,8 +102,8 @@ class Settings extends Component {
                   <input onChange={p => this.handleAvatar(p)} type="file" />
                 </button>
               </div>
-            </div>
-            <div className="col-6">
+            </div> */}
+            <div className="col-12">
               <label>New Email</label>
               <input className="form-control field" type="text" />
               <label>New Password</label>
