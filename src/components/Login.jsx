@@ -24,38 +24,33 @@ class Login extends Component {
     this.setState({ password: v });
     // console.log(this.state.email);
   };
-  submitValues = () => {
+  submitValues = async () => {
     const salt = "$2a$10$saltpasswordhashhashhh";
-    const password = bcrypt.hashSync(this.state.password, salt);
+    const password = await bcrypt.hashSync(this.state.password, salt);
     console.log("Hashed", password);
 
-    fetch(`${this.state.link}/auth/login`, {
+    let fetched = await fetch(`${this.state.link}/auth/login`, {
       method: "POST",
       body: JSON.stringify({
         login: this.state.email,
         password: password
       }),
       headers: { "Content-Type": "application/json" }
-    })
-      .then(res => {
-        let a;
-        if (res.status.toString()[0] === "4") {
-          this.setState({ response: res.statusText });
-          a = window.confirm(res.statusText) ? "" : "";
-        } else {
-          a = window.confirm("Welcome!") ? "" : "";
-          a = this.setState({ response: res.statusText });
-        }
-        return res.json();
-      })
-      .then(res => {
-        const response = res;
-        console.log(response);
-        window.localStorage.setItem("token", response.token);
-        window.localStorage.setItem("admin", response.isAdmin);
-        window.location.href = "/";
-      })
-      .catch(err => (window.confirm(err) ? "" : ""));
+    });
+    let a;
+    if (fetched.status.toString()[0] === "4") {
+      this.setState({ response: fetched.statusText });
+      a = window.confirm(fetched.statusText) ? "" : "";
+    } else {
+      a = window.confirm("Welcome!") ? "" : "";
+      a = this.setState({ response: fetched.statusText });
+      const response = await fetched.json();
+      console.log(response);
+      window.localStorage.setItem("token", response.token);
+      window.localStorage.setItem("admin", response.isAdmin);
+      window.localStorage.setItem("login", this.state.email);
+      window.location.href = "/";
+    }
   };
   handleKeyPress = e => {
     if (e.key === "Enter") this.submitValues();
@@ -69,12 +64,15 @@ class Login extends Component {
 
           <br />
           <label>Login</label>
+
+          {/* <form action=""> */}
           <input
             className="form-control field"
             type="text"
             onChange={this.handleEmail.bind(this)}
             onKeyPress={this.handleKeyPress}
           />
+          {/* </form> */}
           <label>Password</label>
           <input
             className="form-control field"

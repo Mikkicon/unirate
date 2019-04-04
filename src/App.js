@@ -51,14 +51,17 @@ class App extends Component {
             localStorage.getItem("admin").includes(true) ? (
               <Nav.Link href="/admin">Admin</Nav.Link>
             ) : null}
-            <Nav.Link
-              onClick={() =>
-                window.localStorage.clear() & window.location.replace("/login")
-              }
-              className="btn-outline-danger"
-            >
-              Logout
-            </Nav.Link>
+            {localStorage.getItem("token") ? (
+              <Nav.Link
+                onClick={() =>
+                  window.localStorage.clear() &
+                  window.location.replace("/login")
+                }
+                className="btn-outline-danger"
+              >
+                Logout
+              </Nav.Link>
+            ) : null}
           </Nav>
           {/* <Form inline>
             <FormControl type="text" placeholder="Search" className="mr-sm-2" />

@@ -68,8 +68,11 @@ class Registration extends Component {
       headers: { "Content-Type": "application/json" }
     })
       .then(res => {
-        console.log("Response: ", res.json());
         this.setState({ response: res.statusText });
+        let a =
+          res.statusText.toString()[0] === "2"
+            ? (window.location.href = "/login")
+            : this.setState({ response: res.statusText });
       })
       .catch(err => console.log("Error: ", err));
   };
@@ -86,14 +89,17 @@ class Registration extends Component {
 
           <br />
           <label>Email</label>
-          <input
-            name="mail"
-            style={this.state.inputError ? this.state.style : {}}
-            className="form-control field"
-            type="text"
-            onBlur={this.handleEmail.bind(this)}
-            onKeyPress={this.handleKeyPress}
-          />
+          <form action="">
+            <input
+              name="mail"
+              style={this.state.inputError ? this.state.style : {}}
+              className="form-control field"
+              type="text"
+              onBlur={this.handleEmail.bind(this)}
+              onKeyPress={this.handleKeyPress}
+            />
+          </form>
+
           <label>Password</label>
           <input
             name="pass"
