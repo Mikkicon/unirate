@@ -25,15 +25,15 @@ class Home extends Component {
       placeholder: "",
       facVal: "",
       // loading: true,
-      disableScroll: false
+      enableScroll: true
     };
     window.onscroll = async () => {
       const {
         search,
-        state: { disableScroll }
+        state: { enableScroll }
       } = this;
-      if (disableScroll) {
-        console.log("scrolled");
+      if (!enableScroll) {
+        // console.log("scrolled");
         this.setState({ query: {} });
         return;
       } else if (
@@ -57,7 +57,7 @@ class Home extends Component {
   };
   search = async input => {
     if (input.search) {
-      await this.setState({ disableScroll: true, disciplines: [] });
+      await this.setState({ enableScroll: false, disciplines: [] });
     }
     var disciplines = this.state.disciplines;
     var query = Object.keys(input).reduce(
@@ -92,7 +92,7 @@ class Home extends Component {
     this.search({});
   };
   getFacNames = async () => {
-    this.setState({ disableScroll: true });
+    this.setState({ enableScroll: false, query: {} });
     const a = await fetch(`${this.state.link}/faculty`, {
       headers: {
         "Content-Type": "application/json",
@@ -180,10 +180,14 @@ class Home extends Component {
               <Dropdown.Item key="n-asc">Rating /\</Dropdown.Item>
             </DropdownButton>
             <div className="toolItem">
+              {/* <small>infinite scroll</small> */}
               <label className="switch">
                 <input
+                  checked={this.state.enableScroll}
                   type="checkbox"
-                  onChange={p => console.log(p.target.checked)}
+                  onChange={p =>
+                    this.setState({ enableScroll: p.target.checked })
+                  }
                 />
                 <span className="slider round" />
               </label>
@@ -225,11 +229,15 @@ class Home extends Component {
                   placeholder="Year"
                   onChange={p => {
                     const a = this.state.query;
-                    a["year"] = Number(p.target.value);
+                    if (p.target.value === "All") {
+                      delete a["year"];
+                    } else {
+                      a["year"] = Number(p.target.value);
+                    }
                     this.setState({ query: a });
                   }}
                 >
-                  <option>Choose</option>
+                  <option>All</option>
                   <option>1</option>
                   <option>2</option>
                   <option>3</option>
@@ -265,7 +273,7 @@ class Home extends Component {
             <br />
             {this.state.disciplines
               ? this.state.disciplines.map(d => (
-                  <div key={d.id}>
+                  <div key={d.id + Date.now()}>
                     <div
                       className="list-group-item list-group-item-action progress-bar"
                       role="progressbar"

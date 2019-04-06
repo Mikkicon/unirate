@@ -18,6 +18,7 @@ class Admin extends Component {
       // image: avatar,
       number: 3,
       page: 1,
+      total: null,
       selectedNav: "",
       selectedUser: null,
       viewEntity: {},
@@ -29,37 +30,97 @@ class Admin extends Component {
         profession: ""
       },
       post: false,
-      newEntity: null
+      newEntity: null,
+      faculties: null
     };
   }
   componentDidMount() {
     if (this.state.selectedNav === "") {
-      this.selectEntity("discipline");
+      this.selectEntity("user");
     }
   }
-  handleVerification = p => {
-    p.target.value === "fdsa"
-      ? this.setState({ enableSave: true })
-      : this.setState({ enableSave: false });
-  };
-  handleAvatar = p => {
-    let reader = new FileReader();
-    let file = p.target.files[0];
-    reader.onloadend = () => {
-      this.setState({
-        image: reader.result
-      });
-    };
-    reader.readAsDataURL(file);
-  };
-  selectUser = p => {
-    // console.log("Selected user:", p.target);
-    this.setState({
-      selectedUser: this.state.entities.find(
-        a => a[Object.keys(a)[0]].toString() === p.target.id.toString()
-      )
+  // handleAvatar = p => {
+  //   let reader = new FileReader();
+  //   let file = p.target.files[0];
+  //   reader.onloadend = () => {
+  //     this.setState({
+  //       image: reader.result
+  //     });
+  //   };
+  //   reader.readAsDataURL(file);
+  // };
+  getFacNames = async () => {
+    this.setState({ enableScroll: false, query: {} });
+    const a = await fetch(`${this.state.link}/admin/faculty`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
     });
+    const b = await a.json();
+    this.setState({ faculties: b.faculty });
   };
+  selectUser = async p => {
+    const target = p.target.id;
+    if (this.state.selectedNav === "discipline") {
+      this.getFacNames();
+      // Selected user
+      let entity = await this.state.entities.find(
+        a => a[Object.keys(a)[0]].toString() === target.toString()
+      );
+      await this.setState({ selectedUser: entity });
+    } else {
+      console.log(target);
+
+      // Selected user
+      let entity = await this.state.entities.find(
+        a => a[Object.keys(a)[0]].toString() === target.toString()
+      );
+      await this.setState({ selectedUser: entity });
+      // p.target.id -> id of the selected entity in entity list NOT INDEX
+      let newSelectedUser = this.state.selectedUser;
+      let key = await Object.keys(entity)
+        .filter(f => f.indexOf(this.state.selectedNav) === -1)
+        .find(o => o.indexOf("Id") !== -1);
+      if (key) {
+        newSelectedUser[key] = await this.nameById(entity);
+      }
+      this.setState({
+        selectedUser: newSelectedUser
+      });
+    }
+  };
+  nameById = async selected => {
+    // Foreign key in selected entity
+    let key = await Object.keys(selected)
+      .filter(f => f.indexOf(this.state.selectedNav) === -1)
+      .find(o => o.indexOf("Id") !== -1);
+    console.log(key);
+
+    if (!key) {
+      return null;
+    }
+    // facultyId => faculty
+    let entityToFetch = key.slice(0, key.indexOf("Id"));
+
+    var response = await fetch(
+      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${entityToFetch}/`,
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      }
+    ).then(res => res.json());
+    let array = response[entityToFetch];
+    console.log("Response array: ", array);
+
+    let entityByInputId = array.find(e => e.id === Number(selected[key]));
+    if (!entityByInputId) {
+      return null;
+    }
+    return entityByInputId.name;
+  };
+
   pages = () => {
     let array = [];
     for (
@@ -67,7 +128,17 @@ class Admin extends Component {
       i < Math.floor(this.state.entities ? this.state.total / 10 : 0) + 2;
       i++
     ) {
-      array.push(<Pagination.Item key={i}> {i}</Pagination.Item>);
+      array.push(
+        <Pagination.Item
+          onClick={() =>
+            this.loadEntities(this.state.selectedNav, "?offset=" + (i - 1) * 10)
+          }
+          key={i}
+          id={i}
+        >
+          {i}
+        </Pagination.Item>
+      );
     }
     return array;
   };
@@ -86,8 +157,11 @@ class Admin extends Component {
       .catch(err => alert(err));
   };
 
-  loadEntities = entityName => {
-    fetch(`${this.state.link}/admin/${entityName}`, {
+  loadEntities = (entityName, query) => {
+    let link = query
+      ? `${this.state.link}/admin/${entityName + query}`
+      : `${this.state.link}/admin/${entityName}`;
+    fetch(link, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -104,15 +178,28 @@ class Admin extends Component {
             })
           : this.setState({ entities: [], total: 0 })
       )
+      .then(() => {
+        if (this.state.selectedNav === "feedback") {
+          let a = this.state.entities;
+          a.map(entity => {
+            var t = new Date(Number(entity.created) * 1000);
+
+            var formatted = t.toLocaleString();
+            entity.created = formatted;
+            return entity;
+          });
+          this.setState({ entities: a });
+        }
+      })
       .then(console.log(this.state))
       .catch(err => console.log(err));
   };
 
   selectEntity = p => {
     this.setState({
-      selectedNav: p,
-      entities: this.loadEntities(p)
+      selectedNav: p
     });
+    this.loadEntities(p, "");
   };
   updateField = (e, o) => {
     const a = this.state.viewEntity;
@@ -123,11 +210,14 @@ class Admin extends Component {
     let body = null;
     switch (this.state.selectedNav) {
       case "user":
+        body = JSON.stringify({
+          role: Number(this.state.selectedUser["role"])
+        });
         break;
       case "teacher":
         body = JSON.stringify({
           lastName: this.state.selectedUser["lastName"],
-          name: Number(this.state.selectedUser["name"]),
+          name: this.state.selectedUser["name"],
           middleName: this.state.selectedUser["middleName"]
         });
         break;
@@ -138,15 +228,27 @@ class Admin extends Component {
           facultyId: this.state.selectedUser["facultyId"]
         });
       case "feedback":
+        window.alert("You can not modify Feedbacks");
+        window.location.reload();
         break;
       case "faculty":
+        body = JSON.stringify({
+          name: this.state.selectedUser["name"],
+          shortName: this.state.selectedUser["shortName"]
+        });
         break;
 
       case "profession":
+        body = JSON.stringify({
+          name: this.state.selectedUser["name"],
+          facultyId: this.state.selectedUser["facultyId"]
+        });
         break;
       default:
+        body = JSON.stringify({});
         break;
     }
+    if (this.state.selectedNav === "feedback") return null;
     window.confirm("Are you sure you want to update user?")
       ? fetch(
           `${
@@ -208,6 +310,7 @@ class Admin extends Component {
       : console.log("You've decided not to delete discipline.:)");
   };
   postEntity = () => {
+    this.setState({ post: false });
     let body = this.state.selectedUser;
     var result = {},
       key;
@@ -223,8 +326,6 @@ class Admin extends Component {
             : result[c]
         )
       : result;
-    // .slice(1);
-    // delete body[Object.keys(body)[0]];
     console.log(body);
 
     fetch(
@@ -243,12 +344,13 @@ class Admin extends Component {
       .then(p => p.json())
       .then(data => (data.error ? alert(data.error) : console.log(data)))
       .catch(err => alert(err));
-    // window.location.reload();
+    window.location.reload();
   };
+
   render() {
     return (
       <React.Fragment>
-        <div style={{ margin: "auto" }} className="col-10 row">
+        <div style={{ margin: "auto" }} className="col-11 row">
           <div>
             <br />
             <br />
@@ -294,20 +396,28 @@ class Admin extends Component {
               {this.state.entities
                 ? this.state.entities.map(u => (
                     <div
-                      key={u[Object.keys(u)[0]]}
+                      style={{ cursor: "pointer" }}
+                      key={u[Object.keys(u)[0]] ? u[Object.keys(u)[0]] : "new"}
                       onClick={this.selectUser.bind(this.id)}
                       className="list-group-item list-group-item-action"
                       id={u[Object.keys(u)[0]]}
                     >
-                      {u[Object.keys(u)[1]]}{" "}
-                      <div style={{ float: "right" }}>
-                        <MdEdit />
-                      </div>
+                      {this.state.selectedNav === "teacher"
+                        ? u[Object.keys(u)[1]] +
+                          " " +
+                          u[Object.keys(u)[2]] +
+                          " " +
+                          u[Object.keys(u)[3]]
+                        : u[Object.keys(u)[1]]}
+
+                      <MdEdit style={{ float: "right" }} />
                     </div>
                   ))
                 : ""}
               <br />
-              <Pagination>
+              <Pagination
+                style={this.state.total < 10 ? { display: "none" } : {}}
+              >
                 <Pagination.First />
                 <Pagination.Prev
                   disabled={this.state.entities ? this.state.page < 2 : true}
@@ -321,50 +431,134 @@ class Admin extends Component {
 
           <div className="userView col-5">
             {this.state.selectedUser ? (
-              <div>
-                <h2>
-                  {
-                    this.state.selectedUser[
-                      Object.keys(this.state.selectedUser)[1]
-                    ]
-                    // .slice(
-                    //   0,
-                    //   Object.keys(this.state.selectedUser)[1].indexOf("@")
-                    // )
-                  }
-                </h2>
-                <div className="list-group">
-                  {Object.keys(this.state.selectedUser)
-                    .slice(1)
-                    .map(o => (
-                      <div key={o ? o : -1}>
-                        <span>{o.charAt(0).toUpperCase() + o.slice(1)}:</span>
-                        {/* {o === "role" || o === "year" || o === "faculty_id" ? ( */}
-                        <div>
-                          <input
-                            type="text"
-                            onChange={e => {
-                              const sel = this.state.selectedUser;
-                              sel[o] = e.target.value;
-                              this.setState({ selectedUser: sel });
-                            }}
-                            className="list-group-item list-group-item-action"
-                            value={this.state.selectedUser[o]}
-                          />
+              this.state.selectedNav === "discipline" ? (
+                <div>
+                  <h2>
+                    {
+                      this.state.selectedUser[
+                        Object.keys(this.state.selectedUser)[1]
+                      ]
+                    }
+                  </h2>
+                  <div className="list-group">
+                    {Object.keys(this.state.selectedUser)
+                      .slice(1)
+                      .map(o =>
+                        o === "facultyId" ? (
+                          <div key={o ? o : -1}>
+                            <span>
+                              {o.charAt(0).toUpperCase() + o.slice(1)}:
+                            </span>
+                            <div>
+                              <select
+                                className="list-group-item list-group-item-action"
+                                type="text"
+                                onChange={p => {
+                                  const a = this.state.selectedUser;
+                                  a[o] = Number(p.target.value);
+                                  this.setState({ selectedUser: a });
+                                }}
+                              >
+                                {this.state.faculties
+                                  ? this.state.faculties.map(a => (
+                                      <option
+                                        key={a.id}
+                                        value={a.id}
+                                        selected={
+                                          a.id === this.state.selectedUser[o]
+                                        }
+                                      >
+                                        {a.name} ({a.shortName})
+                                      </option>
+                                    ))
+                                  : ""}
+                              </select>
 
-                          <hr />
-                        </div>
-                        {/* ) : (
-                        <div>
-                          {this.state.selectedUser[o]}
+                              <hr />
+                            </div>
+                          </div>
+                        ) : (
+                          <div key={o ? o : -1}>
+                            <span>
+                              {o.charAt(0).toUpperCase() + o.slice(1)}:
+                            </span>
+                            <div>
+                              <input
+                                type="text"
+                                onChange={e => {
+                                  const sel = this.state.selectedUser;
+                                  sel[o] = e.target.value;
+                                  this.setState({ selectedUser: sel });
+                                }}
+                                className="list-group-item list-group-item-action"
+                                value={this.state.selectedUser[o]}
+                              />
 
-                          <hr />
-                        </div>
-                      )} */}
-                      </div>
-                    ))}
+                              <hr />
+                            </div>
+                          </div>
+                        )
+                      )}
+                  </div>
+                  <button
+                    onClick={this.putEntity}
+                    className="btn btn-outline-primary"
+                  >
+                    SAVE
+                  </button>
+                  <button
+                    onClick={this.deleteItem}
+                    className="btn btn-outline-danger"
+                  >
+                    DELETE
+                  </button>
                 </div>
-              </div>
+              ) : (
+                <div>
+                  <h2>
+                    {
+                      this.state.selectedUser[
+                        Object.keys(this.state.selectedUser)[1]
+                      ]
+                    }
+                  </h2>
+                  <div className="list-group">
+                    {Object.keys(this.state.selectedUser)
+                      .slice(1)
+                      .map(o => (
+                        <div key={o ? o : -1}>
+                          <span>{o.charAt(0).toUpperCase() + o.slice(1)}:</span>
+                          <div>
+                            <input
+                              type="text"
+                              onChange={e => {
+                                const sel = this.state.selectedUser;
+                                sel[o] = e.target.value;
+                                this.setState({ selectedUser: sel });
+                              }}
+                              className="list-group-item list-group-item-action"
+                              value={this.state.selectedUser[o]}
+                            />
+
+                            <hr />
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                  <button
+                    onClick={this.putEntity}
+                    className="btn btn-outline-primary"
+                  >
+                    SAVE
+                  </button>
+                  <button
+                    onClick={this.deleteItem}
+                    className="btn btn-outline-danger"
+                  >
+                    DELETE
+                  </button>
+                </div>
+              )
             ) : (
               ""
             )}
@@ -377,7 +571,7 @@ class Admin extends Component {
                     let objCopy = {};
                     let key;
                     for (key in entitiesCopy[0]) {
-                      objCopy[key] = entitiesCopy[key];
+                      objCopy[key] = "";
                     }
 
                     entitiesCopy.unshift(objCopy);
@@ -390,14 +584,14 @@ class Admin extends Component {
                       post: true
                     });
                   }}
-                  className="btn btn-outline-primary"
+                  className="btn btn-outline-primary col-11"
                 >
                   ADD NEW
                 </button>
               ) : (
                 <button
                   onClick={this.postEntity}
-                  className="btn btn-outline-primary"
+                  className="btn btn-outline-primary col-11"
                 >
                   POST
                 </button>
@@ -405,18 +599,6 @@ class Admin extends Component {
             ) : (
               ""
             )}
-            <button
-              onClick={this.putEntity}
-              className="btn btn-outline-primary"
-            >
-              SAVE
-            </button>
-            <button
-              onClick={this.deleteItem}
-              className="btn btn-outline-danger"
-            >
-              DELETE
-            </button>
           </div>
         </div>
       </React.Fragment>
