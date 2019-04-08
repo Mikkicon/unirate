@@ -81,6 +81,8 @@ class StatisticsMostActiveUsers extends Component {
                               : d["professionId"]
                             : d["professionId"]
                           : "Hasn't provided."}
+                        <br />
+                        Rating: {d["rating"]}
                       </div>
                     </div>
                   </div>

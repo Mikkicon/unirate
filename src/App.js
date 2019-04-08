@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import "./Styles/App.css";
+import "bootstrap";
 import Registration from "./modules/Registration";
 import Login from "./modules/Login";
-import Home from "./modules/Home";
+import Home from "./modules/home/Home";
 import Settings from "./modules/Settings";
 import Admin from "./modules/Admin";
 import Discipline from "./modules/Discipline";

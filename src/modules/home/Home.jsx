@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import "../Styles/Home.css";
+import "../../Styles/Home.css";
 import { Link } from "react-router-dom";
-import "bootstrap";
 import Pagination from "react-bootstrap/Pagination";
-// import { MdClose } from "react-icons/md";
 import {
   Dropdown,
   DropdownButton,
