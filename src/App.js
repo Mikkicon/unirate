@@ -124,40 +124,13 @@ class App extends Component {
               testnet={testnet}
               component={<Home testnet={testnet} />}
             />
-            {/* <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
-              path="/statistics/profession"
-              testnet={testnet}
-              component={<StatisticsProfession testnet={testnet} />}
-            />
             <Private
               isAuthenticated={isAuthenticated}
               isAdmin={isAdmin}
-              path="/statistics/popular-teacher"
+              path="/statistics"
               testnet={testnet}
-              component={<StatisticsPopularTeacher testnet={testnet} />}
+              component={<Statistics testnet={testnet} />}
             />
-            <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
-              path="/statistics/most-active-users"
-              testnet={testnet}
-              component={<StatisticsMostActiveUsers testnet={testnet} />}
-            />
-            <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
-              path="/statistics/teacher-most-honest-student"
-              testnet={testnet}
-              component={<StatisticsHonest testnet={testnet} />}
-            />
-            <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
-              path="/statistics/user-rating"
-              testnet={testnet}
-              component={<StatisticsRating testnet={testnet} />}
             /> */}
             <Private
               isAuthenticated={isAuthenticated}
@@ -173,12 +146,10 @@ class App extends Component {
               testnet={testnet}
               component={<Settings testnet={testnet} />}
             />
-
             <Route
               path="/login"
               component={() => <Login testnet={testnet} />}
             />
-
             <Route
               path="/register"
               testnet={testnet}
@@ -209,7 +180,6 @@ class App extends Component {
               path="/teacher"
               component={<Teacher />}
             />
-
             <Private
               isAuthenticated={this.state.isAuthenticated}
               isAdmin={this.state.isAdmin}
