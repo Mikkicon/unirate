@@ -8,7 +8,6 @@ class MyNavbar extends Component {
   };
   render() {
     return (
-    
       //   <div className="main">
       //     <a className="btnstyle" href="/">
       //       Home
@@ -34,6 +33,7 @@ class MyNavbar extends Component {
       //       Logout
       //     </Button>
       //   </div>
+      <div />
     );
   }
 }

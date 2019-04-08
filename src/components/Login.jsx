@@ -40,7 +40,7 @@ class Login extends Component {
     let a;
     if (fetched.status.toString()[0] === "4") {
       this.setState({ response: fetched.statusText });
-      a = window.confirm(fetched.statusText) ? "" : "";
+      a = console.log(fetched.statusText) ? "" : "";
     } else {
       a = window.confirm("Welcome!") ? "" : "";
       a = this.setState({ response: fetched.statusText });
@@ -64,8 +64,9 @@ class Login extends Component {
 
           <br />
           <label>Login</label>
+          <br />
+          <small>Lierals befor '@' in your email</small>
 
-          {/* <form action=""> */}
           <input
             className="form-control field"
             type="text"

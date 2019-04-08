@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
+import { FaThumbsUp, FaThumbsDown, FaBuilding, FaClock } from "react-icons/fa";
 import { Button } from "react-bootstrap";
+import "../Styles/Admin.css";
 class Discipline extends Component {
   constructor(props) {
     super(props);
@@ -12,10 +13,61 @@ class Discipline extends Component {
       discipline: {},
       color: 0,
       feedback: null,
-      feedbacks: null
+      feedbacks: null,
+      faculties: null,
+      // POST feedback/:disciplineId
+      // Path: *discipline id
+      // Body: studentGrade, comment, teachersIds: [number];
+      newFeedback: {}
     };
   }
+  getFacNames = async () => {
+    const a = await fetch(`${this.state.link}/faculty`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    });
+    const b = await a.json();
+    this.setState({ faculties: b.faculty });
+  };
   componentDidMount = () => {
+    this.loadEntities();
+    this.getFacNames();
+  };
+  post = () => {
+    const { newFeedback, discipline } = this.state;
+    console.log(newFeedback);
+    if (
+      !newFeedback.comment ||
+      !newFeedback.teachersIds ||
+      !newFeedback.studentGrade
+    ) {
+      console.log("Missing required fields");
+    } else {
+      fetch(
+        `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/feedback/${
+          discipline.id
+        }`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token")
+          },
+          body: JSON.stringify(newFeedback)
+        }
+      )
+        .then(res =>
+          res.status.toString()[0] === 2
+            ? console.log("Liked")
+            : console.log("Error: ", res.statusText)
+        )
+        .then(() => this.loadEntities())
+        .catch(err => console.log(err));
+    }
+  };
+  loadEntities = () => {
     fetch(
       `${this.state.link}/discipline?id=${window.location.href.substr(
         window.location.href.indexOf("discipline") + 11,
@@ -31,7 +83,6 @@ class Discipline extends Component {
     )
       .then(res => res.json())
       .then(res => this.setState({ discipline: res.discipline[0] }))
-      .then(console.log(this.state))
       .catch(err => console.log(err));
 
     fetch(
@@ -53,37 +104,29 @@ class Discipline extends Component {
           ? this.setState({ feedbacks: res.feedback, totalFb: res.total })
           : this.setState({ feedbacks: [], totalFb: 0 })
       )
-      .then(console.log(this.state))
       .catch(err => console.log(err));
   };
-
-  like = e => {
-    switch (this.state.color) {
-      case 1:
-        this.doLike(0, -1, e);
-        break;
-      case 0:
-        this.doLike(1, 1, e);
-        break;
-      case -1:
-        this.doLike(1, 2, e);
-        break;
-      default:
-        console.log("Error while changing likes");
-
-        break;
-    }
-
-    // fetch(`${this.state.link}/feedback/grade/${e.feedbackId}`, {
-    //   method: "POST",
-    //   body: JSON.stringify({ like: 1 }),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + localStorage.getItem("token")
-    //   }
-    // })
-    //   .then(res => res.json())
-    //   .then();
+  like = async (e, signum) => {
+    fetch(
+      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/feedback/grade/${
+        e.feedbackId
+      }`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify({ like: signum })
+      }
+    )
+      .then(res =>
+        res.status.toString()[0] === 2
+          ? console.log("Liked")
+          : console.log("Error: ", res.statusText)
+      )
+      .then(() => this.loadEntities())
+      .catch(err => console.log(err));
   };
   dislike = e => {
     switch (this.state.color) {
@@ -112,19 +155,37 @@ class Discipline extends Component {
     this.setState({ feedbacks: fb });
   };
   render() {
-    const { discipline, feedback, color, feedbacks } = this.state;
-    console.log(discipline);
+    const { discipline, feedback, color, feedbacks, faculties } = this.state;
+
     return (
       <React.Fragment>
-        <div style={{ margin: "0 auto 0 auto" }} className="col-10">
+        <div style={{ margin: "0 auto 0 auto" }} className=" col-10">
           <h1>
-            {discipline[Object.keys(discipline)[1]]} <small>name</small>
+            <b>{discipline[Object.keys(discipline)[1]]} </b>
           </h1>
-          <h2>
-            {discipline[Object.keys(discipline)[2]]} <small>year</small>
-            {discipline[Object.keys(discipline)[3]]} <small>faculty</small>
-          </h2>
-          <div style={{ margin: "0 auto 0 auto" }} className="col-10">
+          <div style={{ margin: "auto" }}>
+            <h2>
+              <p style={{ float: "left" }}>
+                <FaClock /> {discipline[Object.keys(discipline)[2]]} YEAR
+              </p>
+              <p style={{ float: "right" }}>
+                <FaBuilding />
+                {faculties
+                  ? faculties.find(a => a.id === discipline.facultyId)
+                    ? faculties
+                        .find(a => a.id === discipline.facultyId)
+                        .name.toUpperCase()
+                    : ""
+                  : null}
+              </p>
+            </h2>
+          </div>
+          <br />
+          <div
+            style={{ margin: "100px auto 0 auto" }}
+            className="userList col-10"
+          >
+            <h4>Feedbacks</h4>
             {feedbacks
               ? feedbacks.map(d => (
                   <div key={d.created}>
@@ -148,7 +209,7 @@ class Discipline extends Component {
                       >
                         <span
                           name="Like"
-                          onClick={() => this.like(d)}
+                          onClick={() => this.like(d, 1)}
                           style={{ cursor: "pointer" }}
                         >
                           <FaThumbsUp
@@ -163,7 +224,7 @@ class Discipline extends Component {
                         </span>{" "}
                         <b> {d.rating} </b>{" "}
                         <span
-                          onClick={() => this.dislike(d)}
+                          onClick={() => this.like(d, -1)}
                           style={{ cursor: "pointer" }}
                         >
                           <FaThumbsDown
@@ -180,12 +241,31 @@ class Discipline extends Component {
                     </div>
                     <div className="collapse" id={"col_" + d.created}>
                       <div className="card card-body">
-                        {Object.keys(d).map(attr => (
-                          <div key={attr}>
-                            {" "}
-                            <b>{attr}:</b> {d[attr]} <br />{" "}
-                          </div>
-                        ))}
+                        {Object.keys(d)
+                          .filter(
+                            f =>
+                              f !== "userLogin" &&
+                              f !== "studentGrade" &&
+                              f !== "rating" &&
+                              f.indexOf("Id") === -1
+                          )
+                          .map(attr =>
+                            attr !== "created" ? (
+                              <div key={attr}>
+                                {" "}
+                                <b>{attr}:</b> {d[attr]} <br />{" "}
+                              </div>
+                            ) : (
+                              <div key={attr}>
+                                {" "}
+                                <b>{attr}:</b>{" "}
+                                {Date(
+                                  Number(d["created"]) * 1000
+                                ).toLocaleString()}{" "}
+                                <br />{" "}
+                              </div>
+                            )
+                          )}
                         <Link to={"/feedback" + "/" + d.created} id={d.created}>
                           More about "{d.userLogin}"
                         </Link>
@@ -194,6 +274,50 @@ class Discipline extends Component {
                   </div>
                 ))
               : ""}
+          </div>
+          <div className="userList">
+            <div>
+              <input
+                className="list-group-item list-group-item-action"
+                type="number"
+                placeholder="My teacher was: "
+                onChange={p => {
+                  let state = this.state.newFeedback;
+                  state["teachersIds"] = [Number(p.target.value)];
+                  this.setState({ newFeedback: state });
+                }}
+              />
+              <br />
+              <input
+                className="list-group-item list-group-item-action"
+                type="number"
+                placeholder="My mark was..."
+                onChange={p => {
+                  let state = this.state.newFeedback;
+                  state["studentGrade"] = Number(p.target.value);
+                  this.setState({ newFeedback: state });
+                }}
+              />
+              <br />
+              <input
+                className="list-group-item list-group-item-action"
+                type="text"
+                placeholder="WOW! Such discipline..."
+                onChange={p => {
+                  let state = this.state.newFeedback;
+                  state["comment"] = p.target.value;
+                  this.setState({ newFeedback: state });
+                }}
+              />
+              <br />
+              <button
+                onClick={() => this.post()}
+                className="btn btn-outline-success"
+                style={{ margin: 0, width: "100%" }}
+              >
+                Post!
+              </button>
+            </div>
           </div>
         </div>
       </React.Fragment>

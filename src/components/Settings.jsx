@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "../Styles/Settings.css";
+import bcrypt from "bcryptjs";
 import "bootstrap";
 // import avatar from "../media/avatar.png";
 import { Form, FormControl, FormGroup } from "react-bootstrap";
@@ -24,45 +25,43 @@ class Settings extends Component {
     allProfessions: []
   };
   componentDidMount() {
-    console.log(window.localStorage.getItem("admin").toString() === "false");
-
-    if (window.localStorage.getItem("admin").toString() === "false") {
-      fetch(`${this.state.link}/user/${window.localStorage.getItem("login")}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
-      })
-        .then(res => res.json())
-        .then(userData => {
-          if (userData.error) {
-            alert(userData.error);
-          } else {
-            this.setState({ userData });
-            console.log("Data", userData);
-          }
-        })
-        .catch(err => console.log("Error", err));
-
-      fetch(`${this.state.link}/profession`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
-      })
-        .then(res => res.json())
-        .then(d => {
-          if (d.error) {
-            alert(d.error);
-          } else {
-            this.setState({ allProfessions: d.profession });
-            console.log("Data", d);
-          }
-        })
-        .catch(err => console.log("Error", err));
-    }
+    // console.log(window.localStorage.getItem("admin").toString() === "false");
+    // if (window.localStorage.getItem("admin").toString() === "false") {
+    //   fetch(`${this.state.link}/user/${window.localStorage.getItem("login")}`, {
+    //     method: "GET",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: "Bearer " + localStorage.getItem("token")
+    //     }
+    //   })
+    //     .then(res => res.json())
+    //     .then(userData => {
+    //       if (userData.error) {
+    //         console.log(userData.error);
+    //       } else {
+    //         this.setState({ userData });
+    //         console.log("Data", userData);
+    //       }
+    //     })
+    //     .catch(err => console.log("Error", err));
+    //   fetch(`${this.state.link}/profession`, {
+    //     method: "GET",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: "Bearer " + localStorage.getItem("token")
+    //     }
+    //   })
+    //     .then(res => res.json())
+    //     .then(d => {
+    //       if (d.error) {
+    //         console.log(d.error);
+    //       } else {
+    //         this.setState({ allProfessions: d.profession });
+    //         console.log("Data", d);
+    //       }
+    //     })
+    //     .catch(err => console.log("Error", err));
+    // }
   }
   deleteAccount = () => {
     if (window.localStorage.getItem("admin").toString() === "false") {
@@ -77,20 +76,20 @@ class Settings extends Component {
               }
             }
           )
-            .then(data =>
-              data.status !== 200
-                ? alert(
-                    `User '${this.state.userData.login}' was ` +
-                      JSON.stringify(data.statusText)
-                  )
-                : alert(
-                    `User ${
-                      this.state.userData.login
-                    } has been successfully deleted`
-                  )
-            )
-            .then(window.localStorage.clear())
-            .then((window.location.href = "/login"))
+            .then(data => {
+              // console.log(data);
+
+              if (data.status != 200) {
+                alert(
+                  `User '${this.state.userData.login}' was ` +
+                    JSON.stringify(data.statusText)
+                );
+              } else {
+                alert(`successfully deleted`);
+                window.localStorage.clear();
+                window.location.href = "/login";
+              }
+            })
             .catch(err => console.log(err))
         : console.log("You've decided not to delete your account.:)");
     }
@@ -120,30 +119,37 @@ class Settings extends Component {
     // this.setState({ discipline: p.target.value })
   };
   submitValues = () => {
-    this.handleVerification()
-      ? fetch(
-          `${this.state.link}/user/${window.localStorage.getItem("login")}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token")
-            },
-            body: JSON.stringify(this.state.userInfo)
+    let info = this.state.userInfo;
+    if (
+      this.state.userInfo.password &&
+      this.state.confirm &&
+      this.state.userInfo.password === this.state.confirm
+    ) {
+      const salt = "$2a$10$saltpasswordhashhashhh";
+      info.password = bcrypt.hashSync(info.password, salt);
+
+      fetch(`${this.state.link}/user/${window.localStorage.getItem("login")}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify(info)
+      })
+        .then(res => res.json())
+        .then(updateResponse => {
+          if (updateResponse.error) {
+            console.log(updateResponse.error);
+          } else {
+            this.setState({ updateResponse });
+            console.log("Data", updateResponse);
           }
-        )
-          .then(res => res.json())
-          .then(updateResponse => {
-            if (updateResponse.error) {
-              alert(updateResponse.error);
-            } else {
-              this.setState({ updateResponse });
-              console.log("Data", updateResponse);
-            }
-            let a = window.location.reload();
-          })
-          .catch(err => console.log("Error", err))
-      : this.setState({ error: "Error" });
+          let a = window.location.reload();
+        })
+        .catch(err => console.log("Error", err));
+    } else {
+      this.setState({ error: "Passwords don't match" });
+    }
   };
   render() {
     return (

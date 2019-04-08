@@ -9,7 +9,7 @@ class MyBadge extends Component {
       <div id="badge">
         <Button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="btn btn-outline-primary"
+          className="no-print btn btn-outline-primary"
         >
           <FaArrowUp />
         </Button>

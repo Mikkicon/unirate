@@ -153,8 +153,8 @@ class Admin extends Component {
       headers: { "Content-Type": "application/json" }
     })
       .then(p => p.json())
-      .then(data => (data.error ? alert(data.error) : console.log(data)))
-      .catch(err => alert(err));
+      .then(data => (data.error ? console.log(data.error) : console.log(data)))
+      .catch(err => console.log(err));
   };
 
   loadEntities = (entityName, query) => {
@@ -267,7 +267,7 @@ class Admin extends Component {
         )
           .then(res =>
             res.status !== 200
-              ? alert(JSON.stringify(res.statusText))
+              ? console.log(JSON.stringify(res.statusText))
               : alert(
                   `User ${this.state.email.substring(
                     0,
@@ -277,8 +277,9 @@ class Admin extends Component {
           )
           .catch(err => console.log("Error: ", err))
       : console.log("canceled");
+    this.loadEntities(this.state.selectedNav, "");
   };
-  deleteItem = () => {
+  deleteItem = async () => {
     window.confirm("Are you sure?")
       ? fetch(
           `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${this.state.selectedNav
@@ -308,25 +309,26 @@ class Admin extends Component {
           )
           .catch(err => console.log(err))
       : console.log("You've decided not to delete discipline.:)");
+
+    this.loadEntities(this.state.selectedNav, "");
   };
   postEntity = () => {
     this.setState({ post: false });
     let body = this.state.selectedUser;
     var result = {},
       key;
+    console.log(body);
     for (key in body) {
-      if (body[key] !== undefined && body[key] !== null) {
+      if (key === "year" || key.indexOf("Id") !== -1) {
+        result[key] = Number(body[key]);
+      } else if (key === "id") {
+        delete result[key];
+      } else if (body[key] !== undefined && body[key] !== null) {
         result[key] = body[key];
       }
     }
-    body = result.year
-      ? Object.keys(result).map(c =>
-          c === "year" || c.indexOf("Id") !== -1 || c.indexOf("id") !== -1
-            ? (result[c] = Number(result[c]))
-            : result[c]
-        )
-      : result;
-    console.log(body);
+
+    console.log(result);
 
     fetch(
       `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${this.state.selectedNav
@@ -334,7 +336,7 @@ class Admin extends Component {
         .replace(" ", "")}/`,
       {
         method: "POST",
-        body: JSON.stringify(body),
+        body: JSON.stringify(result),
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + localStorage.getItem("token")
@@ -342,9 +344,10 @@ class Admin extends Component {
       }
     )
       .then(p => p.json())
-      .then(data => (data.error ? alert(data.error) : console.log(data)))
-      .catch(err => alert(err));
-    window.location.reload();
+      .then(data => (data.error ? console.log(data.error) : console.log(data)))
+      .catch(err => console.log(err));
+    this.loadEntities(this.state.selectedNav, "");
+    // window.location.reload();
   };
 
   render() {
@@ -460,17 +463,25 @@ class Admin extends Component {
                                 }}
                               >
                                 {this.state.faculties
-                                  ? this.state.faculties.map(a => (
-                                      <option
-                                        key={a.id}
-                                        value={a.id}
-                                        selected={
-                                          a.id === this.state.selectedUser[o]
-                                        }
-                                      >
-                                        {a.name} ({a.shortName})
-                                      </option>
-                                    ))
+                                  ? this.state.selectedUser[
+                                      Object.keys(this.state.selectedUser)[0]
+                                    ]
+                                    ? this.state.faculties.map(a => (
+                                        <option
+                                          key={a.id}
+                                          value={a.id}
+                                          selected={
+                                            a.id === this.state.selectedUser[o]
+                                          }
+                                        >
+                                          {a.name} ({a.shortName})
+                                        </option>
+                                      ))
+                                    : this.state.faculties.map(a => (
+                                        <option key={a.id} value={a.id}>
+                                          {a.name} ({a.shortName})
+                                        </option>
+                                      ))
                                   : ""}
                               </select>
 
@@ -562,7 +573,8 @@ class Admin extends Component {
             ) : (
               ""
             )}
-            {this.state.selectedNav !== "user" ? (
+            {this.state.selectedNav !== "user" &&
+            this.state.selectedNav !== "feedback" ? (
               !this.state.post ? (
                 <button
                   onClick={() => {
@@ -577,7 +589,7 @@ class Admin extends Component {
                     entitiesCopy.unshift(objCopy);
 
                     // console.log(fildsForNew);
-
+                    this.getFacNames();
                     this.setState({
                       selectedUser: objCopy,
                       entities: entitiesCopy,

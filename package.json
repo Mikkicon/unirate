@@ -12,7 +12,8 @@
     "react-dom": "^16.8.1",
     "react-icons": "^3.5.0",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "2.1.5"
+    "react-scripts": "2.1.5",
+    "react-to-print": "^2.1.0"
   },
   "scripts": {
     "start": " PORT=8080 react-scripts start",

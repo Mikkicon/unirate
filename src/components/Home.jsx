@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "../Styles/Home.css";
 import { Link } from "react-router-dom";
 import "bootstrap";
+import Pagination from "react-bootstrap/Pagination";
 // import { MdClose } from "react-icons/md";
 import {
   Dropdown,
@@ -24,36 +25,76 @@ class Home extends Component {
       faculties: [],
       placeholder: "",
       facVal: "",
+      professions: "",
       // loading: true,
       enableScroll: true
     };
-    window.onscroll = async () => {
-      const {
-        search,
-        state: { enableScroll }
-      } = this;
-      if (!enableScroll) {
-        // console.log("scrolled");
-        this.setState({ query: {} });
-        return;
-      } else if (
-        window.innerHeight + document.documentElement.scrollTop ===
-        document.documentElement.offsetHeight
-      ) {
-        await this.setState({
-          query: {
-            offset: !isNaN(this.state.query.offset)
-              ? this.state.query.offset + 20
-              : 0
-          }
-        });
-        search(this.state.query);
-      }
-    };
+    // window.onscroll = async () => {
+    //   const {
+    //     search,
+    //     state: { enableScroll }
+    //   } = this;
+    //   if (!enableScroll) {
+    //     // console.log("scrolled");
+    //     this.setState({ query: {} });
+    //     return;
+    //   } else if (
+    //     window.innerHeight + document.documentElement.scrollTop ===
+    //     document.documentElement.offsetHeight
+    //   ) {
+    //     await this.setState({
+    //       query: {
+    //         offset: !isNaN(this.state.query.offset)
+    //           ? this.state.query.offset + 20
+    //           : 0
+    //       }
+    //     });
+    //     search(this.state.query);
+    //   }
+    // };
   }
 
   componentDidMount = async () => {
     this.search(this.state.query);
+    this.getFacNames();
+  };
+  getFacNames = async () => {
+    this.setState({ enableScroll: false });
+    const a = await fetch(`${this.state.link}/faculty`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    });
+    const b = await a.json();
+    this.setState({ faculties: b.faculty });
+  };
+
+  pages = () => {
+    let array = [];
+    for (
+      let i = 1;
+      i < Math.floor(this.state.entities ? this.state.total / 10 : 0) + 2;
+      i++
+    ) {
+      array.push(
+        <Pagination.Item
+          onClick={() => {
+            const query = this.state.query;
+            query.offset = (i - 1) * 10;
+            console.log(query);
+
+            this.setState({ query });
+            this.search(query);
+          }}
+          key={i}
+          id={i}
+        >
+          {i}
+        </Pagination.Item>
+      );
+    }
+    return array;
   };
   search = async input => {
     if (input.search) {
@@ -79,7 +120,7 @@ class Home extends Component {
         res.total
           ? this.setState({
               disciplines: res[this.state.selected]
-                ? disciplines.concat(res[this.state.selected])
+                ? res[this.state.selected]
                 : disciplines,
               total: res.total
             })
@@ -102,18 +143,18 @@ class Home extends Component {
     const b = await a.json();
     this.setState({ faculties: b.faculty });
   };
-  // pages = () => {
-  //   let array = [];
-  //   for (
-  //     let i = 1;
-  //     i <
-  //     Math.floor(this.state.entities ? this.state.entities.length / 20 : 0) + 2;
-  //     i++
-  //   ) {
-  //     array.push(<Pagination.Item key={i}> {i}</Pagination.Item>);
-  //   }
-  //   return array;
-  // };
+  getProfNames = async () => {
+    this.setState({ enableScroll: false, query: {} });
+    const a = await fetch(`${this.state.link}/profession`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    });
+    const b = await a.json();
+    this.setState({ professions: b.profession });
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -133,7 +174,10 @@ class Home extends Component {
             </DropdownButton>
 
             <a
-              onClick={() => this.getFacNames()}
+              onClick={() => {
+                this.getFacNames();
+                this.getProfNames();
+              }}
               className="btn btn-primary"
               data-toggle="collapse"
               href="#filter"
@@ -175,9 +219,6 @@ class Home extends Component {
               >
                 Alphabet A->Z
               </Dropdown.Item>
-
-              <Dropdown.Item key="n-desc">Rating \/</Dropdown.Item>
-              <Dropdown.Item key="n-asc">Rating /\</Dropdown.Item>
             </DropdownButton>
             <div className="toolItem">
               {/* <small>infinite scroll</small> */}
@@ -244,6 +285,38 @@ class Home extends Component {
                   <option>4</option>
                 </select>
               </div>
+              {this.state.selected === "discipline" ? (
+                <div>
+                  <hr />
+                  <div className="row">
+                    <b className=" col-3">mandatoryProfessionId</b>
+                    <select
+                      className="form-control col-9"
+                      placeholder="mandatoryProfessionId"
+                      onChange={p => {
+                        const a = this.state.query;
+                        if (p.target.value === "All") {
+                          delete a["mandatoryProfessionId"];
+                        } else {
+                          a["mandatoryProfessionId"] = Number(p.target.value);
+                        }
+                        this.setState({ query: a });
+                      }}
+                    >
+                      <option>All</option>
+                      {this.state.professions
+                        ? this.state.professions.map(a => (
+                            <option key={a.id} value={a.id}>
+                              {a.name}
+                            </option>
+                          ))
+                        : ""}
+                    </select>
+                  </div>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
 
@@ -273,7 +346,7 @@ class Home extends Component {
             <br />
             {this.state.disciplines
               ? this.state.disciplines.map(d => (
-                  <div key={d.id + Date.now()}>
+                  <div key={d.id}>
                     <div
                       className="list-group-item list-group-item-action progress-bar"
                       role="progressbar"
@@ -289,8 +362,29 @@ class Home extends Component {
                     </div>
                     <div className="collapse" id={"col_" + d.id}>
                       <div className="card card-body">
-                        Year: {d.year} <br />
-                        Faculty: {d.facultyId}
+                        {Object.keys(d)
+                          .filter(f => f !== "id" && f !== "login")
+                          .map(key => (
+                            <div key={key}>
+                              {key === "facultyId" ? (
+                                <div>
+                                  {key}:{" "}
+                                  {this.state.faculties.filter(
+                                    a => a.id == d[key]
+                                  )[0]
+                                    ? this.state.faculties.filter(
+                                        a => a.id == d[key]
+                                      )[0].name
+                                    : ""}{" "}
+                                  <br />{" "}
+                                </div>
+                              ) : (
+                                <div>
+                                  {key}: {d[key]} <br />
+                                </div>
+                              )}
+                            </div>
+                          ))}
                         <Link
                           to={"/" + this.state.selected + "/" + d.id}
                           id={d.id}
@@ -303,15 +397,17 @@ class Home extends Component {
                 ))
               : ""}
 
-            {/* <Pagination>
+            <Pagination
+              style={this.state.total < 10 ? { display: "none" } : {}}
+            >
               <Pagination.First />
               <Pagination.Prev
-                disabled={this.state.entities ? this.state.page < 2 : true}
+                disabled={this.state.disciplines ? this.state.page < 2 : true}
               />
               {this.pages()}
               <Pagination.Next />
               <Pagination.Last />
-            </Pagination> */}
+            </Pagination>
           </div>
         </div>
       </React.Fragment>

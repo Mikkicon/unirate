@@ -3,3 +3,9 @@
   bottom: 20px;
   left: 20px;
 }
+@media print {
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+}

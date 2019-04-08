@@ -70,7 +70,7 @@ class Registration extends Component {
       .then(res => {
         this.setState({ response: res.statusText });
         let a =
-          res.statusText.toString()[0] === "2"
+          res.status.toString()[0] === "2"
             ? (window.location.href = "/login")
             : this.setState({ response: res.statusText });
       })

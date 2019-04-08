@@ -11,7 +11,9 @@ import Faculty from "./components/Faculty";
 import Profession from "./components/Profession";
 import Teacher from "./components/Teacher";
 import MyBadge from "./components/MyBadge";
-import { Nav, Navbar } from "react-bootstrap";
+import Statistics from "./components/Statistics";
+import Print from "./components/Print";
+import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 
 // import Discipline1 from "./components/Discipline1";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -44,13 +46,56 @@ class App extends Component {
             {!localStorage.getItem("token") ? (
               <Nav.Link href="/register">SignUp</Nav.Link>
             ) : null}
-            {localStorage.getItem("token") ? (
-              <Nav.Link href="/settings">Settings</Nav.Link>
+
+            {localStorage.getItem("admin") &&
+            localStorage.getItem("admin").includes(true) ? (
+              <NavDropdown title="Statistics" id="collasible-nav-dropdown">
+                <NavDropdown.Item href="/statistics/profession">
+                  Professions <br /> all mandatory disciplines have feedback
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/statistics/most-active-profession">
+                  most-active-profession
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/statistics/popular-teacher">
+                  Teachers <br /> ordered by feedback number
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/statistics/most-active-user">
+                  Users ordered by feedback number
+                </NavDropdown.Item>
+                <NavDropdown.Item href="statistics/teacher-most-honest-student">
+                  Teachers ordered by feedback grades
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/statistics/user-rating">
+                  User rating + total number of feedback left
+                </NavDropdown.Item>
+              </NavDropdown>
+            ) : null}
+            {localStorage.getItem("admin") &&
+            localStorage.getItem("admin").includes(true) ? (
+              <NavDropdown title="Reports" id="collasible-nav-dropdown">
+                <NavDropdown.Item href="/reports/discipline">
+                  Disciplines
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/reports/profession">
+                  Professions
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/reports/faculty">
+                  Faculties
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/reports/teacher">
+                  Teachers
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/reports/user">Users</NavDropdown.Item>
+              </NavDropdown>
             ) : null}
             {localStorage.getItem("admin") &&
             localStorage.getItem("admin").includes(true) ? (
               <Nav.Link href="/admin">Admin</Nav.Link>
             ) : null}
+            {localStorage.getItem("token") ? (
+              <Nav.Link href="/settings">Settings</Nav.Link>
+            ) : null}
+
             {localStorage.getItem("token") ? (
               <Nav.Link
                 onClick={() =>
@@ -77,11 +122,49 @@ class App extends Component {
               path="/"
               exact
               testnet={testnet}
-              component={
-                <div>
-                  <Home testnet={testnet} />
-                </div>
-              }
+              component={<Home testnet={testnet} />}
+            />
+            {/* <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/statistics/profession"
+              testnet={testnet}
+              component={<StatisticsProfession testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/statistics/popular-teacher"
+              testnet={testnet}
+              component={<StatisticsPopularTeacher testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/statistics/most-active-users"
+              testnet={testnet}
+              component={<StatisticsMostActiveUsers testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/statistics/teacher-most-honest-student"
+              testnet={testnet}
+              component={<StatisticsHonest testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/statistics/user-rating"
+              testnet={testnet}
+              component={<StatisticsRating testnet={testnet} />}
+            /> */}
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/reports"
+              testnet={testnet}
+              component={<Print testnet={testnet} />}
             />
             <Private
               isAuthenticated={isAuthenticated}
