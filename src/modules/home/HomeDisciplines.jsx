@@ -8,7 +8,7 @@ import {
   ButtonToolbar,
   Button
 } from "react-bootstrap";
-class Home extends Component {
+class HomeDisciplines extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -16,63 +16,40 @@ class Home extends Component {
         ? "http://localhost:3000"
         : "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com",
       disciplines: [],
-      entities: ["discipline", "profession", "faculty", "teacher"],
-      selected: "discipline",
       total: 0,
-      query: { limit: 20, offset: 0 },
-      faculties: [],
-      placeholder: "",
-      facVal: "",
-      professions: "",
-      // loading: true,
+      token: localStorage.getItem("token"),
+      query: { limit: 10, offset: 0 },
+      faculty: [],
+      placeholder: null,
+      facVal: null,
+      profession: null,
       enableScroll: true
     };
-    // window.onscroll = async () => {
-    //   const {
-    //     search,
-    //     state: { enableScroll }
-    //   } = this;
-    //   if (!enableScroll) {
-    //     // console.log("scrolled");
-    //     this.setState({ query: {} });
-    //     return;
-    //   } else if (
-    //     window.innerHeight + document.documentElement.scrollTop ===
-    //     document.documentElement.offsetHeight
-    //   ) {
-    //     await this.setState({
-    //       query: {
-    //         offset: !isNaN(this.state.query.offset)
-    //           ? this.state.query.offset + 20
-    //           : 0
-    //       }
-    //     });
-    //     search(this.state.query);
-    //   }
-    // };
   }
 
   componentDidMount = async () => {
     this.search(this.state.query);
-    this.getFacNames();
+    this.getNames("faculty");
+    this.getNames("profession");
   };
-  getFacNames = async () => {
-    this.setState({ enableScroll: false });
-    const a = await fetch(`${this.state.link}/faculty`, {
+  getNames = name => {
+    fetch(`${this.state.link}/${name}`, {
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
+        Authorization: "Bearer " + this.state.token
       }
-    });
-    const b = await a.json();
-    this.setState({ faculties: b.faculty });
+    })
+      .then(raw => raw.json())
+      .then(data =>
+        name === "faculty"
+          ? this.setState({ faculty: data[name] })
+          : this.setState({ profession: data[name] })
+      );
   };
-
   pages = () => {
     let array = [];
     for (
       let i = 1;
-      i < Math.floor(this.state.entities ? this.state.total / 10 : 0) + 2;
+      i < Math.floor(this.state.disciplines ? this.state.total / 10 : 0) + 2;
       i++
     ) {
       array.push(
@@ -95,64 +72,31 @@ class Home extends Component {
     return array;
   };
   search = async input => {
-    if (input.search) {
-      await this.setState({ enableScroll: false, disciplines: [] });
-    }
     var disciplines = this.state.disciplines;
     var query = Object.keys(input).reduce(
       (total, current) => total + current + "=" + input[current] + "&",
       ""
     );
-    query = query ? "?" + query.slice(0, -1) : "";
-    console.log("Search params:", query ? query : this.state.selected);
+    query = query ? "?" + query.slice(0, -1) : null;
+    console.log("Search params:", query ? query : "discipline");
 
-    fetch(`${this.state.link}/${this.state.selected}${input ? query : ""}`, {
+    fetch(`${this.state.link}/discipline${input ? query : ""}`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
+        Authorization: "Bearer " + this.state.token
       }
     })
       .then(res => res.json())
       .then(res =>
         res.total
           ? this.setState({
-              disciplines: res[this.state.selected]
-                ? res[this.state.selected]
-                : disciplines,
+              disciplines: res["discipline"] ? res["discipline"] : disciplines,
               total: res.total
             })
           : this.setState({ disciplines: [], total: 0 })
       )
       .catch(err => console.log(err));
   };
-  select = async e => {
-    await this.setState({ selected: e, disciplines: [] });
-    this.search({});
-  };
-  getFacNames = async () => {
-    this.setState({ enableScroll: false, query: {} });
-    const a = await fetch(`${this.state.link}/faculty`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
-      }
-    });
-    const b = await a.json();
-    this.setState({ faculties: b.faculty });
-  };
-  getProfNames = async () => {
-    this.setState({ enableScroll: false, query: {} });
-    const a = await fetch(`${this.state.link}/profession`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
-      }
-    });
-    const b = await a.json();
-    this.setState({ professions: b.profession });
-  };
-
   render() {
     const {
       disciplines,
@@ -170,20 +114,35 @@ class Home extends Component {
             <DropdownButton
               variant="warning"
               id="dropdown-basic-button"
-              title={this.state.selected.toUpperCase()}
+              title="DISCIPLINE"
             >
-              {this.state.entities.map(e => (
-                <Dropdown.Item key={e} onSelect={() => this.select(e)}>
-                  {e}
-                </Dropdown.Item>
-              ))}
+              <Dropdown.Item
+                onSelect={() =>
+                  (window.location.href = "/home/home-disciplines")
+                }
+              >
+                disciplines
+              </Dropdown.Item>
+              <Dropdown.Item
+                onSelect={() =>
+                  (window.location.href = "/home/home-professions")
+                }
+              >
+                profession
+              </Dropdown.Item>
+              <Dropdown.Item
+                onSelect={() => (window.location.href = "/home/home-faculties")}
+              >
+                faculty
+              </Dropdown.Item>
+              <Dropdown.Item
+                onSelect={() => (window.location.href = "/home/home-teachers")}
+              >
+                teachers
+              </Dropdown.Item>
             </DropdownButton>
 
             <a
-              onClick={() => {
-                this.getFacNames();
-                this.getProfNames();
-              }}
               className="btn btn-primary"
               data-toggle="collapse"
               href="#filter"
@@ -192,13 +151,6 @@ class Home extends Component {
             >
               FILTER
             </a>
-
-            {/* <span>
-              <a>
-                <MdClose />
-              </a>
-            </span> */}
-
             <b />
             <DropdownButton
               variant="warning"
@@ -207,7 +159,7 @@ class Home extends Component {
             >
               <Dropdown.Item
                 onClick={() => {
-                  var a = this.state.disciplines;
+                  var a = disciplines;
                   a = a.sort((a, b) => (a.name > b.name ? 1 : -1));
                   this.setState({ disciplines: a });
                 }}
@@ -217,7 +169,7 @@ class Home extends Component {
               </Dropdown.Item>
               <Dropdown.Item
                 onClick={() => {
-                  var a = this.state.disciplines;
+                  var a = disciplines;
                   a = a.sort((a, b) => (a.name < b.name ? 1 : -1));
                   this.setState({ disciplines: a });
                 }}
@@ -227,10 +179,9 @@ class Home extends Component {
               </Dropdown.Item>
             </DropdownButton>
             <div className="toolItem">
-              {/* <small>infinite scroll</small> */}
               <label className="switch">
                 <input
-                  checked={this.state.enableScroll}
+                  checked={enableScroll}
                   type="checkbox"
                   onChange={p =>
                     this.setState({ enableScroll: p.target.checked })
@@ -241,7 +192,7 @@ class Home extends Component {
             </div>
 
             <div className="toolItem">
-              <h4>Found {this.state.total}</h4>
+              <h4>Found {total}</h4>
             </div>
           </ButtonToolbar>
           <div className="collapse" id="filter">
@@ -251,21 +202,25 @@ class Home extends Component {
                 <select
                   className="form-control col-9"
                   type="text"
-                  // value={this.state.facVal}
+                  // value={facVal}
                   placeholder="Faculty Name"
                   onChange={p => {
-                    const a = this.state.query;
-                    a["facultyId"] = Number(p.target.value);
+                    const a = query;
+                    p.target.value === "All"
+                      ? delete a["facultyId"]
+                      : (a["facultyId"] = Number(p.target.value));
+
                     this.setState({ query: a });
                   }}
                 >
-                  {this.state.faculties
-                    ? this.state.faculties.map(a => (
-                        <option key={a.id} value={a.id}>
+                  <option value="All">All</option>
+                  {faculty
+                    ? faculty.map(a => (
+                        <option key={a["id"]} value={a["id"]}>
                           {a.name} ({a.shortName})
                         </option>
                       ))
-                    : ""}
+                    : null}
                 </select>
               </div>
               <hr />
@@ -275,7 +230,7 @@ class Home extends Component {
                   className="form-control col-9"
                   placeholder="Year"
                   onChange={p => {
-                    const a = this.state.query;
+                    const a = query;
                     if (p.target.value === "All") {
                       delete a["year"];
                     } else {
@@ -291,7 +246,7 @@ class Home extends Component {
                   <option>4</option>
                 </select>
               </div>
-              {this.state.selected === "discipline" ? (
+              {
                 <div>
                   <hr />
                   <div className="row">
@@ -300,7 +255,7 @@ class Home extends Component {
                       className="form-control col-9"
                       placeholder="mandatoryProfessionId"
                       onChange={p => {
-                        const a = this.state.query;
+                        const a = query;
                         if (p.target.value === "All") {
                           delete a["mandatoryProfessionId"];
                         } else {
@@ -310,25 +265,22 @@ class Home extends Component {
                       }}
                     >
                       <option>All</option>
-                      {this.state.professions
-                        ? this.state.professions.map(a => (
-                            <option key={a.id} value={a.id}>
-                              {a.name}
+                      {profession
+                        ? profession.map(a => (
+                            <option key={a["id"]} value={a["id"]}>
+                              {a["name"]}
                             </option>
                           ))
-                        : ""}
+                        : null}
                     </select>
                   </div>
                 </div>
-              ) : (
-                ""
-              )}
+              }
             </div>
           </div>
 
           <br />
 
-          {/* {this.state.loading ? <h2>Loading...</h2> : ""} */}
           <div className="row">
             <input
               className="form-control col-9"
@@ -342,7 +294,7 @@ class Home extends Component {
               className=" btn-outline-success col-2"
               onClick={async () => {
                 await this.setState({ disciplines: [] });
-                this.search(this.state.query);
+                this.search(query);
               }}
             >
               Search
@@ -350,9 +302,9 @@ class Home extends Component {
           </div>
           <div className="list-group">
             <br />
-            {this.state.disciplines
-              ? this.state.disciplines.map(d => (
-                  <div key={d.id}>
+            {disciplines
+              ? disciplines.map(d => (
+                  <div key={d["id"]}>
                     <div
                       className="list-group-item list-group-item-action progress-bar"
                       role="progressbar"
@@ -360,48 +312,31 @@ class Home extends Component {
                       aria-valuemin="0"
                       aria-valuemax="100"
                       data-toggle="collapse"
-                      href={"#col_" + d.id}
+                      href={"#col_" + d["id"]}
                       // aria-expanded="false"
                       aria-controls="collapseExample"
                     >
                       {d.name}
                     </div>
-                    <div className="collapse" id={"col_" + d.id}>
+                    <div className="collapse" id={"col_" + d["id"]}>
                       <div className="card card-body">
-                        {Object.keys(d)
-                          .filter(f => f !== "id" && f !== "login")
-                          .map(key => (
-                            <div key={key}>
-                              {key === "facultyId" ? (
-                                <div>
-                                  {key}:{" "}
-                                  {this.state.faculties.filter(
-                                    a => a.id === d[key]
-                                  )[0]
-                                    ? this.state.faculties.filter(
-                                        a => a.id === d[key]
-                                      )[0].name
-                                    : ""}{" "}
-                                  <br />{" "}
-                                </div>
-                              ) : (
-                                <div>
-                                  {key}: {d[key]} <br />
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        <Link
-                          to={"/" + this.state.selected + "/" + d.id}
-                          id={d.id}
-                        >
+                        Name: {d["name"]} <br />
+                        Year: {d["year"]} <br />
+                        <div>
+                          FACULTY:
+                          {faculty.filter(a => a["id"] == d["key"])[0]
+                            ? faculty.filter(a => a["id"] == d["key"])[0].name
+                            : d["facultyId"]}
+                          <br />
+                        </div>
+                        <Link to={"/discipline/" + d["id"]}>
                           More about "{d.name}"
                         </Link>
                       </div>
                     </div>
                   </div>
                 ))
-              : ""}
+              : null}
 
             <Pagination style={total < 10 ? { display: "none" } : {}}>
               <Pagination.First
@@ -422,10 +357,7 @@ class Home extends Component {
               {this.pages()}
               <Pagination.Next
                 disabled={
-                  disciplines
-                    ? query["offset"] &&
-                      query["offset"] + query["limit"] >= total
-                    : true
+                  disciplines ? query["offset"] + query["limit"] >= total : true
                 }
                 onClick={() => {
                   let a = query;
@@ -437,11 +369,8 @@ class Home extends Component {
                 onClick={() => {
                   let a = query;
                   a["offset"] =
-                    Math.floor(
-                      query["limit"] && query["offset"]
-                        ? total / query["limit"]
-                        : 0
-                    ) * 10;
+                    Math.floor(query["limit"] ? total / query["limit"] : 0) *
+                    10;
                   this.search(a);
                 }}
               />
@@ -452,4 +381,4 @@ class Home extends Component {
     );
   }
 }
-export default Home;
+export default HomeDisciplines;

@@ -17,6 +17,10 @@ import StatisticsMostActiveUsers from "./modules/statistics/StatisticsMostActive
 import StatisticsPopularTeacher from "./modules/statistics/StatisticsPopularTeacher";
 import StatisticsProfession from "./modules/statistics/StatisticsProfession";
 import StatisticsRating from "./modules/statistics/StatisticsRating";
+import HomeDisciplines from "./modules/home/HomeDisciplines";
+import HomeProfessions from "./modules/home/HomeProfessions";
+import HomeFaculties from "./modules/home/HomeFaculties";
+import HomeTeachers from "./modules/home/HomeTeachers";
 import Print from "./modules/Print";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 
@@ -58,18 +62,23 @@ class App extends Component {
                 <NavDropdown.Item href="/statistics/profession">
                   Professions <br /> all mandatory disciplines have feedback
                 </NavDropdown.Item>
+                <NavDropdown.Divider />
                 <NavDropdown.Item href="/statistics/most-active-profession">
                   most-active-profession
                 </NavDropdown.Item>
+                <NavDropdown.Divider />
                 <NavDropdown.Item href="/statistics/popular-teacher">
                   Teachers <br /> ordered by feedback number
                 </NavDropdown.Item>
+                <NavDropdown.Divider />
                 <NavDropdown.Item href="/statistics/most-active-user">
                   Users ordered by feedback number
                 </NavDropdown.Item>
+                <NavDropdown.Divider />
                 <NavDropdown.Item href="statistics/teacher-most-honest-student">
                   Teachers ordered by feedback grades
                 </NavDropdown.Item>
+                <NavDropdown.Divider />
                 <NavDropdown.Item href="/statistics/user-rating">
                   User rating + total number of feedback left
                 </NavDropdown.Item>
@@ -120,12 +129,41 @@ class App extends Component {
             <Private
               isAuthenticated={isAuthenticated}
               isAdmin={isAdmin}
-              path="/"
+              path="/home/home-disciplines"
+              testnet={testnet}
+              component={<HomeDisciplines testnet={testnet} />}
+            />
+            {/*
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/home/home-faculties"
+              testnet={testnet}
+              component={<HomeFaculties testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/home/home-professions"
+              testnet={testnet}
+              component={<HomeProfessions testnet={testnet} />}
+            />
+            
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/home/home-teachers"
+              testnet={testnet}
+              component={<HomeTeachers testnet={testnet} />}
+            /> */}
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
               exact
+              path="/"
               testnet={testnet}
               component={<Home testnet={testnet} />}
             />
-
             <Private
               isAuthenticated={isAuthenticated}
               isAdmin={isAdmin}

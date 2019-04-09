@@ -1,7 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import { FaThumbsUp, FaThumbsDown, FaBuilding, FaClock } from "react-icons/fa";
-import { Button } from "react-bootstrap";
 import "../Styles/Admin.css";
 class Discipline extends Component {
   constructor(props) {
@@ -13,8 +11,10 @@ class Discipline extends Component {
       discipline: {},
       color: 0,
       feedback: null,
-      feedbacks: null,
+      feedbacks: [],
       faculties: null,
+      liked: [],
+      disliked: [],
       // POST feedback/:disciplineId
       // Path: *discipline id
       // Body: studentGrade, comment, teachersIds: [number];
@@ -106,7 +106,18 @@ class Discipline extends Component {
       )
       .catch(err => console.log(err));
   };
-  like = async (e, signum) => {
+  like = (e, signum) => {
+    let liked = this.state.liked;
+    let disliked = this.state.disliked;
+    if (signum > 0) {
+      disliked = disliked.filter(f => f !== e["feedbackId"]);
+      liked.push(e["feedbackId"]);
+    } else {
+      liked = liked.filter(f => f !== e["feedbackId"]);
+      disliked.push(e["feedbackId"]);
+    }
+
+    this.setState({ liked: liked, disliked: disliked });
     fetch(
       `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/feedback/grade/${
         e.feedbackId
@@ -128,34 +139,8 @@ class Discipline extends Component {
       .then(() => this.loadEntities())
       .catch(err => console.log(err));
   };
-  dislike = e => {
-    switch (this.state.color) {
-      case 1:
-        this.doLike(-1, -2, e);
-        break;
-      case 0:
-        this.doLike(-1, -1, e);
-        break;
-      case -1:
-        this.doLike(0, 1, e);
-        break;
-      default:
-        console.log("Error while changing likes");
-
-        break;
-    }
-  };
-  doLike = (a, b, e) => {
-    this.setState({ color: a });
-    let a1 = e.feedbackId ? this.setState({ feedback: e }) : "";
-    let fb = this.state.feedbacks;
-    fb.map(f =>
-      f.feedbackId === e.feedbackId ? (f.rating = f.rating + b) : ""
-    );
-    this.setState({ feedbacks: fb });
-  };
   render() {
-    const { discipline, feedback, color, feedbacks, faculties } = this.state;
+    const { discipline, feedbacks, faculties, liked, disliked } = this.state;
 
     return (
       <React.Fragment>
@@ -214,9 +199,7 @@ class Discipline extends Component {
                         >
                           <FaThumbsUp
                             color={
-                              (color === 1 &&
-                                feedback &&
-                                feedback.feedbackId) === d.feedbackId
+                              liked.find(f => f === d["feedbackId"])
                                 ? "green"
                                 : ""
                             }
@@ -229,9 +212,7 @@ class Discipline extends Component {
                         >
                           <FaThumbsDown
                             color={
-                              (color === -1 &&
-                                feedback &&
-                                feedback.feedbackId) === d.feedbackId
+                              disliked.find(f => f === d["feedbackId"])
                                 ? "red"
                                 : ""
                             }
@@ -266,9 +247,6 @@ class Discipline extends Component {
                               </div>
                             )
                           )}
-                        <Link to={"/feedback" + "/" + d.created} id={d.created}>
-                          More about "{d.userLogin}"
-                        </Link>
                       </div>
                     </div>
                   </div>

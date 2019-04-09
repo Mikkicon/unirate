@@ -227,6 +227,7 @@ class Admin extends Component {
           year: Number(this.state.selectedUser["year"]),
           facultyId: this.state.selectedUser["facultyId"]
         });
+        break;
       case "feedback":
         window.alert("You can not modify Feedbacks");
         window.location.reload();
