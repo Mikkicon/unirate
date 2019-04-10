@@ -2,6 +2,9 @@
   position: fixed;
   bottom: 20px;
   left: 20px;
+  /* position: absolute; */
+  elevation: 100;
+  z-index: 100;
 }
 @media print {
   .no-print,
