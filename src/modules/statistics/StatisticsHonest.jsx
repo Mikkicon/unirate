@@ -43,9 +43,17 @@ class StatisticsHonest extends Component {
                     // aria-expanded="false"
                     aria-controls="collapseExample"
                   >
-                    {d["lastName"]
-                      ? d["lastName"] + " " + d["name"] + " " + d["middleName"]
-                      : null}
+                    {d["lastName"] ? (
+                      <div>
+                        {d["lastName"] +
+                          " " +
+                          d["name"] +
+                          " " +
+                          d["middleName"] +
+                          " "}
+                        <b>{d["likes"]}</b>
+                      </div>
+                    ) : null}
                   </div>
                   <div
                     className="collapse"
@@ -54,7 +62,8 @@ class StatisticsHonest extends Component {
                     <div className="card card-body">
                       <div>
                         Lastname: {d.lastName} <br /> Name: {d.name} <br />
-                        MiddleName: {d.middleName}
+                        MiddleName: {d.middleName} <br />
+                        <div className="btn btn-primary">{d["likes"]}</div>
                       </div>
                     </div>
                   </div>

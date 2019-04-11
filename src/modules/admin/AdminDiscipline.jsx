@@ -2,14 +2,9 @@ import React, { Component } from "react";
 import "../../Styles/Admin.css";
 import "bootstrap";
 import Pagination from "react-bootstrap/Pagination";
-import { Navbar, Nav } from "react-bootstrap";
 import { MdEdit } from "react-icons/md";
-import {
-  Dropdown,
-  DropdownButton,
-  ButtonToolbar,
-  Button
-} from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { Dropdown, DropdownButton, ButtonToolbar } from "react-bootstrap";
 // import avatar from "../media/avatar.png";
 class AdminDiscipline extends Component {
   constructor(props) {
@@ -31,7 +26,7 @@ class AdminDiscipline extends Component {
     };
   }
   componentDidMount() {
-    this.loadEntities("");
+    this.search("");
   }
   getFacNames = async () => {
     this.setState({ query: {} });
@@ -75,7 +70,7 @@ class AdminDiscipline extends Component {
     ) {
       array.push(
         <Pagination.Item
-          onClick={() => this.loadEntities("?offset=" + (i - 1) * 10)}
+          onClick={() => this.search({ offset: (i - 1) * 10 })}
           key={i}
           id={i}
         >
@@ -85,29 +80,7 @@ class AdminDiscipline extends Component {
     }
     return array;
   };
-  loadEntities = query => {
-    let link = query
-      ? `${this.state.link}/admin/discipline/${query}`
-      : `${this.state.link}/admin/discipline`;
-    fetch(link, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
-      }
-    })
-      .then(res => res.json())
-      .then(res =>
-        res.total
-          ? this.setState({
-              entities: res["discipline"],
-              total: res.total,
-              newEntity: res["discipline"][0]
-            })
-          : this.setState({ entities: [], total: 0 })
-      )
-      .catch(err => console.log(err));
-  };
+
   putEntity = () => {
     const { link, selectedDiscipline } = this.state;
     let body = JSON.stringify({
@@ -132,13 +105,13 @@ class AdminDiscipline extends Component {
           .then(res => this.setState({ response: res.statusText }))
           .catch(err => console.log("Error: ", err))
       : console.log("canceled");
-    this.loadEntities("");
+    this.search("");
     this.selectEntity();
   };
   deleteEntity = async () => {
     window.confirm("Are you sure?")
       ? fetch(
-          `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/discipline/${
+          `${this.state.link}/admin/discipline/${
             this.state.selectedDiscipline[
               Object.keys(this.state.selectedDiscipline)[0]
             ]
@@ -146,6 +119,7 @@ class AdminDiscipline extends Component {
           {
             method: "DELETE",
             headers: {
+              "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token")
             }
           }
@@ -165,7 +139,7 @@ class AdminDiscipline extends Component {
           .catch(err => console.log(err))
       : console.log("You've decided not to delete discipline.:)");
 
-    this.loadEntities("");
+    this.search("");
   };
   search = async input => {
     if (input.search) {
@@ -204,29 +178,47 @@ class AdminDiscipline extends Component {
       facultyId: this.state.selectedDiscipline["facultyId"]
     };
 
-    fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/discipline/`,
-      {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
+    fetch(`${this.state.link}/admin/discipline/`, {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
       }
-    )
+    })
       .then(p => {
         // this.setState({ response: p.statusText });
         return p;
       })
       .catch(err => console.log(err));
-    this.loadEntities("");
+    this.search("");
 
     // window.location.reload();
   };
   selectEntity = entity => {
-    this.loadEntities("");
+    this.search("");
   };
+
+  addNew = () => {
+    let entitiesCopy = this.state.entities;
+
+    let objCopy = {};
+    let key;
+    for (key in entitiesCopy[0]) {
+      objCopy[key] = "";
+    }
+
+    entitiesCopy.unshift(objCopy);
+
+    // console.log(fildsForNew);
+    this.getFacNames();
+    this.setState({
+      selectedDiscipline: objCopy,
+      entities: entitiesCopy,
+      post: true
+    });
+  };
+
   render() {
     const {
       entities,
@@ -389,48 +381,24 @@ class AdminDiscipline extends Component {
               </div>
             </div>
             <div style={{ margin: "auto" }} className="col-5 userList">
-              <div
-                className="btn btn-outline-info"
-                id="user"
-                onClick={() => this.selectEntity("user")}
-              >
+              <Link className="btn btn-outline-info" to="/admin-user">
                 USERS
-              </div>
-              <div
-                className="btn btn-outline-info"
-                id="teacher"
-                onClick={() => this.selectEntity("teacher")}
-              >
+              </Link>
+              <Link className="btn btn-outline-info" to="/admin-teacher">
                 TEACHERS
-              </div>
-              <div
-                className="btn btn-outline-info"
-                id="discipline"
-                onClick={() => this.selectEntity("discipline")}
-              >
+              </Link>
+              <Link className="btn btn-outline-info" to="/admin-discipline">
                 DISCIPLINES
-              </div>
-              <div
-                className="btn btn-outline-info"
-                id="feedback"
-                onClick={() => this.selectEntity("feedback")}
-              >
+              </Link>
+              <Link className="btn btn-outline-info" to="/admin-feedback">
                 FEEDBACKS
-              </div>
-              <div
-                className="btn btn-outline-info"
-                id="faculty"
-                onClick={() => this.selectEntity("faculty")}
-              >
+              </Link>
+              <Link className="btn btn-outline-info" to="/admin-faculty">
                 FACULTIES
-              </div>
-              <div
-                className="btn btn-outline-info"
-                id="profession"
-                onClick={() => this.selectEntity("profession")}
-              >
+              </Link>
+              <Link className="btn btn-outline-info" to="/admin-profession">
                 PROFESSIONS
-              </div>
+              </Link>
             </div>
           </div>
           <div className=" row userList col-6">
@@ -488,7 +456,7 @@ class AdminDiscipline extends Component {
                     <select
                       onChange={e => {
                         const sel = selectedDiscipline;
-                        sel["facultyId"] = e.target.value;
+                        sel["year"] = e.target.value;
                         this.setState({ selectedDiscipline: sel });
                       }}
                       className="list-group-item list-group-item-action form-control"
@@ -513,7 +481,7 @@ class AdminDiscipline extends Component {
                       }}
                     >
                       {faculties
-                        ? selectedDiscipline[Object.keys(selectedDiscipline)[0]]
+                        ? selectedDiscipline["id"]
                           ? faculties.map(a => (
                               <option
                                 key={a.id}
@@ -558,25 +526,7 @@ class AdminDiscipline extends Component {
             )}
             {!this.state.post ? (
               <button
-                onClick={() => {
-                  let entitiesCopy = this.state.entities;
-
-                  let objCopy = {};
-                  let key;
-                  for (key in entitiesCopy[0]) {
-                    objCopy[key] = "";
-                  }
-
-                  entitiesCopy.unshift(objCopy);
-
-                  // console.log(fildsForNew);
-                  this.getFacNames();
-                  this.setState({
-                    selectedDiscipline: objCopy,
-                    entities: entitiesCopy,
-                    post: true
-                  });
-                }}
+                onClick={this.addNew}
                 style={{ margin: "auto", marginTop: "20px" }}
                 className="btn btn-outline-primary col-12"
               >
@@ -584,6 +534,11 @@ class AdminDiscipline extends Component {
               </button>
             ) : (
               <button
+                disabled={
+                  !selectedDiscipline["name"] ||
+                  !selectedDiscipline["facultyId"] ||
+                  !selectedDiscipline["year"]
+                }
                 onClick={this.postEntity}
                 className="btn btn-outline-primary col-11"
               >

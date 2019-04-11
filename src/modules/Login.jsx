@@ -37,13 +37,12 @@ class Login extends Component {
       }),
       headers: { "Content-Type": "application/json" }
     });
-    let a;
     if (fetched.status.toString()[0] === "4") {
       this.setState({ response: fetched.statusText });
-      a = console.log(fetched.statusText) ? "" : "";
+      console.log(fetched.statusText);
     } else {
-      a = window.confirm("Welcome!") ? "" : "";
-      a = this.setState({ response: fetched.statusText });
+      window.confirm("Welcome!");
+      this.setState({ response: fetched.statusText });
       const response = await fetched.json();
       console.log(response);
       window.localStorage.setItem("token", response.token);

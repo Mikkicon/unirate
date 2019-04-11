@@ -3,7 +3,6 @@ import "../Styles/Settings.css";
 import bcrypt from "bcryptjs";
 import "bootstrap";
 // import avatar from "../media/avatar.png";
-import { Form, FormControl, FormGroup } from "react-bootstrap";
 class Settings extends Component {
   state = {
     link: this.props.testnet
@@ -14,55 +13,10 @@ class Settings extends Component {
     userInfo: {},
     error: null,
     confirm: null,
-    // userInfo: {
-    //   email: "",
-    //   password: "",
-    //   confirm: "",
-    //   profession: ""
-    // },
-    // image: avatar,
     enableSave: true,
     allProfessions: []
   };
-  componentDidMount() {
-    // console.log(window.localStorage.getItem("admin").toString() === "false");
-    // if (window.localStorage.getItem("admin").toString() === "false") {
-    //   fetch(`${this.state.link}/user/${window.localStorage.getItem("login")}`, {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: "Bearer " + localStorage.getItem("token")
-    //     }
-    //   })
-    //     .then(res => res.json())
-    //     .then(userData => {
-    //       if (userData.error) {
-    //         console.log(userData.error);
-    //       } else {
-    //         this.setState({ userData });
-    //         console.log("Data", userData);
-    //       }
-    //     })
-    //     .catch(err => console.log("Error", err));
-    //   fetch(`${this.state.link}/profession`, {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: "Bearer " + localStorage.getItem("token")
-    //     }
-    //   })
-    //     .then(res => res.json())
-    //     .then(d => {
-    //       if (d.error) {
-    //         console.log(d.error);
-    //       } else {
-    //         this.setState({ allProfessions: d.profession });
-    //         console.log("Data", d);
-    //       }
-    //     })
-    //     .catch(err => console.log("Error", err));
-    // }
-  }
+  componentDidMount() {}
   deleteAccount = () => {
     if (window.localStorage.getItem("admin").toString() === "false") {
       window.confirm("Are you sure?")
@@ -79,7 +33,7 @@ class Settings extends Component {
             .then(data => {
               // console.log(data);
 
-              if (data.status != 200) {
+              if (Number(data.status) !== 200) {
                 alert(
                   `User '${this.state.userData.login}' was ` +
                     JSON.stringify(data.statusText)
@@ -144,7 +98,6 @@ class Settings extends Component {
             this.setState({ updateResponse });
             console.log("Data", updateResponse);
           }
-          let a = window.location.reload();
         })
         .catch(err => console.log("Error", err));
     } else {

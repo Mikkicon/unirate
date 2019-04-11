@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-class StatisticsProfession extends Component {
+class StatisticsActiveProfession extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -11,7 +11,7 @@ class StatisticsProfession extends Component {
     };
   }
   componentDidMount() {
-    fetch(`${this.state.link}/admin/statistics/profession`, {
+    fetch(`${this.state.link}/admin/statistics/most-active-profession`, {
       method: "GET",
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token")
@@ -58,7 +58,7 @@ class StatisticsProfession extends Component {
                     // aria-expanded="false"
                     aria-controls="collapseExample"
                   >
-                    {d["id"] ? d["name"] : null}
+                    {d["id"] ? d["name"] : null}: {d["totalFeedback"]}
                   </div>
                   <div
                     className="collapse"
@@ -69,10 +69,10 @@ class StatisticsProfession extends Component {
                         Name: {d.name} <br />
                         Faculty:{" "}
                         {faculties
-                          ? faculties.find(f => f.id === d["facultyId"])
-                            ? faculties.find(f => f.id === d["facultyId"])[
-                                "name"
-                              ]
+                          ? faculties.find(f => f.id === Number(d["facultyId"]))
+                            ? faculties.find(
+                                f => f.id === Number(d["facultyId"])
+                              )["name"]
                             : d["facultyId"]
                           : d["facultyId"]}
                       </div>
@@ -87,4 +87,4 @@ class StatisticsProfession extends Component {
   }
 }
 
-export default StatisticsProfession;
+export default StatisticsActiveProfession;

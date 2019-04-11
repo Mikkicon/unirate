@@ -53,6 +53,10 @@ class Home extends Component {
   }
 
   componentDidMount = async () => {
+    if (localStorage.getItem("admin").includes(true)) {
+      window.location.href = "/admin-discipline";
+    }
+
     this.search(this.state.query);
     this.getFacNames();
   };
@@ -154,14 +158,7 @@ class Home extends Component {
   };
 
   render() {
-    const {
-      disciplines,
-      total,
-      query,
-      faculty,
-      profession,
-      enableScroll
-    } = this.state;
+    const { disciplines, total, query } = this.state;
     return (
       <React.Fragment>
         <div className="homeFormCont col-10">

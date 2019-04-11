@@ -25,7 +25,7 @@ class StatisticsPopularTeacher extends Component {
       .catch(err => console.log(err));
   }
   render() {
-    const { teachers, professions } = this.state;
+    const { teachers } = this.state;
     return (
       <React.Fragment>
         <div className="homeFormCont col-10">
@@ -43,9 +43,17 @@ class StatisticsPopularTeacher extends Component {
                     // aria-expanded="false"
                     aria-controls="collapseExample"
                   >
-                    {d["lastName"]
-                      ? d["lastName"] + " " + d["name"] + " " + d["middleName"]
-                      : null}
+                    {d["lastName"] ? (
+                      <div>
+                        {d["lastName"] +
+                          " " +
+                          d["name"] +
+                          " " +
+                          d["middleName"] +
+                          " "}{" "}
+                        <b>{d["feedbackNum"]}</b>{" "}
+                      </div>
+                    ) : null}
                   </div>
                   <div
                     className="collapse"

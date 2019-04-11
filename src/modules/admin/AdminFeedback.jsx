@@ -1,126 +1,83 @@
 import React, { Component } from "react";
-import "../Styles/Admin.css";
+import "../../Styles/Admin.css";
 import "bootstrap";
 import Pagination from "react-bootstrap/Pagination";
-import { Navbar, Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { MdEdit } from "react-icons/md";
+import { Dropdown, DropdownButton, ButtonToolbar } from "react-bootstrap";
+import Time from "react-time";
+
 // import avatar from "../media/avatar.png";
-class Admin extends Component {
+class AdminFeedback extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      discipline: null,
-      enableSave: false,
       link: this.props.testnet
         ? "http://localhost:3000"
         : "http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com",
       entities: [],
-      // image: avatar,
-      number: 3,
       page: 1,
       total: null,
-      selectedNav: "",
-      selectedUser: null,
-      viewEntity: {},
-      userinfo: {
-        login: "",
-        email: "",
-        password: "",
-        role: "",
-        profession: ""
-      },
+      selectedFeedback: null,
       post: false,
       newEntity: null,
-      faculties: null
+      faculties: null,
+      professions: null,
+      disciplines: null,
+      teachers: null,
+      response: null,
+      query: null
     };
   }
-  componentDidMount() {
-    if (this.state.selectedNav === "") {
-      this.selectEntity("user");
-    }
+  async componentDidMount() {
+    this.search("");
+    await this.getFacNames();
   }
-  // handleAvatar = p => {
-  //   let reader = new FileReader();
-  //   let file = p.target.files[0];
-  //   reader.onloadend = () => {
-  //     this.setState({
-  //       image: reader.result
-  //     });
-  //   };
-  //   reader.readAsDataURL(file);
-  // };
   getFacNames = async () => {
-    this.setState({ enableScroll: false, query: {} });
-    const a = await fetch(`${this.state.link}/admin/faculty`, {
+    this.setState({ query: {} });
+    fetch(`${this.state.link}/admin/faculty`, {
       headers: {
-        "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("token")
       }
-    });
-    const b = await a.json();
-    this.setState({ faculties: b.faculty });
+    })
+      .then(res => res.json())
+      .then(data => this.setState({ faculties: data.faculty }));
+    fetch(`${this.state.link}/admin/profession`, {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    })
+      .then(res => res.json())
+      .then(data => this.setState({ professions: data.profession }));
+    fetch(`${this.state.link}/admin/discipline`, {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    })
+      .then(res => res.json())
+      .then(data => this.setState({ disciplines: data.discipline }));
+    fetch(`${this.state.link}/admin/teacher`, {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    })
+      .then(res => res.json())
+      .then(data => this.setState({ teachers: data.teacher }));
   };
-  selectUser = async p => {
+  selectFeedback = async p => {
+    const entities = this.state.entities;
+
+    if (this.state.post) {
+      entities.shift();
+      this.setState({ entities });
+    }
     const target = p.target.id;
-    if (this.state.selectedNav === "discipline") {
-      this.getFacNames();
-      // Selected user
-      let entity = await this.state.entities.find(
-        a => a[Object.keys(a)[0]].toString() === target.toString()
-      );
-      await this.setState({ selectedUser: entity });
-    } else {
-      console.log(target);
-
-      // Selected user
-      let entity = await this.state.entities.find(
-        a => a[Object.keys(a)[0]].toString() === target.toString()
-      );
-      await this.setState({ selectedUser: entity });
-      // p.target.id -> id of the selected entity in entity list NOT INDEX
-      let newSelectedUser = this.state.selectedUser;
-      let key = await Object.keys(entity)
-        .filter(f => f.indexOf(this.state.selectedNav) === -1)
-        .find(o => o.indexOf("Id") !== -1);
-      if (key) {
-        newSelectedUser[key] = await this.nameById(entity);
-      }
-      this.setState({
-        selectedUser: newSelectedUser
-      });
-    }
+    // Selected user
+    let entity = await this.state.entities.find(
+      a => a[Object.keys(a)[0]].toString() === target.toString()
+    );
+    await this.setState({ selectedFeedback: entity, post: false });
   };
-  nameById = async selected => {
-    // Foreign key in selected entity
-    let key = await Object.keys(selected)
-      .filter(f => f.indexOf(this.state.selectedNav) === -1)
-      .find(o => o.indexOf("Id") !== -1);
-    console.log(key);
-
-    if (!key) {
-      return null;
-    }
-    // facultyId => faculty
-    let entityToFetch = key.slice(0, key.indexOf("Id"));
-
-    var response = await fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${entityToFetch}/`,
-      {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
-      }
-    ).then(res => res.json());
-    let array = response[entityToFetch];
-    console.log("Response array: ", array);
-
-    let entityByInputId = array.find(e => e.id === Number(selected[key]));
-    if (!entityByInputId) {
-      return null;
-    }
-    return entityByInputId.name;
-  };
-
   pages = () => {
     let array = [];
     for (
@@ -130,9 +87,7 @@ class Admin extends Component {
     ) {
       array.push(
         <Pagination.Item
-          onClick={() =>
-            this.loadEntities(this.state.selectedNav, "?offset=" + (i - 1) * 10)
-          }
+          onClick={() => this.search({ offset: (i - 1) * 10 })}
           key={i}
           id={i}
         >
@@ -142,156 +97,18 @@ class Admin extends Component {
     }
     return array;
   };
-  updateUser = p => {
-    const temp = this.state.selectedUser;
-    temp["role"] = p.target.value;
-    this.setState({ selectUser: temp });
-  };
-  submitValues = () => {
-    fetch(`/user/${this.state.userinfo.login}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" }
-    })
-      .then(p => p.json())
-      .then(data => (data.error ? console.log(data.error) : console.log(data)))
-      .catch(err => console.log(err));
-  };
 
-  loadEntities = (entityName, query) => {
-    let link = query
-      ? `${this.state.link}/admin/${entityName + query}`
-      : `${this.state.link}/admin/${entityName}`;
-    fetch(link, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
-      }
-    })
-      .then(res => res.json())
-      .then(res =>
-        res.total
-          ? this.setState({
-              entities: res[entityName],
-              total: res.total,
-              newEntity: res[entityName][0]
-            })
-          : this.setState({ entities: [], total: 0 })
-      )
-      .then(() => {
-        if (this.state.selectedNav === "feedback") {
-          let a = this.state.entities;
-          a.map(entity => {
-            var t = new Date(Number(entity.created) * 1000);
-
-            var formatted = t.toLocaleString();
-            entity.created = formatted;
-            return entity;
-          });
-          this.setState({ entities: a });
-        }
-      })
-      .then(console.log(this.state))
-      .catch(err => console.log(err));
-  };
-
-  selectEntity = p => {
-    this.setState({
-      selectedNav: p
-    });
-    this.loadEntities(p, "");
-  };
-  updateField = (e, o) => {
-    const a = this.state.viewEntity;
-    a[o] = e;
-    this.setState({ viewEntity: a });
-  };
-  putEntity = () => {
-    let body = null;
-    switch (this.state.selectedNav) {
-      case "user":
-        body = JSON.stringify({
-          role: Number(this.state.selectedUser["role"])
-        });
-        break;
-      case "teacher":
-        body = JSON.stringify({
-          lastName: this.state.selectedUser["lastName"],
-          name: this.state.selectedUser["name"],
-          middleName: this.state.selectedUser["middleName"]
-        });
-        break;
-      case "discipline":
-        body = JSON.stringify({
-          name: this.state.selectedUser["name"],
-          year: Number(this.state.selectedUser["year"]),
-          facultyId: this.state.selectedUser["facultyId"]
-        });
-        break;
-      case "feedback":
-        window.alert("You can not modify Feedbacks");
-        window.location.reload();
-        break;
-      case "faculty":
-        body = JSON.stringify({
-          name: this.state.selectedUser["name"],
-          shortName: this.state.selectedUser["shortName"]
-        });
-        break;
-
-      case "profession":
-        body = JSON.stringify({
-          name: this.state.selectedUser["name"],
-          facultyId: this.state.selectedUser["facultyId"]
-        });
-        break;
-      default:
-        body = JSON.stringify({});
-        break;
-    }
-    if (this.state.selectedNav === "feedback") return null;
-    window.confirm("Are you sure you want to update user?")
-      ? fetch(
-          `${
-            this.state.link
-          }/admin/${this.state.selectedNav.toLowerCase().replace(" ", "")}/${
-            this.state.selectedUser[Object.keys(this.state.selectedUser)[0]]
-          }`,
-          {
-            method: "PUT",
-            body: body,
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token")
-            }
-          }
-        )
-          .then(res =>
-            res.status !== 200
-              ? console.log(JSON.stringify(res.statusText))
-              : alert(
-                  `User ${this.state.email.substring(
-                    0,
-                    this.state.email.indexOf("@")
-                  )} has been successfully created`
-                )
-          )
-          .catch(err => console.log("Error: ", err))
-      : console.log("canceled");
-    this.loadEntities(this.state.selectedNav, "");
-  };
-  deleteItem = async () => {
+  deleteEntity = async () => {
     window.confirm("Are you sure?")
       ? fetch(
-          `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${this.state.selectedNav
-            .toLowerCase()
-            .replace(" ", "")}/${
-            this.state.selectedUser[Object.keys(this.state.selectedUser)[0]]
+          `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/feedback/${
+            this.state.selectedFeedback[
+              Object.keys(this.state.selectedFeedback)[0]
+            ]
           }`,
           {
             method: "DELETE",
             headers: {
-              "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token")
             }
           }
@@ -299,133 +116,257 @@ class Admin extends Component {
           .then(data =>
             data.status !== 200
               ? alert(
-                  `Discipline '${this.state.discipline.name}' was ` +
+                  `feedback '${this.state.selectedFeedback.name}' was ` +
                     JSON.stringify(data.statusText)
                 )
               : alert(
-                  `Discipline ${
-                    this.state.discipline.name
+                  `feedback ${
+                    this.state.selectedFeedback.name
                   } has been successfully deleted`
                 )
           )
           .catch(err => console.log(err))
-      : console.log("You've decided not to delete discipline.:)");
+      : console.log("You've decided not to delete feedback.:)");
 
-    this.loadEntities(this.state.selectedNav, "");
+    this.search("");
   };
-  postEntity = () => {
-    this.setState({ post: false });
-    let body = this.state.selectedUser;
-    var result = {},
-      key;
-    console.log(body);
-    for (key in body) {
-      if (key === "year" || key.indexOf("Id") !== -1) {
-        result[key] = Number(body[key]);
-      } else if (key === "id") {
-        delete result[key];
-      } else if (body[key] !== undefined && body[key] !== null) {
-        result[key] = body[key];
-      }
+  search = async input => {
+    if (input.search) {
+      await this.setState({ entities: [] });
     }
+    var feedbacks = this.state.entities;
+    var query = Object.keys(input).reduce(
+      (total, current) => total + current + "=" + input[current] + "&",
+      ""
+    );
+    query = query ? "?" + query.slice(0, -1) : "";
+    console.log("Search params:", query ? query : "feedback");
 
-    console.log(result);
-
-    fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/admin/${this.state.selectedNav
-        .toLowerCase()
-        .replace(" ", "")}/`,
-      {
-        method: "POST",
-        body: JSON.stringify(result),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
+    fetch(`${this.state.link}/admin/feedback/${input ? query : ""}`, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
       }
-    )
-      .then(p => p.json())
-      .then(data => (data.error ? console.log(data.error) : console.log(data)))
+    })
+      .then(res => res.json())
+      .then(res =>
+        res.total
+          ? this.setState({
+              entities: res["feedback"] ? res["feedback"] : feedbacks,
+              total: res.total
+            })
+          : this.setState({ entities: [], total: 0 })
+      )
       .catch(err => console.log(err));
-    this.loadEntities(this.state.selectedNav, "");
-    // window.location.reload();
+  };
+
+  selectEntity = entity => {
+    this.search("");
   };
 
   render() {
+    const {
+      entities,
+      page,
+      total,
+      selectedFeedback,
+      faculties,
+      response,
+      professions,
+      disciplines,
+      teachers,
+      query
+    } = this.state;
+
     return (
       <React.Fragment>
         <div style={{ margin: "auto" }} className="col-11 row">
-          <div>
+          <div className="row">
             <br />
             <br />
-            <Navbar title="LOAD">
-              <Nav.Link id="user" onClick={() => this.selectEntity("user")}>
+            <div className="userList col-6">
+              <ButtonToolbar>
+                <a
+                  className="btn btn-outline-primary"
+                  data-toggle="collapse"
+                  href="#filter"
+                  role="button"
+                  aria-expanded="false"
+                >
+                  FILTER
+                </a>
+                <b />
+                <DropdownButton
+                  variant="outline-warning"
+                  id="dropdown-basic-button"
+                  title="SORT"
+                >
+                  <Dropdown.Item
+                    onClick={() => {
+                      var a = entities;
+                      a = a.sort((a, b) =>
+                        a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
+                      );
+                      this.setState({ entities: a });
+                    }}
+                    key="a-asc"
+                  >
+                    Alphabet A->Z
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => {
+                      var a = entities;
+                      a = a.sort((a, b) =>
+                        a.name.toLowerCase() < b.name.toLowerCase() ? 1 : -1
+                      );
+                      this.setState({ entities: a });
+                    }}
+                    key="a-desc"
+                  >
+                    Alphabet Z->A
+                  </Dropdown.Item>
+                </DropdownButton>
+                {/* <div className="toolItem">
+                  <small>infinite scroll</small> 
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      onChange={p =>
+                        this.setState({ enableScroll: p.target.checked })
+                      }
+                    />
+                    <span className="slider round" />
+                  </label>
+                </div> */}
+
+                <div className="toolItem">
+                  <h4>Found {total}</h4>
+                </div>
+              </ButtonToolbar>
+              <div className="collapse" id="filter">
+                <div className="card card-body">
+                  <div className="row">
+                    <b className=" col-3">Faculty</b>
+                    <select
+                      className="form-control col-9"
+                      type="text"
+                      // value={facVal}
+                      placeholder="Faculty Name"
+                      onChange={p => {
+                        const a = query;
+                        a["facultyId"] = Number(p.target.value);
+                        this.setState({ query: a });
+                        this.search(a);
+                      }}
+                    >
+                      {faculties
+                        ? faculties.map(a => (
+                            <option key={a.id} value={a.id}>
+                              {a.name} ({a.shortName})
+                            </option>
+                          ))
+                        : ""}
+                    </select>
+                  </div>
+                  <hr />
+                  <div className="row">
+                    <b className=" col-3">Year</b>
+                    <select
+                      className="form-control col-9"
+                      placeholder="Year"
+                      onChange={p => {
+                        const a = query;
+                        if (p.target.value === "All") {
+                          delete a["year"];
+                        } else {
+                          a["year"] = Number(p.target.value);
+                        }
+                        this.setState({ query: a });
+                        this.search(a);
+                      }}
+                    >
+                      <option>All</option>
+                      <option>1</option>
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                    </select>
+                  </div>
+                  <div>
+                    <hr />
+                    <div className="row">
+                      <b className=" col-3">mandatoryProfessionId</b>
+                      <select
+                        className="form-control col-9"
+                        placeholder="mandatoryProfessionId"
+                        onChange={p => {
+                          const a = query;
+                          if (p.target.value === "All") {
+                            delete a["mandatoryProfessionId"];
+                          } else {
+                            a["mandatoryProfessionId"] = Number(p.target.value);
+                          }
+                          this.setState({ query: a });
+                          this.search(a);
+                        }}
+                      >
+                        <option>All</option>
+                        {professions
+                          ? professions.map(a => (
+                              <option key={a.id} value={a.id}>
+                                {a.name}
+                              </option>
+                            ))
+                          : ""}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style={{ margin: "auto" }} className="col-5 userList">
+              <Link className="btn btn-outline-info" to="/admin-user">
                 USERS
-              </Nav.Link>
-              <Nav.Link
-                id="teacher"
-                onClick={() => this.selectEntity("teacher")}
-              >
+              </Link>
+              <Link className="btn btn-outline-info" to="/admin-teacher">
                 TEACHERS
-              </Nav.Link>
-              <Nav.Link
-                id="discipline"
-                onClick={() => this.selectEntity("discipline")}
-              >
+              </Link>
+              <Link className="btn btn-outline-info" to="/admin-discipline">
                 DISCIPLINES
-              </Nav.Link>
-              <Nav.Link
-                id="feedback"
-                onClick={() => this.selectEntity("feedback")}
-              >
+              </Link>
+              <Link className="btn btn-outline-info" to="/admin-feedback">
                 FEEDBACKS
-              </Nav.Link>
-              <Nav.Link
-                id="faculty"
-                onClick={() => this.selectEntity("faculty")}
-              >
+              </Link>
+              <Link className="btn btn-outline-info" to="/admin-faculty">
                 FACULTIES
-              </Nav.Link>
-              <Nav.Link
-                id="profession"
-                onClick={() => this.selectEntity("profession")}
-              >
+              </Link>
+              <Link className="btn btn-outline-info" to="/admin-profession">
                 PROFESSIONS
-              </Nav.Link>
-            </Navbar>
+              </Link>
+            </div>
           </div>
           <div className=" row userList col-6">
-            <h3>{this.state.selectedNav}</h3>
+            <h3>FEEDBACKS {response}</h3>
             <div className="list-group col-12">
-              {this.state.entities
-                ? this.state.entities.map(u => (
+              {entities
+                ? entities.map(u => (
                     <div
                       style={{ cursor: "pointer" }}
                       key={u[Object.keys(u)[0]] ? u[Object.keys(u)[0]] : "new"}
-                      onClick={this.selectUser.bind(this.id)}
+                      onClick={this.selectFeedback.bind(this.id)}
                       className="list-group-item list-group-item-action"
                       id={u[Object.keys(u)[0]]}
                     >
-                      {this.state.selectedNav === "teacher"
-                        ? u[Object.keys(u)[1]] +
-                          " " +
-                          u[Object.keys(u)[2]] +
-                          " " +
-                          u[Object.keys(u)[3]]
-                        : u[Object.keys(u)[1]]}
+                      {u[Object.keys(u)[1]]}
 
                       <MdEdit style={{ float: "right" }} />
                     </div>
                   ))
                 : ""}
               <br />
-              <Pagination
-                style={this.state.total < 10 ? { display: "none" } : {}}
-              >
+              <Pagination style={total < 10 ? { display: "none" } : {}}>
                 <Pagination.First />
-                <Pagination.Prev
-                  disabled={this.state.entities ? this.state.page < 2 : true}
-                />
+                <Pagination.Prev disabled={entities ? page < 2 : true} />
                 {this.pages()}
                 <Pagination.Next />
                 <Pagination.Last />
@@ -434,181 +375,88 @@ class Admin extends Component {
           </div>
 
           <div className="userView col-5">
-            {this.state.selectedUser ? (
-              this.state.selectedNav === "discipline" ? (
-                <div>
-                  <h2>
-                    {
-                      this.state.selectedUser[
-                        Object.keys(this.state.selectedUser)[1]
-                      ]
-                    }
-                  </h2>
-                  <div className="list-group">
-                    {Object.keys(this.state.selectedUser)
-                      .slice(1)
-                      .map(o =>
-                        o === "facultyId" ? (
-                          <div key={o ? o : -1}>
-                            <span>
-                              {o.charAt(0).toUpperCase() + o.slice(1)}:
-                            </span>
-                            <div>
-                              <select
-                                className="list-group-item list-group-item-action"
-                                type="text"
-                                onChange={p => {
-                                  const a = this.state.selectedUser;
-                                  a[o] = Number(p.target.value);
-                                  this.setState({ selectedUser: a });
-                                }}
-                              >
-                                {this.state.faculties
-                                  ? this.state.selectedUser[
-                                      Object.keys(this.state.selectedUser)[0]
-                                    ]
-                                    ? this.state.faculties.map(a => (
-                                        <option
-                                          key={a.id}
-                                          value={a.id}
-                                          selected={
-                                            a.id === this.state.selectedUser[o]
-                                          }
-                                        >
-                                          {a.name} ({a.shortName})
-                                        </option>
-                                      ))
-                                    : this.state.faculties.map(a => (
-                                        <option key={a.id} value={a.id}>
-                                          {a.name} ({a.shortName})
-                                        </option>
-                                      ))
-                                  : ""}
-                              </select>
-
-                              <hr />
-                            </div>
+            {selectedFeedback ? (
+              <div>
+                <h2>{selectedFeedback[Object.keys(selectedFeedback)[1]]}</h2>
+                <div className="list-group">
+                  {Object.keys(selectedFeedback)
+                    .filter(
+                      f =>
+                        !f.includes("id") &&
+                        !f.includes("Id") &&
+                        !f.includes("created")
+                    )
+                    .map(o => (
+                      <div key={o ? o : -1}>
+                        <span>{o.charAt(0).toUpperCase() + o.slice(1)}:</span>
+                        <div>
+                          <div className="list-group-item list-group-item-action">
+                            {selectedFeedback[o]}
                           </div>
-                        ) : (
-                          <div key={o ? o : -1}>
-                            <span>
-                              {o.charAt(0).toUpperCase() + o.slice(1)}:
-                            </span>
-                            <div>
-                              <input
-                                type="text"
-                                onChange={e => {
-                                  const sel = this.state.selectedUser;
-                                  sel[o] = e.target.value;
-                                  this.setState({ selectedUser: sel });
-                                }}
-                                className="list-group-item list-group-item-action"
-                                value={this.state.selectedUser[o]}
-                              />
-
-                              <hr />
-                            </div>
-                          </div>
-                        )
-                      )}
-                  </div>
-                  <button
-                    onClick={this.putEntity}
-                    className="btn btn-outline-primary"
-                  >
-                    SAVE
-                  </button>
-                  <button
-                    onClick={this.deleteItem}
-                    className="btn btn-outline-danger"
-                  >
-                    DELETE
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <h2>
-                    {
-                      this.state.selectedUser[
-                        Object.keys(this.state.selectedUser)[1]
-                      ]
-                    }
-                  </h2>
-                  <div className="list-group">
-                    {Object.keys(this.state.selectedUser)
-                      .slice(1)
-                      .map(o => (
-                        <div key={o ? o : -1}>
-                          <span>{o.charAt(0).toUpperCase() + o.slice(1)}:</span>
-                          <div>
-                            <input
-                              type="text"
-                              onChange={e => {
-                                const sel = this.state.selectedUser;
-                                sel[o] = e.target.value;
-                                this.setState({ selectedUser: sel });
-                              }}
-                              className="list-group-item list-group-item-action"
-                              value={this.state.selectedUser[o]}
-                            />
-
-                            <hr />
-                          </div>
+                          <hr />
                         </div>
-                      ))}
+                      </div>
+                    ))}
+                  <div>
+                    <span>Created:</span>
+                    <div>
+                      <div className="list-group-item list-group-item-action">
+                        {
+                          <div>
+                            {
+                              <Time
+                                value={
+                                  Number(selectedFeedback["created"]) * 1000
+                                }
+                                format="HH:mm DD/MM/YYYY"
+                              />
+                            }
+                          </div>
+                        }
+                      </div>
+                      <hr />
+                    </div>
                   </div>
+                  <div>
+                    <span>Teacher name:</span>
+                    <div>
+                      <div className="list-group-item list-group-item-action">
+                        {selectedFeedback["teacherIds"]
+                          ? selectedFeedback["teacherIds"].map(id => (
+                              <p key={id}>
+                                {teachers.find(f => f.id === id)
+                                  ? teachers.find(f => f.id === id)["lastName"]
+                                  : "Not specified"}
+                              </p>
+                            ))
+                          : ""}
+                      </div>
+                      <hr />
+                    </div>
+                  </div>
+                  <div>
+                    <span>Discipline name :</span>
+                    <div>
+                      <div className="list-group-item list-group-item-action">
+                        {
+                          disciplines.find(
+                            f => f.id === selectedFeedback["disciplineId"]
+                          )["name"]
+                        }
+                      </div>
+                      <hr />
+                    </div>
+                  </div>
+                </div>
+                <div>
                   <button
-                    onClick={this.putEntity}
-                    className="btn btn-outline-primary"
-                  >
-                    SAVE
-                  </button>
-                  <button
-                    onClick={this.deleteItem}
+                    onClick={this.deleteEntity}
                     className="btn btn-outline-danger"
                   >
                     DELETE
                   </button>
                 </div>
-              )
-            ) : (
-              ""
-            )}
-            {this.state.selectedNav !== "user" &&
-            this.state.selectedNav !== "feedback" ? (
-              !this.state.post ? (
-                <button
-                  onClick={() => {
-                    let entitiesCopy = this.state.entities;
-
-                    let objCopy = {};
-                    let key;
-                    for (key in entitiesCopy[0]) {
-                      objCopy[key] = "";
-                    }
-
-                    entitiesCopy.unshift(objCopy);
-
-                    // console.log(fildsForNew);
-                    this.getFacNames();
-                    this.setState({
-                      selectedUser: objCopy,
-                      entities: entitiesCopy,
-                      post: true
-                    });
-                  }}
-                  className="btn btn-outline-primary col-11"
-                >
-                  ADD NEW
-                </button>
-              ) : (
-                <button
-                  onClick={this.postEntity}
-                  className="btn btn-outline-primary col-11"
-                >
-                  POST
-                </button>
-              )
+              </div>
             ) : (
               ""
             )}
@@ -619,4 +467,4 @@ class Admin extends Component {
   }
 }
 
-export default Admin;
+export default AdminFeedback;

@@ -73,8 +73,8 @@ class StatisticsMostActiveUsers extends Component {
                         {d["feedbackNum"]} <br />
                         Profession:{" "}
                         {professions
-                          ? professions.find(f => f.id == d["professionId"])
-                            ? professions.find(f => f.id == d["professionId"])[
+                          ? professions.find(f => f.id === d["professionId"])
+                            ? professions.find(f => f.id === d["professionId"])[
                                 "name"
                               ]
                             : d["professionId"]

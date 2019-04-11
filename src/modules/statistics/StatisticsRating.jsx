@@ -74,9 +74,9 @@ class StatisticsMostActiveUsers extends Component {
                         Profession:
                         {d["professionId"]
                           ? professions
-                            ? professions.find(f => f.id == d["professionId"])
+                            ? professions.find(f => f.id === d["professionId"])
                               ? professions.find(
-                                  f => f.id == d["professionId"]
+                                  f => f.id === d["professionId"]
                                 )["name"]
                               : d["professionId"]
                             : d["professionId"]

@@ -7,6 +7,10 @@ import Home from "./modules/home/Home";
 import Settings from "./modules/Settings";
 import Admin from "./modules/admin/Admin";
 import AdminDiscipline from "./modules/admin/AdminDiscipline";
+import AdminProfession from "./modules/admin/AdminProfession";
+import AdminFeedback from "./modules/admin/AdminFeedback";
+import AdminFaculty from "./modules/admin/AdminFaculty";
+import AdminUser from "./modules/admin/AdminUser";
 import Discipline from "./modules/Discipline";
 import Private from "./modules/PrivateRoute";
 import Faculty from "./modules/Faculty";
@@ -18,6 +22,7 @@ import StatisticsMostActiveUsers from "./modules/statistics/StatisticsMostActive
 import StatisticsPopularTeacher from "./modules/statistics/StatisticsPopularTeacher";
 import StatisticsProfession from "./modules/statistics/StatisticsProfession";
 import StatisticsRating from "./modules/statistics/StatisticsRating";
+import StatisticsActiveProfession from "./modules/statistics/StatisticsActiveProfessions";
 // import HomeDisciplines from "./modules/home/HomeDisciplines";
 // import HomeProfessions from "./modules/home/HomeProfessions";
 // import HomeFaculties from "./modules/home/HomeFaculties";
@@ -27,6 +32,7 @@ import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 
 // import Discipline1 from "./components/Discipline1";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import AdminTeacher from "./modules/admin/AdminTeacher";
 
 class App extends Component {
   constructor(props) {
@@ -64,10 +70,6 @@ class App extends Component {
                   Professions <br /> all mandatory disciplines have feedback
                 </NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item href="/statistics/most-active-profession">
-                  most-active-profession
-                </NavDropdown.Item>
-                <NavDropdown.Divider />
                 <NavDropdown.Item href="/statistics/popular-teacher">
                   Teachers <br /> ordered by feedback number
                 </NavDropdown.Item>
@@ -76,12 +78,16 @@ class App extends Component {
                   Users ordered by feedback number
                 </NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item href="statistics/teacher-most-honest-student">
+                <NavDropdown.Item href="/statistics/teacher-most-honest-student">
                   Teachers ordered by feedback grades
                 </NavDropdown.Item>
                 <NavDropdown.Divider />
                 <NavDropdown.Item href="/statistics/user-rating">
                   User rating + total number of feedback left
+                </NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item href="/statistics/most-active-profession">
+                  Popular professions
                 </NavDropdown.Item>
               </NavDropdown>
             ) : null}
@@ -105,7 +111,7 @@ class App extends Component {
             ) : null}
             {localStorage.getItem("admin") &&
             localStorage.getItem("admin").includes(true) ? (
-              <Nav.Link href="/admin">Admin</Nav.Link>
+              <Nav.Link href="/admin-discipline">Admin</Nav.Link>
             ) : null}
             {localStorage.getItem("token") ? (
               <Nav.Link href="/settings">Settings</Nav.Link>
@@ -138,6 +144,7 @@ class App extends Component {
             <Private
               isAuthenticated={isAuthenticated}
               isAdmin={isAdmin}
+              exact
               path="/statistics/profession"
               testnet={testnet}
               component={<StatisticsProfession testnet={testnet} />}
@@ -145,6 +152,7 @@ class App extends Component {
             <Private
               isAuthenticated={isAuthenticated}
               isAdmin={isAdmin}
+              exact
               path="/statistics/popular-teacher"
               testnet={testnet}
               component={<StatisticsPopularTeacher testnet={testnet} />}
@@ -152,6 +160,7 @@ class App extends Component {
             <Private
               isAuthenticated={isAuthenticated}
               isAdmin={isAdmin}
+              exact
               path="/statistics/most-active-user"
               testnet={testnet}
               component={<StatisticsMostActiveUsers testnet={testnet} />}
@@ -159,6 +168,7 @@ class App extends Component {
             <Private
               isAuthenticated={isAuthenticated}
               isAdmin={isAdmin}
+              exact
               path="/statistics/teacher-most-honest-student"
               testnet={testnet}
               component={<StatisticsHonest testnet={testnet} />}
@@ -166,9 +176,18 @@ class App extends Component {
             <Private
               isAuthenticated={isAuthenticated}
               isAdmin={isAdmin}
+              exact
               path="/statistics/user-rating"
               testnet={testnet}
               component={<StatisticsRating testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              exact
+              path="/statistics/most-active-profession"
+              testnet={testnet}
+              component={<StatisticsActiveProfession testnet={testnet} />}
             />
             <Private
               isAuthenticated={isAuthenticated}
@@ -234,6 +253,41 @@ class App extends Component {
               path="/admin-discipline"
               testnet={testnet}
               component={<AdminDiscipline testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/admin-feedback"
+              testnet={testnet}
+              component={<AdminFeedback testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/admin-faculty"
+              testnet={testnet}
+              component={<AdminFaculty testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/admin-user"
+              testnet={testnet}
+              component={<AdminUser testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/admin-teacher"
+              testnet={testnet}
+              component={<AdminTeacher testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/admin-profession"
+              testnet={testnet}
+              component={<AdminProfession testnet={testnet} />}
             />
           </Switch>
         </Router>
