@@ -103,7 +103,7 @@ class AdminTeacher extends Component {
   deleteEntity = async () => {
     window.confirm("Are you sure?")
       ? fetch(
-          `${this.state.link}/admin/faculty/${
+          `${this.state.link}/admin/teacher/${
             this.state.selectedTeacher["id"]
           }`,
           {
@@ -510,7 +510,7 @@ class AdminTeacher extends Component {
                       SAVE
                     </button>
                     <button
-                      onClick={this.deleteItem}
+                      onClick={this.deleteEntity}
                       className="btn btn-outline-danger"
                     >
                       DELETE

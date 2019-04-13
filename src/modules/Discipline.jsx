@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { FaThumbsUp, FaThumbsDown, FaBuilding, FaClock } from "react-icons/fa";
 import "../Styles/Admin.css";
+import Time from "react-time";
 class Discipline extends Component {
   constructor(props) {
     super(props);
@@ -12,12 +13,11 @@ class Discipline extends Component {
       color: 0,
       feedback: null,
       feedbacks: [],
+      teachers: [],
+      teacher: null,
       faculties: null,
       liked: [],
       disliked: [],
-      // POST feedback/:disciplineId
-      // Path: *discipline id
-      // Body: studentGrade, comment, teachersIds: [number];
       newFeedback: {}
     };
   }
@@ -29,7 +29,14 @@ class Discipline extends Component {
       }
     });
     const b = await a.json();
-    this.setState({ faculties: b.faculty });
+    const d = await fetch(`${this.state.link}/teacher`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    });
+    const c = await d.json();
+    this.setState({ faculties: b.faculty, teachers: c.teacher });
   };
   componentDidMount = () => {
     this.loadEntities();
@@ -45,24 +52,34 @@ class Discipline extends Component {
     ) {
       console.log("Missing required fields");
     } else {
-      fetch(
-        `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/feedback/${
-          discipline.id
-        }`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("token")
-          },
-          body: JSON.stringify(newFeedback)
-        }
-      )
+      fetch(`${this.state.link}/feedback/${discipline.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify(newFeedback)
+      })
         .then(res =>
           res.status.toString()[0] === 2
             ? console.log("Liked")
             : console.log("Error: ", res.statusText)
         )
+        .then(() => this.loadEntities())
+        .catch(err => console.log(err));
+    }
+  };
+  deleteFeedback = feedback => {
+    if (feedback["userLogin"] !== localStorage.getItem("login")) {
+      console.log("You can not delete this");
+    } else {
+      fetch(`${this.state.link}/feedback/${this.state.newFeedback.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      })
         .then(() => this.loadEntities())
         .catch(err => console.log(err));
     }
@@ -218,6 +235,7 @@ class Discipline extends Component {
                             }
                           />
                         </span>
+                        {/* <span onClick={this.deleteFeedback.bind(this)}>X</span> */}
                       </div>
                     </div>
                     <div className="collapse" id={"col_" + d.created}>
@@ -240,9 +258,12 @@ class Discipline extends Component {
                               <div key={attr}>
                                 {" "}
                                 <b>{attr}:</b>{" "}
-                                {Date(
-                                  Number(d["created"]) * 1000
-                                ).toLocaleString()}{" "}
+                                {
+                                  <Time
+                                    value={Number(d["created"]) * 1000}
+                                    format="HH:mm DD/MM/YYYY"
+                                  />
+                                }
                                 <br />{" "}
                               </div>
                             )
@@ -255,7 +276,7 @@ class Discipline extends Component {
           </div>
           <div className="userList">
             <div>
-              <input
+              {/* <input
                 className="list-group-item list-group-item-action"
                 type="number"
                 placeholder="My teacher was: "
@@ -264,7 +285,25 @@ class Discipline extends Component {
                   state["teachersIds"] = [Number(p.target.value)];
                   this.setState({ newFeedback: state });
                 }}
-              />
+              /> */}
+              <select
+                className="form-control col-12"
+                type="number"
+                onChange={p => {
+                  let state = this.state.newFeedback;
+                  state["teachersIds"] = [Number(p.target.value)];
+                  this.setState({ newFeedback: state });
+                }}
+              >
+                {this.state.teachers
+                  ? this.state.teachers.map(teacher => (
+                      <option key={teacher["id"]} value={teacher["id"]}>
+                        {teacher["lastName"]} {teacher["name"]}{" "}
+                        {teacher["middleName"]}{" "}
+                      </option>
+                    ))
+                  : ""}
+              </select>
               <br />
               <input
                 className="list-group-item list-group-item-action"
@@ -289,6 +328,11 @@ class Discipline extends Component {
               />
               <br />
               <button
+                disabled={
+                  !this.state.newFeedback["comment"] ||
+                  !this.state.newFeedback["studentGrade"] ||
+                  !this.state.newFeedback["teachersIds"]
+                }
                 onClick={() => this.post()}
                 className="btn btn-outline-success"
                 style={{ margin: 0, width: "100%" }}
