@@ -391,7 +391,26 @@ class AdminFeedback extends Component {
                         <span>{o.charAt(0).toUpperCase() + o.slice(1)}:</span>
                         <div>
                           <div className="list-group-item list-group-item-action">
-                            {selectedFeedback[o]}
+                            {typeof selectedFeedback[o] === "object"
+                              ? selectedFeedback[o]
+                                ? selectedFeedback[o].map(kkk => (
+                                    <div>
+                                      {Object.keys(kkk)
+                                        .filter(
+                                          f =>
+                                            !f.includes("id") &&
+                                            !f.includes("Id")
+                                        )
+                                        .map(k => (
+                                          <div key={k}>
+                                            {k}: {kkk[k]}
+                                          </div>
+                                        ))}
+                                      <hr />
+                                    </div>
+                                  ))
+                                : ""
+                              : selectedFeedback[o]}
                           </div>
                           <hr />
                         </div>
@@ -417,32 +436,12 @@ class AdminFeedback extends Component {
                       <hr />
                     </div>
                   </div>
-                  <div>
-                    <span>Teacher name:</span>
-                    <div>
-                      <div className="list-group-item list-group-item-action">
-                        {selectedFeedback["teacherIds"]
-                          ? selectedFeedback["teacherIds"].map(id => (
-                              <p key={id}>
-                                {teachers.find(f => f.id === id)
-                                  ? teachers.find(f => f.id === id)["lastName"]
-                                  : "Not specified"}
-                              </p>
-                            ))
-                          : ""}
-                      </div>
-                      <hr />
-                    </div>
-                  </div>
+
                   <div>
                     <span>Discipline name :</span>
                     <div>
                       <div className="list-group-item list-group-item-action">
-                        {
-                          disciplines.find(
-                            f => f.id === selectedFeedback["disciplineId"]
-                          )["name"]
-                        }
+                        {selectedFeedback["disciplineName"]}
                       </div>
                       <hr />
                     </div>

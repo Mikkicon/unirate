@@ -27,29 +27,6 @@ class Home extends Component {
       // loading: true,
       enableScroll: true
     };
-    // window.onscroll = async () => {
-    //   const {
-    //     search,
-    //     state: { enableScroll }
-    //   } = this;
-    //   if (!enableScroll) {
-    //     // console.log("scrolled");
-    //     this.setState({ query: {} });
-    //     return;
-    //   } else if (
-    //     window.innerHeight + document.documentElement.scrollTop ===
-    //     document.documentElement.offsetHeight
-    //   ) {
-    //     await this.setState({
-    //       query: {
-    //         offset: !isNaN(this.state.query.offset)
-    //           ? this.state.query.offset + 20
-    //           : 0
-    //       }
-    //     });
-    //     search(this.state.query);
-    //   }
-    // };
   }
 
   componentDidMount = async () => {

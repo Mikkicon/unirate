@@ -85,10 +85,14 @@ class AdminDiscipline extends Component {
     const { link, selectedDiscipline } = this.state;
     let body = JSON.stringify({
       name: selectedDiscipline["name"],
-      year: Number(selectedDiscipline["year"]),
-      facultyId: Number(selectedDiscipline["facultyId"])
+      year: Number(selectedDiscipline["year"])
+      // facultyId: Number(selectedDiscipline["facultyId"])
     });
-
+    console.log(
+      `${link}/admin/discipline/${
+        selectedDiscipline[Object.keys(selectedDiscipline)[0]]
+      }`
+    );
     window.confirm("Are you sure you want to update discipline?")
       ? fetch(
           `${link}/admin/discipline/${
@@ -98,6 +102,7 @@ class AdminDiscipline extends Component {
             method: "PUT",
             body: body,
             headers: {
+              "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token")
             }
           }
