@@ -32,6 +32,7 @@ class AdminDiscipline extends Component {
     this.setState({ query: {} });
     fetch(`${this.state.link}/admin/faculty`, {
       headers: {
+        "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     })
@@ -39,6 +40,7 @@ class AdminDiscipline extends Component {
       .then(data => this.setState({ faculties: data.faculty }));
     fetch(`${this.state.link}/admin/profession`, {
       headers: {
+        "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     })

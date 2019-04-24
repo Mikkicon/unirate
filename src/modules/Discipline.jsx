@@ -294,6 +294,9 @@ class Discipline extends Component {
                   this.setState({ newFeedback: state });
                 }}
               >
+                <option defaultChecked={true} value={""}>
+                  Choose your teacher
+                </option>
                 {this.state.teachers
                   ? this.state.teachers.map(teacher => (
                       <option key={teacher["id"]} value={teacher["id"]}>

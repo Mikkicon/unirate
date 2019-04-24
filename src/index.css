@@ -3,6 +3,7 @@ body {
   padding: 0;
   background-image: url("./media/swirl_pattern.png");
   background-repeat: repeat;
+  /* background-color: #fff; */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;

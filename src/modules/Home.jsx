@@ -24,6 +24,7 @@ class Home extends Component {
       placeholder: "",
       facVal: "",
       professions: "",
+      theme: false,
       // loading: true,
       enableScroll: true
     };
@@ -125,10 +126,12 @@ class Home extends Component {
   };
   loadfeedbackNumbers = () => {};
   render() {
-    const { disciplines, total, query } = this.state;
+    const { disciplines, total, query, theme } = this.state;
     return (
       <React.Fragment>
-        <div className="homeFormCont col-10">
+        <div
+          className={theme ? "homeFormContDark col-10" : "homeFormCont col-10"}
+        >
           <br />
           <ButtonToolbar>
             <DropdownButton
@@ -171,9 +174,7 @@ class Home extends Component {
             >
               <Dropdown.Item
                 onClick={() => {
-                  var a = this.state.disciplines;
-                  a = a.sort((a, b) => (a.name > b.name ? 1 : -1));
-                  this.setState({ disciplines: a });
+                  this.search({ limit: 20, orderBy: "name" });
                 }}
                 key="a-asc"
               >
@@ -181,9 +182,7 @@ class Home extends Component {
               </Dropdown.Item>
               <Dropdown.Item
                 onClick={() => {
-                  var a = this.state.disciplines;
-                  a = a.sort((a, b) => (a.name < b.name ? 1 : -1));
-                  this.setState({ disciplines: a });
+                  this.search({ limit: 20, orderBy: "name DESC" });
                 }}
                 key="a-desc"
               >
@@ -196,11 +195,7 @@ class Home extends Component {
                   <div>
                     <Dropdown.Item
                       onClick={() => {
-                        var a = this.state.disciplines;
-                        a = a.sort((a, b) =>
-                          a["feedbackNum"] > b["feedbackNum"] ? 1 : -1
-                        );
-                        this.setState({ disciplines: a });
+                        this.search({ limit: 20, orderBy: "feedbackNum" });
                       }}
                       key="f-asc"
                     >
@@ -208,11 +203,7 @@ class Home extends Component {
                     </Dropdown.Item>
                     <Dropdown.Item
                       onClick={() => {
-                        var a = this.state.disciplines;
-                        a = a.sort((a, b) =>
-                          a["feedbackNum"] < b["feedbackNum"] ? 1 : -1
-                        );
-                        this.setState({ disciplines: a });
+                        this.search({ limit: 20, orderBy: "feedbackNum DESC" });
                       }}
                       key="f-desc"
                     >
@@ -230,12 +221,13 @@ class Home extends Component {
               {/* <small>infinite scroll</small> */}
               <label className="switch">
                 <input
-                  checked={this.state.enableScroll}
+                  // checked={this.state.enableScroll}
                   type="checkbox"
-                  // onChange={p =>
-                  //   this.setState({ enableScroll: p.target.checked })
-                  // }
-                  onChange={() => this.loadfeedbackNumbers()}
+                  onChange={() =>
+                    theme
+                      ? this.setState({ theme: false })
+                      : this.setState({ theme: true })
+                  }
                 />
                 <span className="slider round" />
               </label>

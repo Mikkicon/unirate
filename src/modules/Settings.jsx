@@ -14,9 +14,19 @@ class Settings extends Component {
     error: null,
     confirm: null,
     enableSave: true,
-    allProfessions: []
+    professions: [],
+    response: null
   };
-  componentDidMount() {}
+  componentDidMount() {
+    fetch(`${this.state.link}/profession`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    })
+      .then(res => res.json())
+      .then(data => this.setState({ professions: data.profession }));
+  }
   deleteAccount = () => {
     if (window.localStorage.getItem("admin").toString() === "false") {
       window.confirm("Are you sure?")
@@ -75,13 +85,15 @@ class Settings extends Component {
   submitValues = () => {
     let info = this.state.userInfo;
     if (
-      this.state.userInfo.password &&
-      this.state.confirm &&
-      this.state.userInfo.password === this.state.confirm
+      // this.state.userInfo.password &&
+      // this.state.confirm &&
+      // this.state.userInfo.password === this.state.confirm
+      1
     ) {
-      const salt = "$2a$10$saltpasswordhashhashhh";
-      info.password = bcrypt.hashSync(info.password, salt);
-
+      if (info.password) {
+        const salt = "$2a$10$saltpasswordhashhashhh";
+        info.password = bcrypt.hashSync(info.password, salt);
+      }
       fetch(`${this.state.link}/user/${window.localStorage.getItem("login")}`, {
         method: "PUT",
         headers: {
@@ -95,7 +107,7 @@ class Settings extends Component {
           if (updateResponse.error) {
             console.log(updateResponse.error);
           } else {
-            this.setState({ updateResponse });
+            this.setState({ response: updateResponse });
             console.log("Data", updateResponse);
           }
         })
@@ -107,7 +119,7 @@ class Settings extends Component {
   render() {
     return (
       <React.Fragment>
-        <div className="homeFormCont col-8">
+        <div className="homeFormCont2 col-8">
           <h1>Settings</h1>
 
           {this.state.error}
@@ -163,7 +175,7 @@ class Settings extends Component {
                 <select
                   className="form-control"
                   onChange={p => {
-                    let disciplines = this.state.allProfessions;
+                    let disciplines = this.state.professions;
                     let diId = disciplines.filter(
                       a => a.name === p.target.value
                     );
@@ -172,17 +184,10 @@ class Settings extends Component {
                     this.setState({ userInfo });
                   }}
                 >
-                  {this.state.allProfessions ? (
-                    Object.keys(this.state.allProfessions).map(k => (
-                      <option
-                        selected={
-                          this.state.allProfessions[k].name ===
-                          this.state.userData.professionName
-                        }
-                        className="dropdown-item"
-                        key={k}
-                      >
-                        {this.state.allProfessions[k].name}
+                  {this.state.professions ? (
+                    Object.keys(this.state.professions).map(k => (
+                      <option className="dropdown-item" key={k}>
+                        {this.state.professions[k].name}
                       </option>
                     ))
                   ) : (

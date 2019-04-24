@@ -4,8 +4,19 @@
   height: auto;
   /* min-height: 100px; */
   margin-top: 100px;
+  /* background-image: url("../media/swirl_pattern.png");
+  background-repeat: repeat; */
   background-color: #fff;
   box-shadow: 0 0 20px gray;
+}
+.homeFormContDark {
+  padding: 100px;
+  margin: auto;
+  height: auto;
+  color: white;
+  margin-top: 100px;
+  background-color: #333;
+  box-shadow: 0 0 20px #aaa;
 }
 h1 {
   text-align: center;

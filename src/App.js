@@ -23,10 +23,6 @@ import StatisticsPopularTeacher from "./modules/statistics/StatisticsPopularTeac
 import StatisticsProfession from "./modules/statistics/StatisticsProfession";
 import StatisticsRating from "./modules/statistics/StatisticsRating";
 import StatisticsActiveProfession from "./modules/statistics/StatisticsActiveProfessions";
-// import HomeDisciplines from "./modules/home/HomeDisciplines";
-// import HomeProfessions from "./modules/home/HomeProfessions";
-// import HomeFaculties from "./modules/home/HomeFaculties";
-// import HomeTeachers from "./modules/home/HomeTeachers";
 import Print from "./modules/Print";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 
