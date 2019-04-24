@@ -173,8 +173,6 @@ class AdminFeedback extends Component {
       faculties,
       response,
       professions,
-      disciplines,
-      teachers,
       query
     } = this.state;
 

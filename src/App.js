@@ -3,7 +3,7 @@ import "./Styles/App.css";
 import "bootstrap";
 import Registration from "./modules/Registration";
 import Login from "./modules/Login";
-import Home from "./modules/home/Home";
+import Home from "./modules/Home";
 import Settings from "./modules/Settings";
 import Admin from "./modules/admin/Admin";
 import AdminDiscipline from "./modules/admin/AdminDiscipline";

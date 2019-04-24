@@ -22,13 +22,6 @@ class Discipline extends Component {
     };
   }
   getFacNames = async () => {
-    const a = await fetch(`${this.state.link}/faculty`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
-      }
-    });
-    const b = await a.json();
     const d = await fetch(`${this.state.link}/teacher`, {
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +29,7 @@ class Discipline extends Component {
       }
     });
     const c = await d.json();
-    this.setState({ faculties: b.faculty, teachers: c.teacher });
+    this.setState({ teachers: c.teacher });
   };
   componentDidMount = () => {
     this.loadEntities();
@@ -157,7 +150,7 @@ class Discipline extends Component {
       .catch(err => console.log(err));
   };
   render() {
-    const { discipline, feedbacks, faculties, liked, disliked } = this.state;
+    const { discipline, feedbacks, liked, disliked } = this.state;
 
     return (
       <React.Fragment>
@@ -172,13 +165,7 @@ class Discipline extends Component {
               </p>
               <p style={{ float: "right" }}>
                 <FaBuilding />
-                {faculties
-                  ? faculties.find(a => a.id === discipline.facultyId)
-                    ? faculties
-                        .find(a => a.id === discipline.facultyId)
-                        .name.toUpperCase()
-                    : ""
-                  : null}
+                {discipline["facultyName"]}
               </p>
             </h2>
           </div>
@@ -250,10 +237,22 @@ class Discipline extends Component {
                           )
                           .map(attr =>
                             attr !== "created" ? (
-                              <div key={attr}>
-                                {" "}
-                                <b>{attr}:</b> {d[attr]} <br />{" "}
-                              </div>
+                              attr === "teachers" ? (
+                                <div>
+                                  {d[attr].map(kk => (
+                                    <div>
+                                      {Object.keys(kk).map(kkk => (
+                                        <div>{kk[kkk]}</div>
+                                      ))}
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div key={attr}>
+                                  {" "}
+                                  <b>{attr}:</b> {d[attr]} <br />{" "}
+                                </div>
+                              )
                             ) : (
                               <div key={attr}>
                                 {" "}
