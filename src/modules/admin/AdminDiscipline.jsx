@@ -307,7 +307,11 @@ class AdminDiscipline extends Component {
                 </div>
               </ButtonToolbar>
               <div className="collapse" id="filter">
-                <div className="card card-body">
+                <div
+                  className={
+                    theme ? "dark-card card card-body" : "card card-body"
+                  }
+                >
                   <div className="row">
                     <b className=" col-3">Faculty</b>
                     <select
@@ -424,7 +428,11 @@ class AdminDiscipline extends Component {
                       style={{ cursor: "pointer" }}
                       key={u[Object.keys(u)[0]] ? u[Object.keys(u)[0]] : "new"}
                       onClick={this.selectDiscipline.bind(this.id)}
-                      className="list-group-item list-group-item-action"
+                      className={
+                        theme
+                          ? "list-group-item list-group-item-primary list-group-item-action progress-bar"
+                          : "list-group-item list-group-item-action progress-bar"
+                      }
                       id={u[Object.keys(u)[0]]}
                     >
                       {u[Object.keys(u)[1]]}
@@ -460,7 +468,11 @@ class AdminDiscipline extends Component {
                         sel["name"] = e.target.value;
                         this.setState({ selectedDiscipline: sel });
                       }}
-                      className="list-group-item list-group-item-action"
+                      className={
+                        theme
+                          ? "search list-group-item list-group-item-action"
+                          : "list-group-item list-group-item-action"
+                      }
                       value={selectedDiscipline["name"]}
                     />
                     <hr />
@@ -473,7 +485,11 @@ class AdminDiscipline extends Component {
                         sel["year"] = e.target.value;
                         this.setState({ selectedDiscipline: sel });
                       }}
-                      className="list-group-item list-group-item-action form-control"
+                      className={
+                        theme
+                          ? "search list-group-item list-group-item-action form-control"
+                          : "list-group-item list-group-item-action form-control"
+                      }
                     >
                       <option>0</option>
                       <option>1</option>
@@ -486,7 +502,11 @@ class AdminDiscipline extends Component {
                   <div>
                     <span>Faculty:</span>
                     <select
-                      className="list-group-item list-group-item-action form-control"
+                      className={
+                        theme
+                          ? "search list-group-item list-group-item-action form-control"
+                          : "list-group-item list-group-item-action form-control"
+                      }
                       type="text"
                       onChange={p => {
                         var a = selectedDiscipline;
