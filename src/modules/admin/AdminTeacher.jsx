@@ -24,7 +24,8 @@ class AdminTeacher extends Component {
       disciplines: null,
       teachers: null,
       response: null,
-      query: {}
+      query: {},
+      theme: false
     };
   }
   async componentDidMount() {
@@ -230,7 +231,8 @@ class AdminTeacher extends Component {
       faculties,
       response,
       professions,
-      query
+      query,
+      theme
     } = this.state;
 
     return (
@@ -242,7 +244,7 @@ class AdminTeacher extends Component {
           <div className="row">
             <br />
             <br />
-            <div className="userList col-7">
+            <div className={theme ? "userListBlack col-7" : "userList col-7"}>
               <ButtonToolbar>
                 <a
                   className="btn btn-outline-primary"
@@ -284,18 +286,19 @@ class AdminTeacher extends Component {
                     Alphabet Z->A
                   </Dropdown.Item>
                 </DropdownButton>
-                {/* <div className="toolItem">
-                  <small>infinite scroll</small> 
+                <div className="toolItem">
                   <label className="switch">
                     <input
                       type="checkbox"
-                      onChange={p =>
-                        this.setState({ enableScroll: p.target.checked })
+                      onChange={() =>
+                        theme
+                          ? this.setState({ theme: false })
+                          : this.setState({ theme: true })
                       }
                     />
                     <span className="slider round" />
                   </label>
-                </div> */}
+                </div>
 
                 <div className="toolItem">
                   <h4>Found {total}</h4>

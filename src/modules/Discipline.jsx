@@ -38,17 +38,14 @@ class Discipline extends Component {
   post = () => {
     const { newFeedback, discipline } = this.state;
     console.log(newFeedback);
-    if (
-      !newFeedback.comment ||
-      !newFeedback.teachersIds ||
-      !newFeedback.studentGrade
-    ) {
+    if (!newFeedback.comment || !newFeedback.studentGrade) {
       console.log("Missing required fields");
     } else {
       fetch(`${this.state.link}/feedback/${discipline.id}`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json; charset=utf-8",
+
           Authorization: "Bearer " + localStorage.getItem("token")
         },
         body: JSON.stringify(newFeedback)
@@ -189,7 +186,7 @@ class Discipline extends Component {
                       // aria-expanded="false"
                       aria-controls="collapseExample"
                     >
-                      <b>{d.userLogin}:</b> "{d.comment}"{" "}
+                      <b>{d.userLogin}:</b> "{d.comment}"
                       <div
                         style={{
                           float: "right",
@@ -208,8 +205,8 @@ class Discipline extends Component {
                                 : ""
                             }
                           />
-                        </span>{" "}
-                        <b> {d.rating} </b>{" "}
+                        </span>
+                        <b> {d.rating} </b>
                         <span
                           onClick={() => this.like(d, -1)}
                           style={{ cursor: "pointer" }}
@@ -238,32 +235,30 @@ class Discipline extends Component {
                           .map(attr =>
                             attr !== "created" ? (
                               attr === "teachers" ? (
-                                <div>
+                                <div key={attr}>
                                   {d[attr].map(kk => (
-                                    <div>
+                                    <div key={kk}>
                                       {Object.keys(kk).map(kkk => (
-                                        <div>{kk[kkk]}</div>
+                                        <div key={kkk}>{kk[kkk]}</div>
                                       ))}
                                     </div>
                                   ))}
                                 </div>
                               ) : (
                                 <div key={attr}>
-                                  {" "}
-                                  <b>{attr}:</b> {d[attr]} <br />{" "}
+                                  <b>{attr}:</b> {d[attr]} <br />
                                 </div>
                               )
                             ) : (
                               <div key={attr}>
-                                {" "}
-                                <b>{attr}:</b>{" "}
+                                <b>{attr}:</b>
                                 {
                                   <Time
                                     value={Number(d["created"]) * 1000}
                                     format="HH:mm DD/MM/YYYY"
                                   />
                                 }
-                                <br />{" "}
+                                <br />
                               </div>
                             )
                           )}
@@ -300,8 +295,8 @@ class Discipline extends Component {
                 {this.state.teachers
                   ? this.state.teachers.map(teacher => (
                       <option key={teacher["id"]} value={teacher["id"]}>
-                        {teacher["lastName"]} {teacher["name"]}{" "}
-                        {teacher["middleName"]}{" "}
+                        {teacher["lastName"]} {teacher["name"]}
+                        {teacher["middleName"]}
                       </option>
                     ))
                   : ""}
@@ -332,8 +327,7 @@ class Discipline extends Component {
               <button
                 disabled={
                   !this.state.newFeedback["comment"] ||
-                  !this.state.newFeedback["studentGrade"] ||
-                  !this.state.newFeedback["teachersIds"]
+                  !this.state.newFeedback["studentGrade"]
                 }
                 onClick={() => this.post()}
                 className="btn btn-outline-success"

@@ -24,7 +24,8 @@ class AdminFaculty extends Component {
       disciplines: null,
       teachers: null,
       response: null,
-      query: {}
+      query: {},
+      theme: false
     };
   }
   async componentDidMount() {
@@ -109,6 +110,7 @@ class AdminFaculty extends Component {
           {
             method: "DELETE",
             headers: {
+              "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token")
             }
           }
@@ -187,12 +189,17 @@ class AdminFaculty extends Component {
   putEntity = () => {
     const { link, selectedFaculty, query } = this.state;
     let body = query;
+    console.log(
+      "Fetched: ",
+      `${link}/admin/faculty/${Number(selectedFaculty["id"])}`
+    );
 
     window.confirm("Are you sure you want to update discipline?")
       ? fetch(`${link}/admin/faculty/${Number(selectedFaculty["id"])}`, {
           method: "PUT",
           body: JSON.stringify(body),
           headers: {
+            "Content-Type": "application/json",
             Authorization: "Bearer " + localStorage.getItem("token")
           }
         })
@@ -218,7 +225,6 @@ class AdminFaculty extends Component {
       }
     })
       .then(p => {
-        // this.setState({ response: p.statusText });
         return p;
       })
       .catch(err => console.log(err));
@@ -232,8 +238,8 @@ class AdminFaculty extends Component {
       selectedFaculty,
       faculties,
       response,
-      professions,
-      query
+      query,
+      theme
     } = this.state;
 
     return (
@@ -245,7 +251,7 @@ class AdminFaculty extends Component {
           <div className="row">
             <br />
             <br />
-            <div className="userList col-7">
+            <div className={theme ? "userListBlack col-7" : "userList col-7"}>
               <ButtonToolbar>
                 <a
                   className="btn btn-outline-primary"
@@ -287,18 +293,19 @@ class AdminFaculty extends Component {
                     Alphabet Z->A
                   </Dropdown.Item>
                 </DropdownButton>
-                {/* <div className="toolItem">
-                  <small>infinite scroll</small> 
+                <div className="toolItem">
                   <label className="switch">
                     <input
                       type="checkbox"
-                      onChange={p =>
-                        this.setState({ enableScroll: p.target.checked })
+                      onChange={() =>
+                        theme
+                          ? this.setState({ theme: false })
+                          : this.setState({ theme: true })
                       }
                     />
                     <span className="slider round" />
                   </label>
-                </div> */}
+                </div>
 
                 <div className="toolItem">
                   <h4>Found {total}</h4>
@@ -330,58 +337,6 @@ class AdminFaculty extends Component {
                     </select>
                   </div>
                   <hr />
-                  <div className="row">
-                    <b className=" col-3">Year</b>
-                    <select
-                      className="form-control col-9"
-                      placeholder="Year"
-                      onChange={p => {
-                        const a = query;
-                        if (p.target.value === "All") {
-                          delete a["year"];
-                        } else {
-                          a["year"] = Number(p.target.value);
-                        }
-                        this.setState({ query: a });
-                        this.search(a);
-                      }}
-                    >
-                      <option>All</option>
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>4</option>
-                    </select>
-                  </div>
-                  <div>
-                    <hr />
-                    <div className="row">
-                      <b className=" col-3">Mandatory Professions</b>
-                      <select
-                        className="form-control col-9"
-                        placeholder="mandatoryProfessionId"
-                        onChange={p => {
-                          const a = query;
-                          if (p.target.value === "All") {
-                            delete a["mandatoryProfessionId"];
-                          } else {
-                            a["mandatoryProfessionId"] = Number(p.target.value);
-                          }
-                          this.setState({ query: a });
-                          this.search(a);
-                        }}
-                      >
-                        <option>All</option>
-                        {professions
-                          ? professions.map(a => (
-                              <option key={a.id} value={a.id}>
-                                {a.name}
-                              </option>
-                            ))
-                          : ""}
-                      </select>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

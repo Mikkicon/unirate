@@ -26,7 +26,8 @@ class AdminFeedback extends Component {
       disciplines: null,
       teachers: null,
       response: null,
-      query: null
+      query: null,
+      theme: false
     };
   }
   async componentDidMount() {
@@ -173,7 +174,8 @@ class AdminFeedback extends Component {
       faculties,
       response,
       professions,
-      query
+      query,
+      theme
     } = this.state;
 
     return (
@@ -182,7 +184,7 @@ class AdminFeedback extends Component {
           <div className="row">
             <br />
             <br />
-            <div className="userList col-6">
+            <div className={theme ? "userListBlack col-6" : "userList col-6"}>
               <ButtonToolbar>
                 <a
                   className="btn btn-outline-primary"
@@ -224,18 +226,19 @@ class AdminFeedback extends Component {
                     Alphabet Z->A
                   </Dropdown.Item>
                 </DropdownButton>
-                {/* <div className="toolItem">
-                  <small>infinite scroll</small> 
+                <div className="toolItem">
                   <label className="switch">
                     <input
                       type="checkbox"
-                      onChange={p =>
-                        this.setState({ enableScroll: p.target.checked })
+                      onChange={() =>
+                        theme
+                          ? this.setState({ theme: false })
+                          : this.setState({ theme: true })
                       }
                     />
                     <span className="slider round" />
                   </label>
-                </div> */}
+                </div>
 
                 <div className="toolItem">
                   <h4>Found {total}</h4>

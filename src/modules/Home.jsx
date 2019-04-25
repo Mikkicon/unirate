@@ -239,51 +239,79 @@ class Home extends Component {
           </ButtonToolbar>
           <div className="collapse" id="filter">
             <div className="card card-body">
-              <div className="row">
-                <b className=" col-3">Faculty</b>
-                <select
-                  className="form-control col-9"
-                  type="text"
-                  // value={this.state.facVal}
-                  placeholder="Faculty Name"
-                  onChange={p => {
-                    const a = this.state.query;
-                    a["facultyId"] = Number(p.target.value);
-                    this.setState({ query: a });
-                  }}
-                >
-                  {this.state.faculties
-                    ? this.state.faculties.map(a => (
-                        <option key={a.id} value={a.id}>
-                          {a.name} ({a.shortName})
-                        </option>
-                      ))
-                    : ""}
-                </select>
-              </div>
+              {this.state.disciplines ? (
+                this.state.disciplines[0] ? (
+                  Object.keys(this.state.disciplines[0]).indexOf("shortName") >
+                    -1 ||
+                  Object.keys(this.state.disciplines[0]).indexOf("lastName") >
+                    -1 ? (
+                    ""
+                  ) : (
+                    <div className="row">
+                      <b className=" col-3">Faculty</b>
+                      <select
+                        className="form-control col-9"
+                        type="text"
+                        // value={this.state.facVal}
+                        placeholder="Faculty Name"
+                        onChange={p => {
+                          const a = this.state.query;
+                          a["facultyId"] = Number(p.target.value);
+                          this.setState({ query: a });
+                        }}
+                      >
+                        {this.state.faculties
+                          ? this.state.faculties.map(a => (
+                              <option key={a.id} value={a.id}>
+                                {a.name} ({a.shortName})
+                              </option>
+                            ))
+                          : ""}
+                      </select>
+                    </div>
+                  )
+                ) : (
+                  ""
+                )
+              ) : (
+                ""
+              )}
               <hr />
-              <div className="row">
-                <b className=" col-3">Year</b>
-                <select
-                  className="form-control col-9"
-                  placeholder="Year"
-                  onChange={p => {
-                    const a = this.state.query;
-                    if (p.target.value === "All") {
-                      delete a["year"];
-                    } else {
-                      a["year"] = Number(p.target.value);
-                    }
-                    this.setState({ query: a });
-                  }}
-                >
-                  <option>All</option>
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                </select>
-              </div>
+              {this.state.disciplines ? (
+                this.state.disciplines[0] ? (
+                  Object.keys(this.state.disciplines[0]).indexOf("year") >
+                  -1 ? (
+                    <div className="row">
+                      <b className=" col-3">Year</b>
+                      <select
+                        className="form-control col-9"
+                        placeholder="Year"
+                        onChange={p => {
+                          const a = this.state.query;
+                          if (p.target.value === "All") {
+                            delete a["year"];
+                          } else {
+                            a["year"] = Number(p.target.value);
+                          }
+                          this.setState({ query: a });
+                        }}
+                      >
+                        <option>All</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                      </select>
+                    </div>
+                  ) : (
+                    ""
+                  )
+                ) : (
+                  ""
+                )
+              ) : (
+                ""
+              )}
               {this.state.selected === "discipline" ? (
                 <div>
                   <hr />
@@ -324,7 +352,9 @@ class Home extends Component {
           {/* {this.state.loading ? <h2>Loading...</h2> : ""} */}
           <div className="row">
             <input
-              className="form-control col-9"
+              className={
+                theme ? "search form-control col-9" : "form-control col-9"
+              }
               type="text"
               placeholder="Search"
               onChange={p => this.search({ search: p.target.value })}
@@ -347,7 +377,11 @@ class Home extends Component {
               ? this.state.disciplines.map(d => (
                   <div key={d.id}>
                     <div
-                      className="list-group-item list-group-item-action progress-bar"
+                      className={
+                        theme
+                          ? "list-group-item list-group-item-primary list-group-item-action progress-bar"
+                          : "list-group-item list-group-item-action progress-bar"
+                      }
                       role="progressbar"
                       // aria-valuenow="75"
                       aria-valuemin="0"
@@ -372,7 +406,11 @@ class Home extends Component {
                       </b>
                     </div>
                     <div className="collapse" id={"col_" + d.id}>
-                      <div className="card card-body">
+                      <div
+                        className={
+                          theme ? "dark-card card card-body" : "card card-body"
+                        }
+                      >
                         {Object.keys(d)
                           .filter(f => f !== "id" && f !== "login")
                           .map(key => (
@@ -408,7 +446,10 @@ class Home extends Component {
                 ))
               : ""}
 
-            <Pagination style={total < 10 ? { display: "none" } : {}}>
+            <Pagination
+              style={total < 10 ? { display: "none" } : {}}
+              className={theme ? "" : ""}
+            >
               <Pagination.First
                 onClick={() => {
                   let a = query;

@@ -22,7 +22,8 @@ class AdminDiscipline extends Component {
       faculties: null,
       professions: null,
       response: null,
-      query: null
+      query: null,
+      theme: false
     };
   }
   componentDidMount() {
@@ -84,12 +85,8 @@ class AdminDiscipline extends Component {
   };
 
   putEntity = () => {
-    const { link, selectedDiscipline } = this.state;
-    let body = JSON.stringify({
-      name: selectedDiscipline["name"],
-      year: Number(selectedDiscipline["year"])
-      // facultyId: Number(selectedDiscipline["facultyId"])
-    });
+    const { link, selectedDiscipline, query } = this.state;
+    let body = JSON.stringify(query);
     console.log(
       `${link}/admin/discipline/${
         selectedDiscipline[Object.keys(selectedDiscipline)[0]]
@@ -234,7 +231,8 @@ class AdminDiscipline extends Component {
       selectedDiscipline,
       faculties,
       response,
-      query
+      query,
+      theme
     } = this.state;
 
     return (
@@ -243,7 +241,7 @@ class AdminDiscipline extends Component {
           <div className="row">
             <br />
             <br />
-            <div className="userList col-6">
+            <div className={theme ? "userListBlack col-6" : "userList col-6"}>
               <ButtonToolbar>
                 <a
                   onClick={() => {
@@ -294,8 +292,10 @@ class AdminDiscipline extends Component {
                     <input
                       checked={this.state.enableScroll}
                       type="checkbox"
-                      onChange={p =>
-                        this.setState({ enableScroll: p.target.checked })
+                      onChange={() =>
+                        theme
+                          ? this.setState({ theme: false })
+                          : this.setState({ theme: true })
                       }
                     />
                     <span className="slider round" />
@@ -387,7 +387,10 @@ class AdminDiscipline extends Component {
                 </div>
               </div>
             </div>
-            <div style={{ margin: "auto" }} className="col-5 userList">
+            <div
+              style={{ margin: "auto" }}
+              className={theme ? "userListBlack col-5" : "col-5 userList"}
+            >
               <Link className="btn btn-outline-info" to="/admin-user">
                 USERS
               </Link>
@@ -408,7 +411,11 @@ class AdminDiscipline extends Component {
               </Link>
             </div>
           </div>
-          <div className=" row userList col-6">
+          <div
+            className={
+              theme ? "row userListBlack col-6" : " row col-6 userList"
+            }
+          >
             <h3>DISCIPLINES {response}</h3>
             <div className="list-group col-12">
               {entities
@@ -437,7 +444,7 @@ class AdminDiscipline extends Component {
             </div>
           </div>
 
-          <div className="userView col-5">
+          <div className={theme ? "userViewBlack col-5" : "col-5 userView"}>
             {selectedDiscipline ? (
               <div>
                 <h2>
@@ -482,9 +489,11 @@ class AdminDiscipline extends Component {
                       className="list-group-item list-group-item-action form-control"
                       type="text"
                       onChange={p => {
-                        const a = selectedDiscipline;
+                        var a = selectedDiscipline;
                         a["facultyId"] = Number(p.target.value);
-                        this.setState({ selectedDiscipline: a });
+                        var query1 = query;
+                        query1["facultyId"] = Number(p.target.value);
+                        this.setState({ selectedDiscipline: a, query: query1 });
                       }}
                     >
                       {faculties
@@ -494,7 +503,7 @@ class AdminDiscipline extends Component {
                                 key={a.id}
                                 value={a.id}
                                 selected={
-                                  a.id === selectedDiscipline["facultyId"]
+                                  a.name === selectedDiscipline["facultyName"]
                                 }
                               >
                                 {a.name} ({a.shortName})

@@ -22,7 +22,8 @@ class AdminUser extends Component {
       faculties: null,
       professions: null,
       response: null,
-      query: null
+      query: null,
+      theme: false
     };
   }
   componentDidMount() {
@@ -175,7 +176,8 @@ class AdminUser extends Component {
       selectedUser,
       faculties,
       response,
-      query
+      query,
+      theme
     } = this.state;
 
     return (
@@ -184,7 +186,7 @@ class AdminUser extends Component {
           <div className="row">
             <br />
             <br />
-            <div className="userList col-6">
+            <div className={theme ? "userListBlack col-6" : "userList col-6"}>
               <ButtonToolbar>
                 <a
                   onClick={() => {
@@ -206,11 +208,7 @@ class AdminUser extends Component {
                 >
                   <Dropdown.Item
                     onClick={() => {
-                      var a = this.state.entities;
-                      a = a.sort((a, b) =>
-                        a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
-                      );
-                      this.setState({ entities: a });
+                      this.search({ orderBy: "login" });
                     }}
                     key="a-asc"
                   >
@@ -218,11 +216,7 @@ class AdminUser extends Component {
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() => {
-                      var a = this.state.entities;
-                      a = a.sort((a, b) =>
-                        a.name.toLowerCase() < b.name.toLowerCase() ? 1 : -1
-                      );
-                      this.setState({ entities: a });
+                      this.search({ orderBy: "login DESC" });
                     }}
                     key="a-desc"
                   >
@@ -235,8 +229,10 @@ class AdminUser extends Component {
                     <input
                       checked={this.state.enableScroll}
                       type="checkbox"
-                      onChange={p =>
-                        this.setState({ enableScroll: p.target.checked })
+                      onChange={() =>
+                        theme
+                          ? this.setState({ theme: false })
+                          : this.setState({ theme: true })
                       }
                     />
                     <span className="slider round" />
