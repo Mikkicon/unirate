@@ -62,10 +62,10 @@ class App extends Component {
             {localStorage.getItem("admin") &&
             localStorage.getItem("admin").includes(true) ? (
               <NavDropdown title="Statistics" id="collasible-nav-dropdown">
-                <NavDropdown.Item href="/statistics/profession">
+                {/* <NavDropdown.Item href="/statistics/profession">
                   Professions <br /> all mandatory disciplines have feedback
                 </NavDropdown.Item>
-                <NavDropdown.Divider />
+                <NavDropdown.Divider /> */}
                 <NavDropdown.Item href="/statistics/popular-teacher">
                   Teachers <br /> ordered by feedback number
                 </NavDropdown.Item>

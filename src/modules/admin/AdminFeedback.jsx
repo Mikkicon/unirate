@@ -21,7 +21,7 @@ class AdminFeedback extends Component {
       selectedFeedback: null,
       post: false,
       newEntity: null,
-      faculties: null,
+      feedbacks: null,
       professions: null,
       disciplines: null,
       teachers: null,
@@ -50,7 +50,7 @@ class AdminFeedback extends Component {
     })
       .then(res => res.json())
       .then(data => this.setState({ professions: data.profession }));
-    fetch(`${this.state.link}/admin/discipline`, {
+    fetch(`${this.state.link}/admin/discipline?limit=999`, {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
@@ -154,6 +154,7 @@ class AdminFeedback extends Component {
         res.total
           ? this.setState({
               entities: res["feedback"] ? res["feedback"] : feedbacks,
+              feedbacks: res["feedback"] ? res["feedback"] : feedbacks,
               total: res.total
             })
           : this.setState({ entities: [], total: 0 })
@@ -171,10 +172,9 @@ class AdminFeedback extends Component {
       page,
       total,
       selectedFeedback,
-      faculties,
       response,
-      professions,
-      query,
+      feedbacks,
+      disciplines,
       theme
     } = this.state;
 
@@ -247,80 +247,30 @@ class AdminFeedback extends Component {
               <div className="collapse" id="filter">
                 <div className="card card-body">
                   <div className="row">
-                    <b className=" col-3">Faculty</b>
+                    <b className=" col-3">Discipline</b>
                     <select
                       className="form-control col-9"
                       type="text"
                       // value={facVal}
-                      placeholder="Faculty Name"
+                      placeholder="Discipline Name"
                       onChange={p => {
-                        const a = query;
-                        a["facultyId"] = Number(p.target.value);
-                        this.setState({ query: a });
-                        this.search(a);
+                        var a = feedbacks;
+                        a = a.filter(
+                          f =>
+                            f["disciplineName"].toString().toLowerCase() ===
+                            p.target.value.toString().toLowerCase()
+                        );
+                        this.setState({ entities: a });
                       }}
                     >
-                      {faculties
-                        ? faculties.map(a => (
-                            <option key={a.id} value={a.id}>
-                              {a.name} ({a.shortName})
+                      {disciplines
+                        ? disciplines.map(a => (
+                            <option key={a.id} value={a.name}>
+                              {a.name}
                             </option>
                           ))
                         : ""}
                     </select>
-                  </div>
-                  <hr />
-                  <div className="row">
-                    <b className=" col-3">Year</b>
-                    <select
-                      className="form-control col-9"
-                      placeholder="Year"
-                      onChange={p => {
-                        const a = query;
-                        if (p.target.value === "All") {
-                          delete a["year"];
-                        } else {
-                          a["year"] = Number(p.target.value);
-                        }
-                        this.setState({ query: a });
-                        this.search(a);
-                      }}
-                    >
-                      <option>All</option>
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>4</option>
-                    </select>
-                  </div>
-                  <div>
-                    <hr />
-                    <div className="row">
-                      <b className=" col-3">mandatoryProfessionId</b>
-                      <select
-                        className="form-control col-9"
-                        placeholder="mandatoryProfessionId"
-                        onChange={p => {
-                          const a = query;
-                          if (p.target.value === "All") {
-                            delete a["mandatoryProfessionId"];
-                          } else {
-                            a["mandatoryProfessionId"] = Number(p.target.value);
-                          }
-                          this.setState({ query: a });
-                          this.search(a);
-                        }}
-                      >
-                        <option>All</option>
-                        {professions
-                          ? professions.map(a => (
-                              <option key={a.id} value={a.id}>
-                                {a.name}
-                              </option>
-                            ))
-                          : ""}
-                      </select>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -395,7 +345,7 @@ class AdminFeedback extends Component {
                             {typeof selectedFeedback[o] === "object"
                               ? selectedFeedback[o]
                                 ? selectedFeedback[o].map(kkk => (
-                                    <div>
+                                    <div key={kkk}>
                                       {Object.keys(kkk)
                                         .filter(
                                           f =>

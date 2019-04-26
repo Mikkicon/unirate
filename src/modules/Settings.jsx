@@ -18,12 +18,17 @@ class Settings extends Component {
     response: null
   };
   componentDidMount() {
-    fetch(`${this.state.link}/profession`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
+    fetch(
+      `${this.state.link}/${
+        window.localStorage.getItem("admin").includes(true) ? "admin/" : ""
+      }profession`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
       }
-    })
+    )
       .then(res => res.json())
       .then(data => this.setState({ professions: data.profession }));
   }

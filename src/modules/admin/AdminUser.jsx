@@ -192,7 +192,7 @@ class AdminUser extends Component {
                   onClick={() => {
                     this.getFacNames();
                   }}
-                  className="btn btn-outline-primary"
+                  className="btn btn-outline-primary disabled"
                   data-toggle="collapse"
                   href="#filter"
                   role="button"

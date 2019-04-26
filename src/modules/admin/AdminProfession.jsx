@@ -234,7 +234,6 @@ class AdminProfession extends Component {
       selectedProfession,
       faculties,
       response,
-      professions,
       query,
       theme
     } = this.state;
@@ -305,13 +304,15 @@ class AdminProfession extends Component {
                 </div>
 
                 <div className="toolItem">
-                  <h4>Found {total}</h4>
+                  <h4>
+                    {response ? "Response: " + response : ""} Found {total}
+                  </h4>
                 </div>
               </ButtonToolbar>
               <div className="collapse" id="filter">
                 <div className="card card-body">
                   <div className="row">
-                    <b className=" col-3">profession</b>
+                    <b className=" col-3">Faculty</b>
                     <select
                       className="form-control col-9"
                       type="text"
@@ -332,59 +333,6 @@ class AdminProfession extends Component {
                           ))
                         : ""}
                     </select>
-                  </div>
-                  <hr />
-                  <div className="row">
-                    <b className=" col-3">Year</b>
-                    <select
-                      className="form-control col-9"
-                      placeholder="Year"
-                      onChange={p => {
-                        const a = query;
-                        if (p.target.value === "All") {
-                          delete a["year"];
-                        } else {
-                          a["year"] = Number(p.target.value);
-                        }
-                        this.setState({ query: a });
-                        this.search(a);
-                      }}
-                    >
-                      <option>All</option>
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>4</option>
-                    </select>
-                  </div>
-                  <div>
-                    <hr />
-                    <div className="row">
-                      <b className=" col-3">Mandatory Professions</b>
-                      <select
-                        className="form-control col-9"
-                        placeholder="mandatoryProfessionId"
-                        onChange={p => {
-                          const a = query;
-                          if (p.target.value === "All") {
-                            delete a["mandatoryProfessionId"];
-                          } else {
-                            a["mandatoryProfessionId"] = Number(p.target.value);
-                          }
-                          this.setState({ query: a });
-                          this.search(a);
-                        }}
-                      >
-                        <option>All</option>
-                        {professions
-                          ? professions.map(a => (
-                              <option key={a.id} value={a.id}>
-                                {a.name}
-                              </option>
-                            ))
-                          : ""}
-                      </select>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -411,7 +359,7 @@ class AdminProfession extends Component {
             </div>
           </div>
           <div className=" row userList col-6">
-            <h3>PROFESSIONS {response}</h3>
+            <h3>PROFESSIONS </h3>
             <div className="list-group col-12">
               {entities
                 ? entities.map(u => (

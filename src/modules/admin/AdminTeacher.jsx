@@ -247,7 +247,7 @@ class AdminTeacher extends Component {
             <div className={theme ? "userListBlack col-7" : "userList col-7"}>
               <ButtonToolbar>
                 <a
-                  className="btn btn-outline-primary"
+                  className="btn btn-outline-primary disabled"
                   data-toggle="collapse"
                   href="#filter"
                   role="button"
