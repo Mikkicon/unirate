@@ -459,7 +459,7 @@ class AdminProfession extends Component {
                   SAVE
                 </button>
                 <button
-                  onClick={this.deleteItem}
+                  onClick={this.deleteEntity}
                   className="btn btn-outline-danger"
                 >
                   DELETE

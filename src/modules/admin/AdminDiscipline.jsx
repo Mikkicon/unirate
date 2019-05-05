@@ -5,6 +5,7 @@ import Pagination from "react-bootstrap/Pagination";
 import { MdEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { Dropdown, DropdownButton, ButtonToolbar } from "react-bootstrap";
+import Filter from "../Filter";
 // import avatar from "../media/avatar.png";
 class AdminDiscipline extends Component {
   constructor(props) {
@@ -127,20 +128,7 @@ class AdminDiscipline extends Component {
               Authorization: "Bearer " + localStorage.getItem("token")
             }
           }
-        )
-          .then(data =>
-            data.status !== 200
-              ? alert(
-                  `Discipline '${this.state.selectedDiscipline.name}' was ` +
-                    JSON.stringify(data.statusText)
-                )
-              : alert(
-                  `Discipline ${
-                    this.state.selectedDiscipline.name
-                  } has been successfully deleted`
-                )
-          )
-          .catch(err => console.log(err))
+        ).catch(err => console.log(err))
       : console.log("You've decided not to delete discipline.:)");
 
     this.search("");
@@ -232,7 +220,8 @@ class AdminDiscipline extends Component {
       faculties,
       response,
       query,
-      theme
+      theme,
+      link
     } = this.state;
 
     return (
@@ -306,90 +295,17 @@ class AdminDiscipline extends Component {
                   <h4>Found {this.state.total}</h4>
                 </div>
               </ButtonToolbar>
-              <div className="collapse" id="filter">
-                <div
-                  className={
+              {/* className={
                     theme ? "dark-card card card-body" : "card card-body"
-                  }
-                >
-                  <div className="row">
-                    <b className=" col-3">Faculty</b>
-                    <select
-                      className="form-control col-9"
-                      type="text"
-                      // value={this.state.facVal}
-                      placeholder="Faculty Name"
-                      onChange={p => {
-                        const a = query;
-                        a["facultyId"] = Number(p.target.value);
-                        this.setState({ query: a });
-                        this.search(a);
-                      }}
-                    >
-                      {this.state.faculties
-                        ? this.state.faculties.map(a => (
-                            <option key={a.id} value={a.id}>
-                              {a.name} ({a.shortName})
-                            </option>
-                          ))
-                        : ""}
-                    </select>
-                  </div>
-                  <hr />
-                  <div className="row">
-                    <b className=" col-3">Year</b>
-                    <select
-                      className="form-control col-9"
-                      placeholder="Year"
-                      onChange={p => {
-                        const a = query;
-                        if (p.target.value === "All") {
-                          delete a["year"];
-                        } else {
-                          a["year"] = Number(p.target.value);
-                        }
-                        this.setState({ query: a });
-                        this.search(a);
-                      }}
-                    >
-                      <option>All</option>
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>4</option>
-                    </select>
-                  </div>
-                  <div>
-                    <hr />
-                    <div className="row">
-                      <b className=" col-3">mandatoryProfessionId</b>
-                      <select
-                        className="form-control col-9"
-                        placeholder="mandatoryProfessionId"
-                        onChange={p => {
-                          const a = query;
-                          if (p.target.value === "All") {
-                            delete a["mandatoryProfessionId"];
-                          } else {
-                            a["mandatoryProfessionId"] = Number(p.target.value);
-                          }
-                          this.setState({ query: a });
-                          this.search(a);
-                        }}
-                      >
-                        <option>All</option>
-                        {this.state.professions
-                          ? this.state.professions.map(a => (
-                              <option key={a.id} value={a.id}>
-                                {a.name}
-                              </option>
-                            ))
-                          : ""}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                  } */}
+
+              <Filter
+                link={link}
+                admin={true}
+                search={this.search}
+                theme={theme}
+                options={["faculty", "year", "mandatoryProfessionId"]}
+              />
             </div>
             <div
               style={{ margin: "auto" }}

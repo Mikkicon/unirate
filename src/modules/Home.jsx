@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "../Styles/Home.css";
 import { Link } from "react-router-dom";
 import Pagination from "react-bootstrap/Pagination";
+import Filter from "./Filter";
 import {
   Dropdown,
   DropdownButton,
@@ -10,7 +11,11 @@ import {
 } from "react-bootstrap";
 class Home extends Component {
   constructor(props) {
+    if (localStorage.getItem("admin").includes(true)) {
+      window.location.href = "/admin-discipline";
+    }
     super(props);
+
     this.state = {
       link: this.props.testnet
         ? "http://localhost:3000"
@@ -31,12 +36,7 @@ class Home extends Component {
   }
 
   componentDidMount = async () => {
-    if (localStorage.getItem("admin").includes(true)) {
-      window.location.href = "/admin-discipline";
-    }
-
     this.search(this.state.query);
-    this.getFacNames();
   };
 
   getFacNames = async () => {
@@ -112,21 +112,9 @@ class Home extends Component {
     await this.setState({ selected: e, disciplines: [] });
     this.search({});
   };
-
-  getProfNames = async () => {
-    this.setState({ enableScroll: false, query: {} });
-    const a = await fetch(`${this.state.link}/profession`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
-      }
-    });
-    const b = await a.json();
-    this.setState({ professions: b.profession });
-  };
   loadfeedbackNumbers = () => {};
   render() {
-    const { disciplines, total, query, theme } = this.state;
+    const { selected, disciplines, total, query, link, theme } = this.state;
     return (
       <React.Fragment>
         <div
@@ -147,11 +135,11 @@ class Home extends Component {
             </DropdownButton>
 
             <a
-              onClick={() => {
-                this.getFacNames();
-                this.getProfNames();
-              }}
-              className="btn btn-primary"
+              className={
+                selected === "faculty"
+                  ? "btn btn-primary disabled"
+                  : "btn btn-primary"
+              }
               data-toggle="collapse"
               href="#filter"
               role="button"
@@ -159,12 +147,6 @@ class Home extends Component {
             >
               FILTER
             </a>
-
-            {/* <span>
-              <a>
-                <MdClose />
-              </a>
-            </span> */}
 
             <b />
             <DropdownButton
@@ -237,115 +219,17 @@ class Home extends Component {
               <h4>Found {this.state.total}</h4>
             </div>
           </ButtonToolbar>
-          <div className="collapse" id="filter">
-            <div className="card card-body">
-              {this.state.disciplines ? (
-                this.state.disciplines[0] ? (
-                  Object.keys(this.state.disciplines[0]).indexOf("shortName") >
-                    -1 ||
-                  Object.keys(this.state.disciplines[0]).indexOf("lastName") >
-                    -1 ? (
-                    ""
-                  ) : (
-                    <div className="row">
-                      <b className=" col-3">Faculty</b>
-                      <select
-                        className="form-control col-9"
-                        type="text"
-                        // value={this.state.facVal}
-                        placeholder="Faculty Name"
-                        onChange={p => {
-                          const a = this.state.query;
-                          a["facultyId"] = Number(p.target.value);
-                          this.setState({ query: a });
-                        }}
-                      >
-                        {this.state.faculties
-                          ? this.state.faculties.map(a => (
-                              <option key={a.id} value={a.id}>
-                                {a.name} ({a.shortName})
-                              </option>
-                            ))
-                          : ""}
-                      </select>
-                    </div>
-                  )
-                ) : (
-                  ""
-                )
-              ) : (
-                ""
-              )}
-              <hr />
-              {this.state.disciplines ? (
-                this.state.disciplines[0] ? (
-                  Object.keys(this.state.disciplines[0]).indexOf("year") >
-                  -1 ? (
-                    <div className="row">
-                      <b className=" col-3">Year</b>
-                      <select
-                        className="form-control col-9"
-                        placeholder="Year"
-                        onChange={p => {
-                          const a = this.state.query;
-                          if (p.target.value === "All") {
-                            delete a["year"];
-                          } else {
-                            a["year"] = Number(p.target.value);
-                          }
-                          this.setState({ query: a });
-                        }}
-                      >
-                        <option>All</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                      </select>
-                    </div>
-                  ) : (
-                    ""
-                  )
-                ) : (
-                  ""
-                )
-              ) : (
-                ""
-              )}
-              {this.state.selected === "discipline" ? (
-                <div>
-                  <hr />
-                  <div className="row">
-                    <b className=" col-3">mandatoryProfessionId</b>
-                    <select
-                      className="form-control col-9"
-                      placeholder="mandatoryProfessionId"
-                      onChange={p => {
-                        const a = this.state.query;
-                        if (p.target.value === "All") {
-                          delete a["mandatoryProfessionId"];
-                        } else {
-                          a["mandatoryProfessionId"] = Number(p.target.value);
-                        }
-                        this.setState({ query: a });
-                      }}
-                    >
-                      <option>All</option>
-                      {this.state.professions
-                        ? this.state.professions.map(a => (
-                            <option key={a.id} value={a.id}>
-                              {a.name}
-                            </option>
-                          ))
-                        : ""}
-                    </select>
-                  </div>
-                </div>
-              ) : (
-                ""
-              )}
-            </div>
-          </div>
+          {selected === "discipline" ? (
+            <Filter
+              link={link}
+              search={this.search}
+              options={["faculty", "year", "mandatoryProfessionId"]}
+            />
+          ) : selected === "teacher" || selected === "profession" ? (
+            <Filter search={this.search} options={["faculty"]} />
+          ) : (
+            <Filter search={this.search} options={[]} />
+          )}
 
           <br />
 

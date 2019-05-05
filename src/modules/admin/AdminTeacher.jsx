@@ -265,7 +265,9 @@ class AdminTeacher extends Component {
                     onClick={() => {
                       var a = entities;
                       a = a.sort((a, b) =>
-                        a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
+                        a.lastName.toLowerCase() > b.lastName.toLowerCase()
+                          ? 1
+                          : -1
                       );
                       this.setState({ entities: a });
                     }}
@@ -277,7 +279,9 @@ class AdminTeacher extends Component {
                     onClick={() => {
                       var a = entities;
                       a = a.sort((a, b) =>
-                        a.name.toLowerCase() < b.name.toLowerCase() ? 1 : -1
+                        a.lastName.toLowerCase() < b.lastName.toLowerCase()
+                          ? 1
+                          : -1
                       );
                       this.setState({ entities: a });
                     }}

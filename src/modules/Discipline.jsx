@@ -235,7 +235,7 @@ class Discipline extends Component {
                           .map(attr =>
                             attr !== "created" ? (
                               attr === "teachers" ? (
-                                <div key={attr}>
+                                <div key={"attr"}>
                                   {d[attr].map(kk => (
                                     <div key={kk}>
                                       {Object.keys(kk).map(kkk => (
@@ -270,16 +270,6 @@ class Discipline extends Component {
           </div>
           <div className="userList">
             <div>
-              {/* <input
-                className="list-group-item list-group-item-action"
-                type="number"
-                placeholder="My teacher was: "
-                onChange={p => {
-                  let state = this.state.newFeedback;
-                  state["teachersIds"] = [Number(p.target.value)];
-                  this.setState({ newFeedback: state });
-                }}
-              /> */}
               <select
                 className="form-control col-12"
                 type="number"
@@ -295,7 +285,7 @@ class Discipline extends Component {
                 {this.state.teachers
                   ? this.state.teachers.map(teacher => (
                       <option key={teacher["id"]} value={teacher["id"]}>
-                        {teacher["lastName"]} {teacher["name"]}
+                        {teacher["lastName"]} {teacher["name"]}{" "}
                         {teacher["middleName"]}
                       </option>
                     ))

@@ -41,14 +41,13 @@ class Login extends Component {
       this.setState({ response: fetched.statusText });
       console.log(fetched.statusText);
     } else {
-      window.confirm("Welcome!");
       this.setState({ response: fetched.statusText });
       const response = await fetched.json();
       console.log(response);
       window.localStorage.setItem("token", response.token);
       window.localStorage.setItem("admin", response.isAdmin);
       window.localStorage.setItem("login", this.state.email);
-      window.location.href = "/";
+      window.location.href = response.isAdmin ? "/admin-discipline" : "/";
     }
   };
   handleKeyPress = e => {
