@@ -21,15 +21,15 @@ class Discipline extends Component {
       newFeedback: {}
     };
   }
-  getFacNames = async () => {
-    const d = await fetch(`${this.state.link}/teacher`, {
+  getFacNames = () => {
+    fetch(`${this.state.link}/teacher`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("token")
       }
-    });
-    const c = await d.json();
-    this.setState({ teachers: c.teacher });
+    })
+      .then(d => d.json())
+      .then(c => this.setState({ teachers: c.teacher }));
   };
   componentDidMount = () => {
     this.loadEntities();

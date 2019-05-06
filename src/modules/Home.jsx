@@ -3,17 +3,10 @@ import "../Styles/Home.css";
 import { Link } from "react-router-dom";
 import Pagination from "react-bootstrap/Pagination";
 import Filter from "./Filter";
-import {
-  Dropdown,
-  DropdownButton,
-  ButtonToolbar,
-  Button
-} from "react-bootstrap";
+import Toolbar from "./Toolbar";
+import { Button } from "react-bootstrap";
 class Home extends Component {
   constructor(props) {
-    if (localStorage.getItem("admin").includes(true)) {
-      window.location.href = "/admin-discipline";
-    }
     super(props);
 
     this.state = {
@@ -34,21 +27,25 @@ class Home extends Component {
       enableScroll: true
     };
   }
-
+  componentWillMount = () => {
+    if (localStorage.getItem("admin").includes(true)) {
+      window.location.href = "/admin-discipline";
+    }
+  };
   componentDidMount = async () => {
     this.search(this.state.query);
   };
 
   getFacNames = async () => {
     this.setState({ enableScroll: false, query: {} });
-    const a = await fetch(`${this.state.link}/faculty`, {
+    fetch(`${this.state.link}/faculty`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("token")
       }
-    });
-    const b = await a.json();
-    this.setState({ faculties: b.faculty });
+    })
+      .then(a => a.json())
+      .then(b => this.setState({ faculties: b.faculty }));
   };
   pages = () => {
     let array = [];
@@ -77,9 +74,6 @@ class Home extends Component {
     return array;
   };
   search = async input => {
-    if (input.search) {
-      await this.setState({ enableScroll: false, disciplines: [] });
-    }
     var disciplines = this.state.disciplines;
     var query = Object.keys(input).reduce(
       (total, current) => total + current + "=" + input[current] + "&",
@@ -109,123 +103,44 @@ class Home extends Component {
       .catch(err => console.log(err));
   };
   select = async e => {
-    await this.setState({ selected: e, disciplines: [] });
-    this.search({});
+    this.setState({ selected: e, disciplines: [] }, () => this.search({}));
+  };
+  setTheme = a => {
+    this.setState({ theme: a });
   };
   loadfeedbackNumbers = () => {};
   render() {
-    const { selected, disciplines, total, query, link, theme } = this.state;
+    const {
+      selected,
+      disciplines,
+      total,
+      query,
+      link,
+      theme,
+      entities
+    } = this.state;
     return (
       <React.Fragment>
         <div
           className={theme ? "homeFormContDark col-10" : "homeFormCont col-10"}
         >
           <br />
-          <ButtonToolbar>
-            <DropdownButton
-              variant="warning"
-              id="dropdown-basic-button"
-              title={this.state.selected.toUpperCase()}
-            >
-              {this.state.entities.map(e => (
-                <Dropdown.Item key={e} onSelect={() => this.select(e)}>
-                  {e}
-                </Dropdown.Item>
-              ))}
-            </DropdownButton>
-
-            <a
-              className={
-                selected === "faculty"
-                  ? "btn btn-primary disabled"
-                  : "btn btn-primary"
-              }
-              data-toggle="collapse"
-              href="#filter"
-              role="button"
-              aria-expanded="false"
-            >
-              FILTER
-            </a>
-
-            <b />
-            <DropdownButton
-              variant="warning"
-              id="dropdown-basic-button"
-              title="SORT"
-            >
-              <Dropdown.Item
-                onClick={() => {
-                  this.search({ limit: 20, orderBy: "name" });
-                }}
-                key="a-asc"
-              >
-                Alphabet A->Z
-              </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => {
-                  this.search({ limit: 20, orderBy: "name DESC" });
-                }}
-                key="a-desc"
-              >
-                Alphabet Z->A
-              </Dropdown.Item>
-              {this.state.disciplines[0] ? (
-                Object.keys(this.state.disciplines[0]).includes(
-                  "feedbackNum"
-                ) ? (
-                  <div>
-                    <Dropdown.Item
-                      onClick={() => {
-                        this.search({ limit: 20, orderBy: "feedbackNum" });
-                      }}
-                      key="f-asc"
-                    >
-                      Feedbacks 0->N
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={() => {
-                        this.search({ limit: 20, orderBy: "feedbackNum DESC" });
-                      }}
-                      key="f-desc"
-                    >
-                      Feedbacks N->0
-                    </Dropdown.Item>
-                  </div>
-                ) : (
-                  ""
-                )
-              ) : (
-                ""
-              )}
-            </DropdownButton>
-            <div className="toolItem">
-              {/* <small>infinite scroll</small> */}
-              <label className="switch">
-                <input
-                  // checked={this.state.enableScroll}
-                  type="checkbox"
-                  onChange={() =>
-                    theme
-                      ? this.setState({ theme: false })
-                      : this.setState({ theme: true })
-                  }
-                />
-                <span className="slider round" />
-              </label>
-            </div>
-
-            <div className="toolItem">
-              <h4>Found {this.state.total}</h4>
-            </div>
-          </ButtonToolbar>
+          <Toolbar
+            selected={selected}
+            theme={theme}
+            select={this.select}
+            search={this.search}
+            entities={entities}
+            setTheme={this.setTheme}
+            total={total}
+          />
           {selected === "discipline" ? (
             <Filter
               link={link}
               search={this.search}
               options={["faculty", "year", "mandatoryProfessionId"]}
             />
-          ) : selected === "teacher" || selected === "profession" ? (
+          ) : selected === "profession" ? (
             <Filter search={this.search} options={["faculty"]} />
           ) : (
             <Filter search={this.search} options={[]} />
@@ -247,9 +162,10 @@ class Home extends Component {
             <Button
               style={{ margin: "auto 0" }}
               className=" btn-outline-success col-2"
-              onClick={async () => {
-                await this.setState({ disciplines: [] });
-                this.search(this.state.query);
+              onClick={() => {
+                this.setState({ disciplines: [] }, () =>
+                  this.search(this.state.query)
+                );
               }}
             >
               Search
@@ -266,20 +182,14 @@ class Home extends Component {
                           ? "list-group-item list-group-item-primary list-group-item-action progress-bar"
                           : "list-group-item list-group-item-action progress-bar"
                       }
-                      role="progressbar"
-                      // aria-valuenow="75"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
                       data-toggle="collapse"
                       href={"#col_" + d.id}
-                      // aria-expanded="false"
                       aria-controls="collapseExample"
                     >
                       {d.name}{" "}
                       <b
                         style={{
                           float: "right"
-                          // margin: "0 auto 0 auto"
                         }}
                       >
                         {d["feedbackNum"]
@@ -298,29 +208,16 @@ class Home extends Component {
                         {Object.keys(d)
                           .filter(f => f !== "id" && f !== "login")
                           .map(key => (
-                            <div key={key}>
-                              {key === "facultyId" ? (
-                                <div>
-                                  {key}:{" "}
-                                  {this.state.faculties.filter(
-                                    a => a.id === d[key]
-                                  )[0]
-                                    ? this.state.faculties.filter(
-                                        a => a.id === d[key]
-                                      )[0].name
-                                    : ""}{" "}
-                                  <br />{" "}
-                                </div>
-                              ) : (
-                                <div>
-                                  {key}: {d[key]} <br />
-                                </div>
-                              )}
+                            <div style={{ display: "block" }} key={key}>
+                              <div>
+                                <b>{key.toUpperCase()} </b> : {d[key]} {"     "}
+                              </div>
                             </div>
                           ))}
                         <Link
                           to={"/" + this.state.selected + "/" + d.id}
                           id={d.id}
+                          className="btn btn-outline-info"
                         >
                           More about "{d.name}"
                         </Link>

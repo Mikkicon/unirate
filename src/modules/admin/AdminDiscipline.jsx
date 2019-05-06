@@ -3,9 +3,9 @@ import "../../Styles/Admin.css";
 import "bootstrap";
 import Pagination from "react-bootstrap/Pagination";
 import { MdEdit } from "react-icons/md";
-import { Link } from "react-router-dom";
-import { Dropdown, DropdownButton, ButtonToolbar } from "react-bootstrap";
 import Filter from "../Filter";
+import Toolbar from "../Toolbar";
+import AdminMenu from "../AdminMenu";
 // import avatar from "../media/avatar.png";
 class AdminDiscipline extends Component {
   constructor(props) {
@@ -133,10 +133,7 @@ class AdminDiscipline extends Component {
 
     this.search("");
   };
-  search = async input => {
-    if (input.search) {
-      await this.setState({ entities: [] });
-    }
+  search = input => {
     var disciplines = this.state.entities;
     var query = Object.keys(input).reduce(
       (total, current) => total + current + "=" + input[current] + "&",
@@ -210,7 +207,9 @@ class AdminDiscipline extends Component {
       post: true
     });
   };
-
+  setTheme = a => {
+    this.setState({ theme: a });
+  };
   render() {
     const {
       entities,
@@ -231,70 +230,15 @@ class AdminDiscipline extends Component {
             <br />
             <br />
             <div className={theme ? "userListBlack col-6" : "userList col-6"}>
-              <ButtonToolbar>
-                <a
-                  onClick={() => {
-                    this.getFacNames();
-                  }}
-                  className="btn btn-outline-primary"
-                  data-toggle="collapse"
-                  href="#filter"
-                  role="button"
-                  aria-expanded="false"
-                >
-                  FILTER
-                </a>
-                <b />
-                <DropdownButton
-                  variant="outline-warning"
-                  id="dropdown-basic-button"
-                  title="SORT"
-                >
-                  <Dropdown.Item
-                    onClick={() => {
-                      var a = this.state.entities;
-                      a = a.sort((a, b) =>
-                        a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
-                      );
-                      this.setState({ entities: a });
-                    }}
-                    key="a-asc"
-                  >
-                    Alphabet A->Z
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => {
-                      var a = this.state.entities;
-                      a = a.sort((a, b) =>
-                        a.name.toLowerCase() < b.name.toLowerCase() ? 1 : -1
-                      );
-                      this.setState({ entities: a });
-                    }}
-                    key="a-desc"
-                  >
-                    Alphabet Z->A
-                  </Dropdown.Item>
-                </DropdownButton>
-                <div className="toolItem">
-                  {/* <small>infinite scroll</small> */}
-                  <label className="switch">
-                    <input
-                      checked={this.state.enableScroll}
-                      type="checkbox"
-                      onChange={() =>
-                        theme
-                          ? this.setState({ theme: false })
-                          : this.setState({ theme: true })
-                      }
-                    />
-                    <span className="slider round" />
-                  </label>
-                </div>
-
-                <div className="toolItem">
-                  <h4>Found {this.state.total}</h4>
-                </div>
-              </ButtonToolbar>
+              <Toolbar
+                selected="discipline"
+                theme={theme}
+                select={null}
+                search={this.search}
+                entities={entities}
+                setTheme={this.setTheme}
+                total={total}
+              />
               {/* className={
                     theme ? "dark-card card card-body" : "card card-body"
                   } */}
@@ -307,29 +251,7 @@ class AdminDiscipline extends Component {
                 options={["faculty", "year", "mandatoryProfessionId"]}
               />
             </div>
-            <div
-              style={{ margin: "auto" }}
-              className={theme ? "userListBlack col-5" : "col-5 userList"}
-            >
-              <Link className="btn btn-outline-info" to="/admin-user">
-                USERS
-              </Link>
-              <Link className="btn btn-outline-info" to="/admin-teacher">
-                TEACHERS
-              </Link>
-              <Link className="btn btn-outline-info" to="/admin-discipline">
-                DISCIPLINES
-              </Link>
-              <Link className="btn btn-outline-info" to="/admin-feedback">
-                FEEDBACKS
-              </Link>
-              <Link className="btn btn-outline-info" to="/admin-faculty">
-                FACULTIES
-              </Link>
-              <Link className="btn btn-outline-info" to="/admin-profession">
-                PROFESSIONS
-              </Link>
-            </div>
+            <AdminMenu theme={theme} />
           </div>
           <div
             className={
