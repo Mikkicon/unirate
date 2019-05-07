@@ -114,17 +114,17 @@ class Discipline extends Component {
       .catch(err => console.log(err));
   };
   like = (e, signum) => {
-    let liked = this.state.liked;
-    let disliked = this.state.disliked;
-    if (signum > 0) {
-      disliked = disliked.filter(f => f !== e["feedbackId"]);
-      liked.push(e["feedbackId"]);
-    } else {
-      liked = liked.filter(f => f !== e["feedbackId"]);
-      disliked.push(e["feedbackId"]);
-    }
-
-    this.setState({ liked: liked, disliked: disliked });
+    this.setState(state =>
+      signum > 0
+        ? {
+            disliked: state.disliked.filter(f => f !== e["feedbackId"]),
+            liked: [...state.liked, e["feedbackId"]]
+          }
+        : {
+            liked: state.liked.filter(f => f !== e["feedbackId"]),
+            disliked: [...state.disliked, e["feedbackId"]]
+          }
+    );
     fetch(
       `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/feedback/grade/${
         e.feedbackId
@@ -176,7 +176,7 @@ class Discipline extends Component {
               ? feedbacks.map(d => (
                   <div key={d.created}>
                     <div
-                      className="list-group-item list-group-item-action progress-bar"
+                      className="list-group-item clearfix list-group-item-action progress-bar"
                       // role="progressbar"
                       // aria-valuenow="75"
                       aria-valuemin="0"
@@ -274,9 +274,13 @@ class Discipline extends Component {
                 className="form-control col-12"
                 type="number"
                 onChange={p => {
-                  let state = this.state.newFeedback;
-                  state["teachersIds"] = [Number(p.target.value)];
-                  this.setState({ newFeedback: state });
+                  p.persist();
+                  this.setState(state => ({
+                    newFeedback: {
+                      ...state.newFeedback,
+                      teachersIds: [Number(p.target.value)]
+                    }
+                  }));
                 }}
               >
                 <option defaultChecked={true} value={""}>
@@ -297,9 +301,13 @@ class Discipline extends Component {
                 type="number"
                 placeholder="My mark was..."
                 onChange={p => {
-                  let state = this.state.newFeedback;
-                  state["studentGrade"] = Number(p.target.value);
-                  this.setState({ newFeedback: state });
+                  p.persist();
+                  this.setState(state => ({
+                    newFeedback: {
+                      ...state.newFeedback,
+                      studentGrade: Number(p.target.value)
+                    }
+                  }));
                 }}
               />
               <br />
@@ -308,9 +316,13 @@ class Discipline extends Component {
                 type="text"
                 placeholder="WOW! Such discipline..."
                 onChange={p => {
-                  let state = this.state.newFeedback;
-                  state["comment"] = p.target.value;
-                  this.setState({ newFeedback: state });
+                  p.persist();
+                  this.setState(state => ({
+                    newFeedback: {
+                      ...state.newFeedback,
+                      comment: p.target.value
+                    }
+                  }));
                 }}
               />
               <br />

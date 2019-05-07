@@ -31,8 +31,9 @@ class AdminDiscipline extends Component {
     this.search("");
   }
   getFacNames = async () => {
+    const { link } = this.state;
     this.setState({ query: {} });
-    fetch(`${this.state.link}/admin/faculty`, {
+    fetch(`${link}/admin/faculty`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("token")
@@ -40,7 +41,7 @@ class AdminDiscipline extends Component {
     })
       .then(res => res.json())
       .then(data => this.setState({ faculties: data.faculty }));
-    fetch(`${this.state.link}/admin/profession`, {
+    fetch(`${link}/admin/profession`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("token")
@@ -49,21 +50,18 @@ class AdminDiscipline extends Component {
       .then(res => res.json())
       .then(data => this.setState({ professions: data.profession }));
   };
-  selectDiscipline = async p => {
-    const entities = this.state.entities;
-
+  selectDiscipline = p => {
+    const t = p.target.id;
     if (this.state.post) {
-      entities.shift();
-      this.setState({ entities });
+      this.setState(state => ({ entities: state.entities.slice(1) }));
     }
-    const target = p.target.id;
-
     this.getFacNames();
-    // Selected user
-    let entity = await this.state.entities.find(
-      a => a[Object.keys(a)[0]].toString() === target.toString()
-    );
-    await this.setState({ selectedDiscipline: entity, post: false });
+    this.setState(state => ({
+      selectedDiscipline: state.entities.find(
+        a => a[Object.keys(a)[0]].toString() === t
+      ),
+      post: false
+    }));
   };
   pages = () => {
     let array = [];
@@ -114,12 +112,11 @@ class AdminDiscipline extends Component {
     this.selectEntity();
   };
   deleteEntity = async () => {
+    const { link, selectedDiscipline } = this.state;
     window.confirm("Are you sure?")
       ? fetch(
-          `${this.state.link}/admin/discipline/${
-            this.state.selectedDiscipline[
-              Object.keys(this.state.selectedDiscipline)[0]
-            ]
+          `${link}/admin/discipline/${
+            selectedDiscipline[Object.keys(selectedDiscipline)[0]]
           }`,
           {
             method: "DELETE",
@@ -160,14 +157,15 @@ class AdminDiscipline extends Component {
       .catch(err => console.log(err));
   };
   postEntity = async () => {
+    const { selectedDiscipline, link } = this.state;
     this.setState({ post: false });
     let body = {
-      name: this.state.selectedDiscipline["name"],
-      year: Number(this.state.selectedDiscipline["year"]),
-      facultyId: this.state.selectedDiscipline["facultyId"]
+      name: selectedDiscipline["name"],
+      year: Number(selectedDiscipline["year"]),
+      facultyId: selectedDiscipline["facultyId"]
     };
 
-    fetch(`${this.state.link}/admin/discipline/`, {
+    fetch(`${link}/admin/discipline/`, {
       method: "POST",
       body: JSON.stringify(body),
       headers: {
@@ -199,7 +197,6 @@ class AdminDiscipline extends Component {
 
     entitiesCopy.unshift(objCopy);
 
-    // console.log(fildsForNew);
     this.getFacNames();
     this.setState({
       selectedDiscipline: objCopy,
@@ -220,7 +217,8 @@ class AdminDiscipline extends Component {
       response,
       query,
       theme,
-      link
+      link,
+      post
     } = this.state;
 
     return (
@@ -398,7 +396,7 @@ class AdminDiscipline extends Component {
             ) : (
               ""
             )}
-            {!this.state.post ? (
+            {!post ? (
               <button
                 onClick={this.addNew}
                 style={{ margin: "auto", marginTop: "20px" }}

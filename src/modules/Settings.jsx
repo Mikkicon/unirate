@@ -149,9 +149,9 @@ class Settings extends Component {
                 <label>New Email</label>
                 <input
                   onChange={e => {
-                    let userInfo = this.state.userInfo;
-                    userInfo["email"] = e.target.value;
-                    this.setState({ userInfo });
+                    this.setState(state => ({
+                      userInfo: { ...state.userInfo, email: e.target.value }
+                    }));
                   }}
                   className="form-control field"
                   type="text"
@@ -161,9 +161,9 @@ class Settings extends Component {
               <label>New Password</label>
               <input
                 onChange={e => {
-                  let userInfo = this.state.userInfo;
-                  userInfo["password"] = e.target.value;
-                  this.setState({ userInfo });
+                  this.setState(state => ({
+                    userInfo: { ...state.userInfo, password: e.target.value }
+                  }));
                 }}
                 className="form-control field"
                 type="password"
@@ -180,13 +180,14 @@ class Settings extends Component {
                 <select
                   className="form-control"
                   onChange={p => {
-                    let disciplines = this.state.professions;
-                    let diId = disciplines.filter(
-                      a => a.name === p.target.value
-                    );
-                    let userInfo = this.state.userInfo;
-                    userInfo["professionId"] = diId[0]["id"];
-                    this.setState({ userInfo });
+                    this.setState(state => ({
+                      userInfo: {
+                        ...state.userInfo,
+                        professionId: state.professions.find(
+                          a => a.name === p.target.value
+                        )
+                      }
+                    }));
                   }}
                 >
                   {this.state.professions ? (

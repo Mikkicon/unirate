@@ -57,12 +57,12 @@ class Home extends Component {
       array.push(
         <Pagination.Item
           onClick={() => {
-            const query = this.state.query;
-            query.offset = (i - 1) * 10;
-            console.log(query);
-
-            this.setState({ query });
-            this.search(query);
+            this.setState(
+              state => ({
+                query: { ...state.query, offset: (i - 1) * 10 }
+              }),
+              () => this.search(this.state.query)
+            );
           }}
           key={i}
           id={i}
@@ -108,7 +108,6 @@ class Home extends Component {
   setTheme = a => {
     this.setState({ theme: a });
   };
-  loadfeedbackNumbers = () => {};
   render() {
     const {
       selected,
@@ -147,8 +146,6 @@ class Home extends Component {
           )}
 
           <br />
-
-          {/* {this.state.loading ? <h2>Loading...</h2> : ""} */}
           <div className="row">
             <input
               className={
@@ -208,7 +205,7 @@ class Home extends Component {
                         {Object.keys(d)
                           .filter(f => f !== "id" && f !== "login")
                           .map(key => (
-                            <div style={{ display: "block" }} key={key}>
+                            <div key={key}>
                               <div>
                                 <b>{key.toUpperCase()} </b> : {d[key]} {"     "}
                               </div>

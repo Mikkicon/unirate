@@ -35,7 +35,7 @@ class App extends Component {
     super(props);
     this.state = {
       testnet: false,
-      isAdmin: window.localStorage.getItem("admin") ? true : false,
+      isAdmin: window.localStorage.getItem("admin") === "true" ? true : false,
       isAuthenticated: window.localStorage.getItem("token") ? true : false
     };
   }
