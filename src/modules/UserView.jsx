@@ -9,9 +9,7 @@ class UserView extends Component {
       post,
       addNew,
       query,
-      putEntity,
-      entityAction,
-      postEntity
+      entityAction
     } = this.props;
     return (
       <div className={theme ? "userViewBlack col-5" : "col-5 userView"}>
