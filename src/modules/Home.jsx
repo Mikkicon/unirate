@@ -27,11 +27,7 @@ class Home extends Component {
       enableScroll: true
     };
   }
-  componentWillMount = () => {
-    if (localStorage.getItem("admin").includes(true)) {
-      window.location.href = "/admin-discipline";
-    }
-  };
+
   componentDidMount = async () => {
     this.search(this.state.query);
   };

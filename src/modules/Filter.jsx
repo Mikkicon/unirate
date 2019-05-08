@@ -14,10 +14,12 @@ class Filter extends Component {
   }
 
   componentDidMount = () => {
+    this.getFacNames();
+  };
+  getFacNames = async () => {
     const link = this.props.admin
       ? this.props.link + "/admin/faculty"
       : this.props.link + "/faculty";
-    console.log(link);
     fetch(link, {
       headers: {
         "Content-Type": "application/json",
@@ -27,11 +29,10 @@ class Filter extends Component {
       .then(a => a.json())
       .then(b => this.setState({ faculties: b.faculty }));
   };
-  getProfNames = () => {
+  getProfNames = async () => {
     const link = this.props.admin
       ? this.props.link + "/admin/profession"
       : this.props.link + "/profession";
-    console.log(link);
     fetch(link, {
       headers: {
         "Content-Type": "application/json",

@@ -2,10 +2,11 @@ import React, { Component } from "react";
 import "../../Styles/Admin.css";
 import "bootstrap";
 import Pagination from "react-bootstrap/Pagination";
-import { MdEdit } from "react-icons/md";
 import Filter from "../Filter";
 import Toolbar from "../Toolbar";
 import AdminMenu from "../AdminMenu";
+import UserList from "../UserList";
+import UserView from "../UserView";
 // import avatar from "../media/avatar.png";
 class AdminDiscipline extends Component {
   constructor(props) {
@@ -29,6 +30,7 @@ class AdminDiscipline extends Component {
   }
   componentDidMount() {
     this.search("");
+    this.getFacNames();
   }
   getFacNames = async () => {
     const { link } = this.state;
@@ -55,7 +57,6 @@ class AdminDiscipline extends Component {
     if (this.state.post) {
       this.setState(state => ({ entities: state.entities.slice(1) }));
     }
-    this.getFacNames();
     this.setState(state => ({
       selectedDiscipline: state.entities.find(
         a => a[Object.keys(a)[0]].toString() === t
@@ -83,22 +84,30 @@ class AdminDiscipline extends Component {
     return array;
   };
 
-  putEntity = () => {
+  entityAction = async method => {
     const { link, selectedDiscipline, query } = this.state;
-    let body = JSON.stringify(query);
-    console.log(
-      `${link}/admin/discipline/${
-        selectedDiscipline[Object.keys(selectedDiscipline)[0]]
-      }`
-    );
-    window.confirm("Are you sure you want to update discipline?")
+    let body =
+      method === "PUT"
+        ? JSON.stringify(query)
+        : method === "POST"
+        ? JSON.stringify({
+            name: selectedDiscipline["name"],
+            year: Number(selectedDiscipline["year"]),
+            facultyId: selectedDiscipline["facultyId"]
+          })
+        : "";
+    console.log(body);
+
+    window.confirm(`Are you sure you want to ${method} discipline?`)
       ? fetch(
           `${link}/admin/discipline/${
-            selectedDiscipline[Object.keys(selectedDiscipline)[0]]
+            method !== "POST"
+              ? selectedDiscipline[Object.keys(selectedDiscipline)[0]]
+              : ""
           }`,
           {
-            method: "PUT",
-            body: body,
+            method: method,
+            body: method === "DELETE" ? null : body,
             headers: {
               "Content-Type": "application/json",
               Authorization: "Bearer " + localStorage.getItem("token")
@@ -109,28 +118,8 @@ class AdminDiscipline extends Component {
           .catch(err => console.log("Error: ", err))
       : console.log("canceled");
     this.search("");
-    this.selectEntity();
   };
-  deleteEntity = async () => {
-    const { link, selectedDiscipline } = this.state;
-    window.confirm("Are you sure?")
-      ? fetch(
-          `${link}/admin/discipline/${
-            selectedDiscipline[Object.keys(selectedDiscipline)[0]]
-          }`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + localStorage.getItem("token")
-            }
-          }
-        ).catch(err => console.log(err))
-      : console.log("You've decided not to delete discipline.:)");
-
-    this.search("");
-  };
-  search = input => {
+  search = async input => {
     var disciplines = this.state.entities;
     var query = Object.keys(input).reduce(
       (total, current) => total + current + "=" + input[current] + "&",
@@ -156,39 +145,13 @@ class AdminDiscipline extends Component {
       )
       .catch(err => console.log(err));
   };
-  postEntity = async () => {
-    const { selectedDiscipline, link } = this.state;
-    this.setState({ post: false });
-    let body = {
-      name: selectedDiscipline["name"],
-      year: Number(selectedDiscipline["year"]),
-      facultyId: selectedDiscipline["facultyId"]
-    };
 
-    fetch(`${link}/admin/discipline/`, {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
-      }
-    })
-      .then(p => {
-        // this.setState({ response: p.statusText });
-        return p;
-      })
-      .catch(err => console.log(err));
-    this.search("");
-
-    // window.location.reload();
-  };
   selectEntity = entity => {
     this.search("");
   };
 
   addNew = () => {
     let entitiesCopy = this.state.entities;
-
     let objCopy = {};
     let key;
     for (key in entitiesCopy[0]) {
@@ -210,15 +173,13 @@ class AdminDiscipline extends Component {
   render() {
     const {
       entities,
-      page,
       total,
       selectedDiscipline,
       faculties,
-      response,
-      query,
       theme,
       link,
-      post
+      post,
+      query
     } = this.state;
 
     return (
@@ -237,10 +198,6 @@ class AdminDiscipline extends Component {
                 setTheme={this.setTheme}
                 total={total}
               />
-              {/* className={
-                    theme ? "dark-card card card-body" : "card card-body"
-                  } */}
-
               <Filter
                 link={link}
                 admin={true}
@@ -251,173 +208,25 @@ class AdminDiscipline extends Component {
             </div>
             <AdminMenu theme={theme} />
           </div>
-          <div
-            className={
-              theme ? "row userListBlack col-6" : " row col-6 userList"
-            }
-          >
-            <h3>DISCIPLINES {response}</h3>
-            <div className="list-group col-12">
-              {entities
-                ? entities.map(u => (
-                    <div
-                      style={{ cursor: "pointer" }}
-                      key={u[Object.keys(u)[0]] ? u[Object.keys(u)[0]] : "new"}
-                      onClick={this.selectDiscipline.bind(this.id)}
-                      className={
-                        theme
-                          ? "list-group-item list-group-item-primary list-group-item-action progress-bar"
-                          : "list-group-item list-group-item-action progress-bar"
-                      }
-                      id={u[Object.keys(u)[0]]}
-                    >
-                      {u[Object.keys(u)[1]]}
-
-                      <MdEdit style={{ float: "right" }} />
-                    </div>
-                  ))
-                : ""}
-              <br />
-              <Pagination style={total < 10 ? { display: "none" } : {}}>
-                <Pagination.First />
-                <Pagination.Prev disabled={entities ? page < 2 : true} />
-                {this.pages()}
-                <Pagination.Next />
-                <Pagination.Last />
-              </Pagination>
-            </div>
-          </div>
-
-          <div className={theme ? "userViewBlack col-5" : "col-5 userView"}>
-            {selectedDiscipline ? (
-              <div>
-                <h2>
-                  {selectedDiscipline[Object.keys(selectedDiscipline)[1]]}
-                </h2>
-                <div className="list-group">
-                  <div>
-                    <span>Name:</span>
-                    <input
-                      type="text"
-                      onChange={e => {
-                        const sel = selectedDiscipline;
-                        sel["name"] = e.target.value;
-                        this.setState({ selectedDiscipline: sel });
-                      }}
-                      className={
-                        theme
-                          ? "search list-group-item list-group-item-action"
-                          : "list-group-item list-group-item-action"
-                      }
-                      value={selectedDiscipline["name"]}
-                    />
-                    <hr />
-                  </div>
-                  <div>
-                    <span>Year:</span>
-                    <select
-                      onChange={e => {
-                        const sel = selectedDiscipline;
-                        sel["year"] = e.target.value;
-                        this.setState({ selectedDiscipline: sel });
-                      }}
-                      className={
-                        theme
-                          ? "search list-group-item list-group-item-action form-control"
-                          : "list-group-item list-group-item-action form-control"
-                      }
-                    >
-                      <option>0</option>
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>4</option>
-                    </select>
-                    <hr />
-                  </div>
-                  <div>
-                    <span>Faculty:</span>
-                    <select
-                      className={
-                        theme
-                          ? "search list-group-item list-group-item-action form-control"
-                          : "list-group-item list-group-item-action form-control"
-                      }
-                      type="text"
-                      onChange={p => {
-                        var a = selectedDiscipline;
-                        a["facultyId"] = Number(p.target.value);
-                        var query1 = query;
-                        query1["facultyId"] = Number(p.target.value);
-                        this.setState({ selectedDiscipline: a, query: query1 });
-                      }}
-                    >
-                      {faculties
-                        ? selectedDiscipline["id"]
-                          ? faculties.map(a => (
-                              <option
-                                key={a.id}
-                                value={a.id}
-                                selected={
-                                  a.name === selectedDiscipline["facultyName"]
-                                }
-                              >
-                                {a.name} ({a.shortName})
-                              </option>
-                            ))
-                          : faculties.map(a => (
-                              <option key={a.id} value={a.id}>
-                                {a.name} ({a.shortName})
-                              </option>
-                            ))
-                        : ""}
-                    </select>
-                  </div>
-                </div>
-                {selectedDiscipline["name"] ? (
-                  <div>
-                    <button
-                      onClick={this.putEntity}
-                      className="btn btn-outline-primary"
-                    >
-                      SAVE
-                    </button>
-                    <button
-                      onClick={this.deleteEntity}
-                      className="btn btn-outline-danger"
-                    >
-                      DELETE
-                    </button>
-                  </div>
-                ) : (
-                  ""
-                )}
-              </div>
-            ) : (
-              ""
-            )}
-            {!post ? (
-              <button
-                onClick={this.addNew}
-                style={{ margin: "auto", marginTop: "20px" }}
-                className="btn btn-outline-primary col-12"
-              >
-                ADD NEW
-              </button>
-            ) : (
-              <button
-                disabled={
-                  !selectedDiscipline["name"] ||
-                  !selectedDiscipline["facultyId"] ||
-                  !selectedDiscipline["year"]
-                }
-                onClick={this.postEntity}
-                className="btn btn-outline-primary col-11"
-              >
-                POST
-              </button>
-            )}
-          </div>
+          <UserList
+            selectDiscipline={this.selectDiscipline}
+            entities={entities}
+            pages={this.pages}
+            theme={theme}
+            search={this.search}
+            total={total}
+          />
+          <UserView
+            theme={theme}
+            selectedDiscipline={selectedDiscipline}
+            faculties={faculties}
+            post={post}
+            query={query}
+            addNew={this.addNew}
+            putEntity={this.putEntity}
+            postEntity={this.postEntity}
+            entityAction={this.entityAction}
+          />
         </div>
       </React.Fragment>
     );
