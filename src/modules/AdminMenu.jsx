@@ -6,7 +6,7 @@ class AdminMenu extends Component {
     const { theme } = this.props;
     return (
       <div
-        style={{ margin: "auto" }}
+        // style={{ margin: "auto" }}
         className={theme ? "userListBlack col-5" : "col-5 userList"}
       >
         <Link className="btn btn-outline-info" to="/admin-user">

@@ -7,7 +7,7 @@ import Toolbar from "../Toolbar";
 import AdminMenu from "../AdminMenu";
 import UserList from "../UserList";
 import UserView from "../UserView";
-// import avatar from "../media/avatar.png";
+
 class AdminDiscipline extends Component {
   constructor(props) {
     super(props);
@@ -30,27 +30,29 @@ class AdminDiscipline extends Component {
   }
   componentDidMount() {
     this.search("");
-    this.getFacNames();
+    this.getFacProfNames();
   }
-  getFacNames = async () => {
+  getFacProfNames = async () => {
     const { link } = this.state;
     this.setState({ query: {} });
-    fetch(`${link}/admin/faculty`, {
+    let rawfac = await fetch(`${link}/admin/faculty`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("token")
       }
-    })
-      .then(res => res.json())
-      .then(data => this.setState({ faculties: data.faculty }));
-    fetch(`${link}/admin/profession`, {
+    });
+    let datafac = await rawfac.json();
+    let rawprof = await fetch(`${link}/admin/profession`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("token")
       }
-    })
-      .then(res => res.json())
-      .then(data => this.setState({ professions: data.profession }));
+    });
+    let dataprof = rawprof.json();
+    this.setState({
+      professions: dataprof.profession,
+      faculties: datafac.faculty
+    });
   };
   selectDiscipline = p => {
     const t = p.target.id;
@@ -120,7 +122,6 @@ class AdminDiscipline extends Component {
     this.search("");
   };
   search = async input => {
-    var disciplines = this.state.entities;
     var query = Object.keys(input).reduce(
       (total, current) => total + current + "=" + input[current] + "&",
       ""
@@ -128,26 +129,23 @@ class AdminDiscipline extends Component {
     query = query ? "?" + query.slice(0, -1) : "";
     console.log("Search params:", query ? query : "discipline");
 
-    fetch(`${this.state.link}/admin/discipline/${input ? query : ""}`, {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token")
+    let searchRaw = await fetch(
+      `${this.state.link}/admin/discipline/${input ? query : ""}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
       }
-    })
-      .then(res => res.json())
-      .then(res =>
-        res.total
-          ? this.setState({
-              entities: res["discipline"] ? res["discipline"] : disciplines,
-              total: res.total
-            })
-          : this.setState({ entities: [], total: 0 })
-      )
-      .catch(err => console.log(err));
-  };
+    );
+    let searchData = await searchRaw.json();
 
-  selectEntity = entity => {
-    this.search("");
+    searchData.total
+      ? this.setState({
+          entities: searchData["discipline"] ? searchData["discipline"] : [],
+          total: searchData.total
+        })
+      : this.setState({ entities: [], total: 0 });
   };
 
   addNew = () => {
@@ -160,7 +158,7 @@ class AdminDiscipline extends Component {
 
     entitiesCopy.unshift(objCopy);
 
-    this.getFacNames();
+    this.getFacProfNames();
     this.setState({
       selectedDiscipline: objCopy,
       entities: entitiesCopy,
@@ -199,6 +197,7 @@ class AdminDiscipline extends Component {
                 total={total}
               />
               <Filter
+                faculties={faculties}
                 link={link}
                 admin={true}
                 search={this.search}

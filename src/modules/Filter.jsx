@@ -12,23 +12,6 @@ class Filter extends Component {
       this.getProfNames();
     }
   }
-
-  componentDidMount = () => {
-    this.getFacNames();
-  };
-  getFacNames = async () => {
-    const link = this.props.admin
-      ? this.props.link + "/admin/faculty"
-      : this.props.link + "/faculty";
-    fetch(link, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token")
-      }
-    })
-      .then(a => a.json())
-      .then(b => this.setState({ faculties: b.faculty }));
-  };
   getProfNames = async () => {
     const link = this.props.admin
       ? this.props.link + "/admin/profession"
@@ -43,8 +26,8 @@ class Filter extends Component {
       .then(b => this.setState({ mandatory: b.profession }));
   };
   render() {
-    const { search, options, theme } = this.props;
-    const { query, faculties, mandatory } = this.state;
+    const { search, options, theme, faculties } = this.props;
+    const { query, mandatory } = this.state;
     return (
       <div className="collapse" id="filter">
         <div className={theme ? "dark-card card card-body" : "card card-body"}>
