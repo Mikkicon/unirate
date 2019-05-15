@@ -30,8 +30,10 @@ input[type="file"] {
   background-color: #fff;
   box-shadow: 0 0 20px gray;
   transition-duration: 0.3s;
+  border-radius: 10px;
 }
 .userList:hover {
+  border-radius: 10px;
   padding: 10px;
   margin: auto;
   height: auto;
@@ -41,6 +43,7 @@ input[type="file"] {
   transition-duration: 0.3s;
 }
 .userView {
+  border-radius: 10px;
   position: relative;
   min-width: 235px;
   border: dashed gray;
@@ -52,6 +55,7 @@ input[type="file"] {
   background-color: #fff;
 }
 .userListBlack {
+  border-radius: 10px;
   padding: 10px;
   margin: auto;
   height: auto;
@@ -61,6 +65,7 @@ input[type="file"] {
   box-shadow: 0 0 20px gray;
 }
 .userViewBlack {
+  border-radius: 10px;
   position: relative;
   min-width: 235px;
   border: dashed gray;

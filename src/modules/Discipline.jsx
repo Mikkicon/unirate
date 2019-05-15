@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { FaThumbsUp, FaThumbsDown, FaBuilding, FaClock } from "react-icons/fa";
 import "../Styles/Admin.css";
+import NewFeedback from "./NewFeedback";
 import Time from "react-time";
 class Discipline extends Component {
   constructor(props) {
@@ -147,7 +148,14 @@ class Discipline extends Component {
       .catch(err => console.log(err));
   };
   render() {
-    const { discipline, feedbacks, liked, disliked } = this.state;
+    const {
+      discipline,
+      feedbacks,
+      liked,
+      disliked,
+      newFeedback,
+      teachers
+    } = this.state;
 
     return (
       <React.Fragment>
@@ -268,6 +276,7 @@ class Discipline extends Component {
                 ))
               : ""}
           </div>
+          <NewFeedback newFeedback={newFeedback} teachers={teachers} />
           <div className="userList">
             <div>
               <select

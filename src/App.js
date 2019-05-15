@@ -6,6 +6,7 @@ import Login from "./modules/Login";
 import Home from "./modules/Home";
 import Settings from "./modules/Settings";
 import Admin from "./modules/admin/Admin";
+import AdminTemplate from "./modules/admin/AdminTemplate";
 import AdminDiscipline from "./modules/admin/AdminDiscipline";
 import AdminProfession from "./modules/admin/AdminProfession";
 import AdminFeedback from "./modules/admin/AdminFeedback";
@@ -255,7 +256,7 @@ class App extends Component {
               isAdmin={isAdmin}
               path="/admin-feedback"
               testnet={testnet}
-              component={<AdminFeedback testnet={testnet} />}
+              component={<AdminTemplate testnet={testnet} />}
             />
             <Private
               isAuthenticated={isAuthenticated}

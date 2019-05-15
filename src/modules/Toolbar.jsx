@@ -4,7 +4,7 @@ class Toolbar extends Component {
   state = {};
   render() {
     const {
-      selected,
+      selectedEntity,
       theme,
       select,
       entities,
@@ -18,7 +18,7 @@ class Toolbar extends Component {
           <DropdownButton
             variant="warning"
             id="dropdown-basic-button"
-            title={selected.toUpperCase()}
+            title={selectedEntity ? selectedEntity.toUpperCase() : ""}
           >
             {entities.map(e => (
               <Dropdown.Item key={e} onSelect={() => select(e)}>
@@ -30,7 +30,7 @@ class Toolbar extends Component {
 
         <a
           className={
-            selected === "faculty"
+            selectedEntity === "faculty"
               ? "btn btn-primary disabled"
               : "btn btn-primary"
           }
@@ -64,7 +64,7 @@ class Toolbar extends Component {
           >
             Alphabet Z->A
           </Dropdown.Item>
-          {selected === "discipline" ? (
+          {selectedEntity === "discipline" ? (
             <div>
               <Dropdown.Item
                 onClick={() => {

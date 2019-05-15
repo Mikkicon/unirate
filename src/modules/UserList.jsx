@@ -9,6 +9,7 @@ class UserList extends Component {
       pages,
       total,
       selectDiscipline,
+      selectedEntity,
       response,
       theme,
       search
@@ -18,7 +19,9 @@ class UserList extends Component {
       <div
         className={theme ? "row userListBlack col-6" : " row col-6 userList"}
       >
-        <h3>DISCIPLINES {response}</h3>
+        <h3>
+          {selectedEntity ? selectedEntity.toUpperCase() : ""} {response}
+        </h3>
         <div className="list-group col-12">
           {entities
             ? entities.map(u => (

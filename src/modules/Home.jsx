@@ -30,6 +30,7 @@ class Home extends Component {
 
   componentDidMount = async () => {
     this.search(this.state.query);
+    this.getFacNames();
   };
 
   getFacNames = async () => {
@@ -109,6 +110,7 @@ class Home extends Component {
       selected,
       disciplines,
       total,
+      faculties,
       query,
       link,
       theme,
@@ -121,7 +123,7 @@ class Home extends Component {
         >
           <br />
           <Toolbar
-            selected={selected}
+            selectedEntity={selected}
             theme={theme}
             select={this.select}
             search={this.search}
@@ -133,6 +135,7 @@ class Home extends Component {
             <Filter
               link={link}
               search={this.search}
+              faculties={faculties}
               options={["faculty", "year", "mandatoryProfessionId"]}
             />
           ) : selected === "profession" ? (
