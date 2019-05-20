@@ -36,8 +36,8 @@ class Discipline extends Component {
     this.loadEntities();
     this.getFacNames();
   };
-  post = () => {
-    const { newFeedback, discipline } = this.state;
+  post = async newFeedback => {
+    const { discipline } = this.state;
     console.log(newFeedback);
     if (!newFeedback.comment || !newFeedback.studentGrade) {
       console.log("Missing required fields");
@@ -59,6 +59,7 @@ class Discipline extends Component {
         .then(() => this.loadEntities())
         .catch(err => console.log(err));
     }
+    this.loadEntities()
   };
   deleteFeedback = feedback => {
     if (feedback["userLogin"] !== localStorage.getItem("login")) {
@@ -75,8 +76,8 @@ class Discipline extends Component {
         .catch(err => console.log(err));
     }
   };
-  loadEntities = () => {
-    fetch(
+  loadEntities = async () => {
+    var rawResult = await fetch(
       `${this.state.link}/discipline?id=${window.location.href.substr(
         window.location.href.indexOf("discipline") + 11,
         window.location.href.length
@@ -89,9 +90,8 @@ class Discipline extends Component {
         }
       }
     )
-      .then(res => res.json())
-      .then(res => this.setState({ discipline: res.discipline[0] }))
-      .catch(err => console.log(err));
+    const result = await rawResult.json()
+    this.setState({discipline: result.discipline[0]})
 
     fetch(
       `${this.state.link}/feedback?disciplineId=${window.location.href.substr(
@@ -276,79 +276,10 @@ class Discipline extends Component {
                 ))
               : ""}
           </div>
-          <NewFeedback newFeedback={newFeedback} teachers={teachers} />
-          <div className="userList">
-            <div>
-              <select
-                className="form-control col-12"
-                type="number"
-                onChange={p => {
-                  p.persist();
-                  this.setState(state => ({
-                    newFeedback: {
-                      ...state.newFeedback,
-                      teachersIds: [Number(p.target.value)]
-                    }
-                  }));
-                }}
-              >
-                <option defaultChecked={true} value={""}>
-                  Choose your teacher
-                </option>
-                {this.state.teachers
-                  ? this.state.teachers.map(teacher => (
-                      <option key={teacher["id"]} value={teacher["id"]}>
-                        {teacher["lastName"]} {teacher["name"]}{" "}
-                        {teacher["middleName"]}
-                      </option>
-                    ))
-                  : ""}
-              </select>
-              <br />
-              <input
-                className="list-group-item list-group-item-action"
-                type="number"
-                placeholder="My mark was..."
-                onChange={p => {
-                  p.persist();
-                  this.setState(state => ({
-                    newFeedback: {
-                      ...state.newFeedback,
-                      studentGrade: Number(p.target.value)
-                    }
-                  }));
-                }}
-              />
-              <br />
-              <input
-                className="list-group-item list-group-item-action"
-                type="text"
-                placeholder="WOW! Such discipline..."
-                onChange={p => {
-                  p.persist();
-                  this.setState(state => ({
-                    newFeedback: {
-                      ...state.newFeedback,
-                      comment: p.target.value
-                    }
-                  }));
-                }}
-              />
-              <br />
-              <button
-                disabled={
-                  !this.state.newFeedback["comment"] ||
-                  !this.state.newFeedback["studentGrade"]
-                }
-                onClick={() => this.post()}
-                className="btn btn-outline-success"
-                style={{ margin: 0, width: "100%" }}
-              >
-                Post!
-              </button>
-            </div>
-          </div>
-        </div>
+          <NewFeedback newFeedback={newFeedback} post={this.post} teachers={teachers} />
+          <br/>
+          <br/>
+        </div> 
       </React.Fragment>
     );
   }

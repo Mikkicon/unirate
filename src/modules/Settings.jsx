@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import "../Styles/Settings.css";
 import bcrypt from "bcryptjs";
 import "bootstrap";
-// import avatar from "../media/avatar.png";
+import avatar from "../media/avatar.png";
+import Progress from "./Progress";
 class Settings extends Component {
   state = {
     link: this.props.testnet
@@ -15,7 +16,8 @@ class Settings extends Component {
     confirm: null,
     enableSave: true,
     professions: [],
-    response: null
+    response: null,
+    image: avatar
   };
   componentDidMount() {
     fetch(
@@ -129,7 +131,7 @@ class Settings extends Component {
 
           {this.state.error}
           <div className="row">
-            {/* <div className="col-6">
+            <div className="col-12">
               <img
                 src={this.state.image}
                 width="200px"
@@ -137,12 +139,15 @@ class Settings extends Component {
                 alt="Default logo"
               />
               <div>
-                <button className="btn btn-outline-primary col-6 float-left">
+                <button className="btn btn-outline-primary col-12 float-left">
                   Upload
                   <input onChange={p => this.handleAvatar(p)} type="file" />
                 </button>
               </div>
-            </div> */}
+            </div>
+            <div className="col-12">
+              <Progress testnet={this.props.testnet} />
+            </div>
             <div className="col-12">
               <input type="hidden" value="something" />
               <form action="">

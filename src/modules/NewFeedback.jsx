@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 class NewFeedback extends Component {
-  state = {};
+  state = {
+    newFeedback: {}
+  };
   render() {
-    const { teachers, newFeedback } = this.props;
+    const { teachers, post } = this.props;
+    const { newFeedback } = this.state;
     return (
       <div className="userList">
         <div>
@@ -64,7 +67,10 @@ class NewFeedback extends Component {
           <br />
           <button
             disabled={!newFeedback["comment"] || !newFeedback["studentGrade"]}
-            onClick={() => this.post()}
+            onClick={() => {
+              this.setState({ newFeedback: {} });
+              post(newFeedback);
+            }}
             className="btn btn-outline-success"
             style={{ margin: 0, width: "100%" }}
           >
