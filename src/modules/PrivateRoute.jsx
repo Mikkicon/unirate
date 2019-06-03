@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Route, Redirect } from "react-router-dom";
-import AdminTemplate from "./admin/AdminTemplate";
+import AdminTemplate from "./AdminTemplate";
 class Private extends Component {
   constructor(props) {
     super(props);

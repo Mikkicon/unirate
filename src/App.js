@@ -5,13 +5,8 @@ import Registration from "./modules/Registration";
 import Login from "./modules/Login";
 import Home from "./modules/Home";
 import Settings from "./modules/Settings";
-import Admin from "./modules/admin/Admin";
-import AdminTemplate from "./modules/admin/AdminTemplate";
-import AdminDiscipline from "./modules/admin/AdminDiscipline";
-import AdminProfession from "./modules/admin/AdminProfession";
-// import AdminFeedback from "./modules/admin/AdminFeedback";
-import AdminFaculty from "./modules/admin/AdminFaculty";
-import AdminUser from "./modules/admin/AdminUser";
+import Admin from "./modules/Admin";
+import AdminTemplate from "./modules/AdminTemplate";
 import Discipline from "./modules/Discipline";
 import Private from "./modules/PrivateRoute";
 import Faculty from "./modules/Faculty";
@@ -22,7 +17,6 @@ import Statistics from "./modules/Statistics";
 import Print from "./modules/Print";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import AdminTeacher from "./modules/admin/AdminTeacher";
 
 class App extends Component {
   constructor(props) {
@@ -261,44 +255,9 @@ class App extends Component {
             <Private
               isAuthenticated={isAuthenticated}
               isAdmin={isAdmin}
-              path="/admin-discipline"
-              testnet={testnet}
-              component={<AdminDiscipline testnet={testnet} />}
-            />
-            <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
               path="/admin-template"
               testnet={testnet}
               component={<AdminTemplate testnet={testnet} />}
-            />
-            <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
-              path="/admin-faculty"
-              testnet={testnet}
-              component={<AdminFaculty testnet={testnet} />}
-            />
-            <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
-              path="/admin-user"
-              testnet={testnet}
-              component={<AdminUser testnet={testnet} />}
-            />
-            <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
-              path="/admin-teacher"
-              testnet={testnet}
-              component={<AdminTeacher testnet={testnet} />}
-            />
-            <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
-              path="/admin-profession"
-              testnet={testnet}
-              component={<AdminProfession testnet={testnet} />}
             />
           </Switch>
         </Router>
