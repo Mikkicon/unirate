@@ -106,7 +106,6 @@ class UserView extends Component {
                   <button
                     key={button}
                     style={{ margin: "auto", marginTop: "20px" }}
-                    // disabled={!selectedItem["name"] || !selectedItem["year"]}
                     onClick={() => entityAction("POST", UDPEntity)}
                     className="btn btn-outline-primary col-12"
                   >

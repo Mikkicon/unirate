@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "../Styles/Progress.css";
+import "../../Styles/Progress.css";
 class Progress extends Component {
   state = {
     feedbacks: [],

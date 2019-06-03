@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import "../Styles/Settings.css";
+import "../../Styles/Settings.css";
 import bcrypt from "bcryptjs";
 import "bootstrap";
-import avatar from "../media/avatar.png";
-import Progress from "./Progress";
+import avatar from "../../media/avatar.png";
+import Progress from "../Components/Progress";
 class Settings extends Component {
   state = {
     link: this.props.testnet

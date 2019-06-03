@@ -1,20 +1,17 @@
 import React, { Component } from "react";
 import "./Styles/App.css";
 import "bootstrap";
-import Registration from "./modules/Registration";
-import Login from "./modules/Login";
-import Home from "./modules/Home";
-import Settings from "./modules/Settings";
-import Admin from "./modules/Admin";
-import AdminTemplate from "./modules/AdminTemplate";
-import Discipline from "./modules/Discipline";
-import Private from "./modules/PrivateRoute";
-import Faculty from "./modules/Faculty";
-import Profession from "./modules/Profession";
-import Teacher from "./modules/Teacher";
-import MyBadge from "./modules/MyBadge";
-import Statistics from "./modules/Statistics";
-import Print from "./modules/Print";
+import Registration from "./modules/Components/Registration";
+import Login from "./modules/Components/Login";
+import Home from "./modules/Compounds/Home";
+import Settings from "./modules/Compounds/Settings";
+import Admin from "./modules/Components/Admin";
+import AdminTemplate from "./modules/Compounds/AdminTemplate";
+import Discipline from "./modules/Compounds/Discipline";
+import Private from "./modules/Compounds/PrivateRoute";
+import MyBadge from "./modules/Components/MyBadge";
+import Statistics from "./modules/Components/Statistics";
+import Print from "./modules/Components/Print";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
@@ -225,24 +222,6 @@ class App extends Component {
               path="/discipline"
               testnet={testnet}
               component={<Discipline testnet={testnet} />}
-            />
-            <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
-              path="/faculty"
-              component={<Faculty />}
-            />
-            <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
-              path="/profession"
-              component={<Profession />}
-            />
-            <Private
-              isAuthenticated={isAuthenticated}
-              isAdmin={isAdmin}
-              path="/teacher"
-              component={<Teacher />}
             />
 
             <Private

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 // import { Link, Router, Switch } from "react-router-dom";
 import bcrypt from "bcryptjs";
-import "../Styles/RegForm.css";
+import "../../Styles/RegForm.css";
 import "bootstrap";
 class Registration extends Component {
   state = {

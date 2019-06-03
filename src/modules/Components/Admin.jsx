@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "../Styles/Admin.css";
+import "../../Styles/Admin.css";
 import "bootstrap";
 import Pagination from "react-bootstrap/Pagination";
 import { Navbar, Nav } from "react-bootstrap";

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button } from "react-bootstrap";
 import { FaArrowUp } from "react-icons/fa";
-import "../Styles/Badge.css";
+import "../../Styles/Badge.css";
 class MyBadge extends Component {
   state = {};
   render() {

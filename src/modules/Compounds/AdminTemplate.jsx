@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import "../Styles/Admin.css";
+import "../../Styles/Admin.css";
 import "bootstrap";
 import Pagination from "react-bootstrap/Pagination";
-import Filter from "./Filter";
+import Filter from "../Components/Filter";
 import Toolbar from "./Toolbar";
-import AdminMenu from "./AdminMenu";
+import AdminMenu from "../Components/AdminMenu";
 import UserList from "./UserList";
-import UserView from "./UserView";
+import UserView from "../Components/UserView";
 
 class AdminTemplate extends Component {
   constructor(props) {

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Feedback from "./Feedback";
+import Feedback from "../Components/Feedback";
 class Feedbacks extends Component {
   state = {};
   render() {
