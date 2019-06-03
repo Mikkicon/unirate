@@ -154,10 +154,9 @@ class Home extends Component {
               placeholder="Search"
               onChange={p => this.search({ search: p.target.value })}
             />
-            <div className="col-1" />
+            {/* <div className="col-1" /> */}
             <Button
-              style={{ margin: "auto 0" }}
-              className=" btn-outline-success col-2"
+              className=" btnStyle btn-outline-success col-2"
               onClick={() => {
                 this.setState({ disciplines: [] }, () =>
                   this.search(this.state.query)

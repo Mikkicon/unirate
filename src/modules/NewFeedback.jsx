@@ -14,6 +14,8 @@ class NewFeedback extends Component {
             type="number"
             onChange={p => {
               p.persist();
+              console.log(Number(p.target.value));
+
               this.setState(state => ({
                 newFeedback: {
                   ...state.newFeedback,

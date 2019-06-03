@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { FaThumbsUp, FaThumbsDown, FaBuilding, FaClock } from "react-icons/fa";
+import { FaBuilding, FaClock } from "react-icons/fa";
 import "../Styles/Admin.css";
 import NewFeedback from "./NewFeedback";
-import Time from "react-time";
+import Feedbacks from "./Feedbacks";
 class Discipline extends Component {
   constructor(props) {
     super(props);
@@ -59,7 +59,7 @@ class Discipline extends Component {
         .then(() => this.loadEntities())
         .catch(err => console.log(err));
     }
-    this.loadEntities()
+    this.loadEntities();
   };
   deleteFeedback = feedback => {
     if (feedback["userLogin"] !== localStorage.getItem("login")) {
@@ -89,9 +89,9 @@ class Discipline extends Component {
           Authorization: "Bearer " + localStorage.getItem("token")
         }
       }
-    )
-    const result = await rawResult.json()
-    this.setState({discipline: result.discipline[0]})
+    );
+    const result = await rawResult.json();
+    this.setState({ discipline: result.discipline[0] });
 
     fetch(
       `${this.state.link}/feedback?disciplineId=${window.location.href.substr(
@@ -175,111 +175,20 @@ class Discipline extends Component {
             </h2>
           </div>
           <br />
-          <div
-            style={{ margin: "100px auto 0 auto" }}
-            className="userList col-10"
-          >
-            <h4>Feedbacks</h4>
-            {feedbacks
-              ? feedbacks.map(d => (
-                  <div key={d.created}>
-                    <div
-                      className="list-group-item clearfix list-group-item-action progress-bar"
-                      // role="progressbar"
-                      // aria-valuenow="75"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                      data-toggle="collapse"
-                      href={"#col_" + d.created}
-                      // aria-expanded="false"
-                      aria-controls="collapseExample"
-                    >
-                      <b>{d.userLogin}:</b> "{d.comment}"
-                      <div
-                        style={{
-                          float: "right",
-                          margin: "0 auto 0 auto"
-                        }}
-                      >
-                        <span
-                          name="Like"
-                          onClick={() => this.like(d, 1)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <FaThumbsUp
-                            color={
-                              liked.find(f => f === d["feedbackId"])
-                                ? "green"
-                                : ""
-                            }
-                          />
-                        </span>
-                        <b> {d.rating} </b>
-                        <span
-                          onClick={() => this.like(d, -1)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <FaThumbsDown
-                            color={
-                              disliked.find(f => f === d["feedbackId"])
-                                ? "red"
-                                : ""
-                            }
-                          />
-                        </span>
-                        {/* <span onClick={this.deleteFeedback.bind(this)}>X</span> */}
-                      </div>
-                    </div>
-                    <div className="collapse" id={"col_" + d.created}>
-                      <div className="card card-body">
-                        {Object.keys(d)
-                          .filter(
-                            f =>
-                              f !== "userLogin" &&
-                              f !== "studentGrade" &&
-                              f !== "rating" &&
-                              f.indexOf("Id") === -1
-                          )
-                          .map(attr =>
-                            attr !== "created" ? (
-                              attr === "teachers" ? (
-                                <div key={"attr"}>
-                                  {d[attr].map(kk => (
-                                    <div key={kk}>
-                                      {Object.keys(kk).map(kkk => (
-                                        <div key={kkk}>{kk[kkk]}</div>
-                                      ))}
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : (
-                                <div key={attr}>
-                                  <b>{attr}:</b> {d[attr]} <br />
-                                </div>
-                              )
-                            ) : (
-                              <div key={attr}>
-                                <b>{attr}:</b>
-                                {
-                                  <Time
-                                    value={Number(d["created"]) * 1000}
-                                    format="HH:mm DD/MM/YYYY"
-                                  />
-                                }
-                                <br />
-                              </div>
-                            )
-                          )}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              : ""}
-          </div>
-          <NewFeedback newFeedback={newFeedback} post={this.post} teachers={teachers} />
-          <br/>
-          <br/>
-        </div> 
+          <Feedbacks
+            feedbacks={feedbacks}
+            liked={liked}
+            disliked={disliked}
+            like={this.like}
+          />
+          <NewFeedback
+            newFeedback={newFeedback}
+            post={this.post}
+            teachers={teachers}
+          />
+          <br />
+          <br />
+        </div>
       </React.Fragment>
     );
   }

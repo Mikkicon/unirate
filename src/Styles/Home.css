@@ -22,6 +22,25 @@
   color: white;
   background-color: #333;
 }
+.btnStyle {
+  background-color: transparent;
+  padding: 10px;
+  margin: 0 20px;
+  color: black;
+  border: 1px solid black;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 100%;
+  transition: all 0.1s ease-in;
+  border-radius: 5px;
+  width: 100px;
+}
+.btnStyle:hover {
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  transition: all 0.1s ease-in;
+}
+
 h1 {
   text-align: center;
   margin: 50px;

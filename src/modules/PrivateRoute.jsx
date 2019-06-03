@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Route, Redirect } from "react-router-dom";
-import AdminDiscipline from "./admin/AdminDiscipline";
+import AdminTemplate from "./admin/AdminTemplate";
 class Private extends Component {
   constructor(props) {
     super(props);
@@ -17,8 +17,8 @@ class Private extends Component {
         )
       ) : path.toString() === "/" && isAdmin ? (
         <Redirect
-          to="/admin-discipline"
-          component={<AdminDiscipline testnet={testnet} />}
+          to="/admin-template"
+          component={<AdminTemplate testnet={testnet} />}
         />
       ) : (
         <Route to={path} component={testnet => component} />

@@ -215,9 +215,15 @@ class AdminDiscipline extends Component {
             search={this.search}
             total={total}
           />
+
           <UserView
             theme={theme}
-            selectedDiscipline={selectedDiscipline}
+            attributes={{
+              attributes: ["name", "year", "facultyName"],
+              buttons: ["SAVE", "DELETE", "POST"]
+            }}
+            selectedEntity={"discipline"}
+            selectedItem={selectedDiscipline}
             faculties={faculties}
             post={post}
             query={query}

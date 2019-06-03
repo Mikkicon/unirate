@@ -18,7 +18,7 @@ class AdminTemplate extends Component {
       entities: [],
       total: 0,
       selectedItem: null,
-      selectedEntity: "profession",
+      selectedEntity: "discipline",
       post: false,
       faculties: [],
       professions: [],
@@ -28,15 +28,16 @@ class AdminTemplate extends Component {
       attributes: {
         feedback: {
           attributes: [
-            "login",
-            "grade",
+            "userLogin",
+            "studentGrade",
             "rating",
             "comment",
             "disciplineName",
             "teachers",
             "created"
           ],
-          buttons: ["DELETE"]
+          buttons: ["DELETE"],
+          editable: []
         },
         user: {
           attributes: [
@@ -46,23 +47,28 @@ class AdminTemplate extends Component {
             "professionName",
             "totalFeedbackNumber"
           ],
-          buttons: ["SAVE", "DELETE"]
+          buttons: ["SAVE", "DELETE"],
+          editable: ["role"]
         },
         teacher: {
           attributes: ["lastName", "name", "middleName", "feedbackNumber"],
-          buttons: ["SAVE", "DELETE"]
+          buttons: ["SAVE", "DELETE"],
+          editable: ["lastName", "name", "middleName"]
         },
         discipline: {
           attributes: ["name", "year", "facultyName"],
-          buttons: ["SAVE", "DELETE", "POST"]
+          buttons: ["SAVE", "DELETE", "POST"],
+          editable: ["name", "year", "facultyName"]
         },
         faculty: {
           attributes: ["name", "shortName"],
-          buttons: ["SAVE", "DELETE", "POST"]
+          buttons: ["SAVE", "DELETE", "POST"],
+          editable: ["name", "shortName"]
         },
         profession: {
           attributes: ["name", "facultyName"],
-          buttons: ["SAVE", "DELETE", "POST"]
+          buttons: ["SAVE", "DELETE", "POST"],
+          editable: ["name", "facultyName"]
         }
       }
     };
@@ -125,23 +131,21 @@ class AdminTemplate extends Component {
     return array;
   };
 
-  entityAction = async method => {
-    const { link, selectedItem, query } = this.state;
+  entityAction = async (method, query) => {
+    const { link, selectedItem, selectedEntity } = this.state;
     let body =
-      method === "PUT"
-        ? JSON.stringify(query)
-        : method === "POST"
-        ? JSON.stringify({
-            name: selectedItem["name"],
-            year: Number(selectedItem["year"]),
-            facultyId: selectedItem["facultyId"]
-          })
-        : "";
+      method === "PUT" || method === "POST" ? JSON.stringify(query) : "";
+    console.log(method, query);
     console.log(body);
+    console.log(
+      `${link}/admin/${selectedEntity}/${
+        method !== "POST" ? selectedItem[Object.keys(selectedItem)[0]] : ""
+      }`
+    );
 
-    window.confirm(`Are you sure you want to ${method} discipline?`)
+    window.confirm(`Are you sure you want to ${method + selectedEntity} ?`)
       ? fetch(
-          `${link}/admin/discipline/${
+          `${link}/admin/${selectedEntity}/${
             method !== "POST" ? selectedItem[Object.keys(selectedItem)[0]] : ""
           }`,
           {
@@ -153,7 +157,7 @@ class AdminTemplate extends Component {
             }
           }
         )
-          .then(res => this.setState({ response: res.statusText }))
+          .then(res => console.log(res))
           .catch(err => console.log("Error: ", err))
       : console.log("canceled");
     this.search("");

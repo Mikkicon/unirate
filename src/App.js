@@ -9,7 +9,7 @@ import Admin from "./modules/admin/Admin";
 import AdminTemplate from "./modules/admin/AdminTemplate";
 import AdminDiscipline from "./modules/admin/AdminDiscipline";
 import AdminProfession from "./modules/admin/AdminProfession";
-import AdminFeedback from "./modules/admin/AdminFeedback";
+// import AdminFeedback from "./modules/admin/AdminFeedback";
 import AdminFaculty from "./modules/admin/AdminFaculty";
 import AdminUser from "./modules/admin/AdminUser";
 import Discipline from "./modules/Discipline";
@@ -18,16 +18,9 @@ import Faculty from "./modules/Faculty";
 import Profession from "./modules/Profession";
 import Teacher from "./modules/Teacher";
 import MyBadge from "./modules/MyBadge";
-import StatisticsHonest from "./modules/statistics/StatisticsHonest";
-import StatisticsMostActiveUsers from "./modules/statistics/StatisticsMostActiveUsers";
-import StatisticsPopularTeacher from "./modules/statistics/StatisticsPopularTeacher";
-import StatisticsProfession from "./modules/statistics/StatisticsProfession";
-import StatisticsRating from "./modules/statistics/StatisticsRating";
-import StatisticsActiveProfession from "./modules/statistics/StatisticsActiveProfessions";
+import Statistics from "./modules/Statistics";
 import Print from "./modules/Print";
 import { Nav, Navbar, NavDropdown } from "react-bootstrap";
-
-// import Discipline1 from "./components/Discipline1";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AdminTeacher from "./modules/admin/AdminTeacher";
 
@@ -144,7 +137,12 @@ class App extends Component {
               exact
               path="/statistics/profession"
               testnet={testnet}
-              component={<StatisticsProfession testnet={testnet} />}
+              component={
+                <Statistics
+                  entity={"most-active-profession"}
+                  testnet={testnet}
+                />
+              }
             />
             <Private
               isAuthenticated={isAuthenticated}
@@ -152,7 +150,9 @@ class App extends Component {
               exact
               path="/statistics/popular-teacher"
               testnet={testnet}
-              component={<StatisticsPopularTeacher testnet={testnet} />}
+              component={
+                <Statistics entity={"popular-teacher"} testnet={testnet} />
+              }
             />
             <Private
               isAuthenticated={isAuthenticated}
@@ -160,7 +160,9 @@ class App extends Component {
               exact
               path="/statistics/most-active-user"
               testnet={testnet}
-              component={<StatisticsMostActiveUsers testnet={testnet} />}
+              component={
+                <Statistics entity={"most-active-user"} testnet={testnet} />
+              }
             />
             <Private
               isAuthenticated={isAuthenticated}
@@ -168,7 +170,12 @@ class App extends Component {
               exact
               path="/statistics/teacher-most-honest-student"
               testnet={testnet}
-              component={<StatisticsHonest testnet={testnet} />}
+              component={
+                <Statistics
+                  entity={"teacher-most-honest-student"}
+                  testnet={testnet}
+                />
+              }
             />
             <Private
               isAuthenticated={isAuthenticated}
@@ -176,7 +183,9 @@ class App extends Component {
               exact
               path="/statistics/user-rating"
               testnet={testnet}
-              component={<StatisticsRating testnet={testnet} />}
+              component={
+                <Statistics entity={"user-rating"} testnet={testnet} />
+              }
             />
             <Private
               isAuthenticated={isAuthenticated}
@@ -184,7 +193,12 @@ class App extends Component {
               exact
               path="/statistics/most-active-profession"
               testnet={testnet}
-              component={<StatisticsActiveProfession testnet={testnet} />}
+              component={
+                <Statistics
+                  entity={"most-active-profession"}
+                  testnet={testnet}
+                />
+              }
             />
             <Private
               isAuthenticated={isAuthenticated}
@@ -254,7 +268,7 @@ class App extends Component {
             <Private
               isAuthenticated={isAuthenticated}
               isAdmin={isAdmin}
-              path="/admin-feedback"
+              path="/admin-template"
               testnet={testnet}
               component={<AdminTemplate testnet={testnet} />}
             />

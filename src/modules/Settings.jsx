@@ -17,23 +17,13 @@ class Settings extends Component {
     enableSave: true,
     professions: [],
     response: null,
-    image: avatar
+    image: avatar,
+    feedbacks: []
   };
   componentDidMount() {
-    fetch(
-      `${this.state.link}/${
-        window.localStorage.getItem("admin").includes(true) ? "admin/" : ""
-      }profession`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        }
-      }
-    )
-      .then(res => res.json())
-      .then(data => this.setState({ professions: data.profession }));
+    this.getData();
   }
+
   deleteAccount = () => {
     if (window.localStorage.getItem("admin").toString() === "false") {
       window.confirm("Are you sure?")
@@ -123,11 +113,40 @@ class Settings extends Component {
       this.setState({ error: "Passwords don't match" });
     }
   };
+  getData = async () => {
+    let response = await fetch(
+      `${this.state.link}/${
+        window.localStorage.getItem("admin").includes(true) ? "admin/" : ""
+      }profession`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      }
+    );
+    let data = await response.json();
+    this.setState({ professions: data.profession });
+    response = await fetch(
+      `${this.state.link}/${
+        window.localStorage.getItem("admin").includes(true) ? "admin/" : ""
+      }feedback?user_login=${localStorage.getItem("login")}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token")
+        }
+      }
+    );
+    data = await response.json();
+    this.setState({ feedbacks: data.feedback });
+  };
+
   render() {
     return (
       <React.Fragment>
         <div className="homeFormCont2 col-8">
-          <h1>Settings</h1>
+          <h2>Settings</h2>
 
           {this.state.error}
           <div className="row">
@@ -146,7 +165,11 @@ class Settings extends Component {
               </div>
             </div>
             <div className="col-12">
-              <Progress testnet={this.props.testnet} />
+              {window.localStorage.getItem("admin").includes(true) ? (
+                ""
+              ) : (
+                <Progress testnet={this.props.testnet} />
+              )}
             </div>
             <div className="col-12">
               <input type="hidden" value="something" />
@@ -154,6 +177,7 @@ class Settings extends Component {
                 <label>New Email</label>
                 <input
                   onChange={e => {
+                    e.persist();
                     this.setState(state => ({
                       userInfo: { ...state.userInfo, email: e.target.value }
                     }));
@@ -166,6 +190,7 @@ class Settings extends Component {
               <label>New Password</label>
               <input
                 onChange={e => {
+                  e.persist();
                   this.setState(state => ({
                     userInfo: { ...state.userInfo, password: e.target.value }
                   }));
@@ -185,6 +210,7 @@ class Settings extends Component {
                 <select
                   className="form-control"
                   onChange={p => {
+                    p.persist();
                     this.setState(state => ({
                       userInfo: {
                         ...state.userInfo,
