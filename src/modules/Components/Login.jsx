@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import bcrypt from "bcryptjs";
 import "../../Styles/LoginForm.css";
-import "bootstrap";
+
 class Login extends Component {
   state = {
     link: this.props.testnet

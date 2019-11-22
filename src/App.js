@@ -5,6 +5,9 @@ import Registration from "./modules/Components/Registration";
 import Login from "./modules/Components/Login";
 import Home from "./modules/Compounds/Home";
 import Settings from "./modules/Compounds/Settings";
+import Faculty from "./modules/Components/Faculty";
+import Profession from "./modules/Components/Profession";
+import Teacher from "./modules/Components/Teacher";
 import Admin from "./modules/Components/Admin";
 import AdminTemplate from "./modules/Compounds/AdminTemplate";
 import Discipline from "./modules/Compounds/Discipline";
@@ -223,7 +226,27 @@ class App extends Component {
               testnet={testnet}
               component={<Discipline testnet={testnet} />}
             />
-
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/faculty"
+              testnet={testnet}
+              component={<Faculty testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/profession"
+              testnet={testnet}
+              component={<Profession testnet={testnet} />}
+            />
+            <Private
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              path="/teacher"
+              testnet={testnet}
+              component={<Teacher testnet={testnet} />}
+            />
             <Private
               isAuthenticated={isAuthenticated}
               isAdmin={isAdmin}

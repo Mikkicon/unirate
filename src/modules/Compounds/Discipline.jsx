@@ -126,19 +126,14 @@ class Discipline extends Component {
             disliked: [...state.disliked, e["feedbackId"]]
           }
     );
-    fetch(
-      `http://disciplinerate-env.aag5tvekef.us-east-1.elasticbeanstalk.com/feedback/grade/${
-        e.feedbackId
-      }`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token")
-        },
-        body: JSON.stringify({ like: signum })
-      }
-    )
+    fetch(`${this.state.link}/feedback/grade/${e.feedbackId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
+      },
+      body: JSON.stringify({ like: signum })
+    })
       .then(res =>
         res.status.toString()[0] === 2
           ? console.log("Liked")

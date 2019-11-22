@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "../../Styles/Admin.css";
-import "bootstrap";
+
 import Pagination from "react-bootstrap/Pagination";
 import Filter from "../Components/Filter";
 import Toolbar from "./Toolbar";
