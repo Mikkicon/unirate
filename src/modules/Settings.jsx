@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import "../../Styles/Settings.css";
+import "../Styles/Settings.css";
 import bcrypt from "bcryptjs";
-import avatar from "../../media/avatar.png";
-import Progress from "../Components/Progress";
+import avatar from "../media/avatar.png";
+import Progress from "./Progress";
 class Settings extends Component {
   constructor(props) {
     super(props);
@@ -81,13 +81,15 @@ class Settings extends Component {
   };
 
   saveChanges = () => {
-    const { userInfo, link } = this.state;
+    const { userInfo } = this.state;
     var userData = { ...userInfo };
     if (userData.password) {
       const salt = "$2a$10$saltpasswordhashhashhh";
       userData.password = bcrypt.hashSync(userData.password, salt);
     }
-    fetch(`${link}/user/${this.login}`, {
+    console.log("User data: ", userData);
+
+    fetch(`${this.link}/user/${this.login}`, {
       method: "PUT",
       headers: this.headers,
       body: JSON.stringify(userData)
@@ -133,7 +135,7 @@ class Settings extends Component {
   handleProfessionChange = p => {
     const professionId = this.state.professions.find(
       a => a.name === p.target.value
-    );
+    )["id"];
     this.setState(state => ({
       userInfo: {
         ...state.userInfo,
@@ -142,10 +144,7 @@ class Settings extends Component {
     }));
   };
   selectedProfessionComp = () => (
-    <select
-      className="form-control"
-      onChange={p => this.handleProfessionChange}
-    >
+    <select className="form-control" onChange={this.handleProfessionChange}>
       {Object.keys(this.state.professions).map(k => (
         <option className="dropdown-item" key={k}>
           {this.state.professions[k].name}
@@ -173,8 +172,21 @@ class Settings extends Component {
     if (professions) return this.notSelectedProfessionComp();
     return null;
   };
-
+  // componentDidUpdate(prevProps, prevState) {
+  //   Object.entries(this.props).forEach(
+  //     ([key, val]) =>
+  //       prevProps[key] !== val && console.log(`Prop '${key}' changed`)
+  //   );
+  //   if (this.state) {
+  //     Object.entries(this.state).forEach(
+  //       ([key, val]) =>
+  //         prevState[key] !== val && console.log(`State '${key}' changed`)
+  //     );
+  //   }
+  // }
   render() {
+    console.log("Rendered Settings");
+
     return (
       <React.Fragment>
         <div className="homeFormCont2 col-8">

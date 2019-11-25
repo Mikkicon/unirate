@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import "../../Styles/Home.css";
+import "../Styles/Home.css";
 import { Link } from "react-router-dom";
 import Pagination from "react-bootstrap/Pagination";
-import Filter from "../Components/Filter";
+import Filter from "./Filter";
 import Toolbar from "./Toolbar";
 import { Button } from "react-bootstrap";
 class Home extends Component {

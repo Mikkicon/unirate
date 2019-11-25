@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import bcrypt from "bcryptjs";
-import "../../Styles/LoginForm.css";
+import "../Styles/LoginForm.css";
 
 class Login extends Component {
   state = {

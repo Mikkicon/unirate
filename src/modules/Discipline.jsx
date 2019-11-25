@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { FaBuilding, FaClock } from "react-icons/fa";
-import "../../Styles/Admin.css";
-import NewFeedback from "../Components/NewFeedback";
+import "../Styles/Admin.css";
+import NewFeedback from "./NewFeedback";
 import Feedbacks from "./Feedbacks";
 class Discipline extends Component {
   constructor(props) {

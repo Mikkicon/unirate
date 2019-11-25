@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "../../Styles/Print.css";
+import "../Styles/Print.css";
 class Print extends Component {
   constructor(props) {
     super(props);
